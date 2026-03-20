@@ -7,7 +7,10 @@ export const errorMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  console.error(err)
+  console.error('Error:', err.message)
+  if (err instanceof AppError) {
+    console.error('Code:', err.code, 'Status:', err.statusCode)
+  }
 
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
