@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../db/prisma.client.js'
 import { UserRepository } from '../../users/infrastructure/user.repository.js'
 import { RegisterUserUseCase } from '../application/register-user.use-case.js'
 import { LoginUserUseCase } from '../application/login-user.use-case.js'
@@ -13,7 +13,6 @@ import { authMiddleware, AuthRequest } from './auth.middleware.js'
 
 export const createAuthRouter = () => {
   const router = Router()
-  const prisma = new PrismaClient()
   const userRepository = new UserRepository(prisma)
 
   /**
