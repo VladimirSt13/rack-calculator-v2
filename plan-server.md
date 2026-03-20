@@ -1,8 +1,8 @@
 # 🗂️ План разработки сервера
 
-> **Статус проекта:** Sprint 1 (Auth & Users) — ✅ Завершён
-> **Последнее обновление:** 20 марта 2026 г.
-> **Git статус:** main branch, последний коммит `cb65ef9` — feat: add monorepo structure и Sprint 1
+> **Статус проекта:** Sprint 2 (Frontend Auth) — ✅ Завершён
+> **Последнее обновление:** 21 марта 2026 г.
+> **Git статус:** main branch, Sprint 1 & 2 влиты в main
 
 ---
 
@@ -15,7 +15,7 @@
 1. ✅ Инициализация Node.js + TypeScript проекта
 2. ✅ Установка зависимостей:
    - Backend: Express, Prisma (MongoDB), Zod
-   - Dev: ESLint, Prettier, Vitest, ts-node-dev
+   - Dev: ESLint, Prettier, Vitest, tsx
 3. ✅ Настройка линтинга и форматирования
 4. ✅ Настройка структуры проекта (модули + слои)
 5. ✅ Настройка тестов (Vitest конфиг)
@@ -27,7 +27,7 @@
 
 ## **Sprint 1 — User Management & Auth**
 
-**Статус:** ✅ **ЗАВЕРШЁН**
+**Статус:** ✅ **ЗАВЕРШЁН** (в main)
 
 **Выполненные задачи:**
 
@@ -53,6 +53,7 @@
    - `GET /api/auth/me`
 5. ✅ JWT Service: JwtService (generateAccessToken, generateRefreshToken, verifyRefreshToken)
 6. ✅ Auth Middleware: authMiddleware
+7. ✅ Prisma singleton (prisma.client.ts)
 
 **Недостающие элементы:**
 
@@ -64,7 +65,28 @@
 
 ---
 
-## **Sprint 2 — Roles & RBAC**
+## **Sprint 2 — Frontend Auth Pages**
+
+**Статус:** ✅ **ЗАВЕРШЁН** (в main)
+
+**Выполненные задачи:**
+
+1. ✅ API client с interceptors (auth, refresh)
+2. ✅ Auth service (login, register, logout, getCurrentUser, resetPassword)
+3. ✅ Zustand store для auth state
+4. ✅ Валидация форм (Zod + React Hook Form)
+5. ✅ Страницы:
+   - `/login` — вход
+   - `/register` — регистрация
+   - `/profile` — профиль пользователя
+6. ✅ React Router + TanStack Query
+7. ✅ Стили для auth форм
+
+**Результат:** полный цикл аутентификации работает (frontend + backend)
+
+---
+
+## **Sprint 3 — Roles & RBAC**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -89,7 +111,7 @@
 
 ---
 
-## **Sprint 3 — Audit / Logging**
+## **Sprint 4 — Audit / Logging**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -110,7 +132,7 @@
 
 ---
 
-## **Sprint 4 — Core Business Module: Rack**
+## **Sprint 5 — Core Business Module: Rack**
 
 **Статус:** ⚠️ **ЧАСТИЧНО НАЧАТ** (создана структура модуля, без реализации)
 
@@ -130,7 +152,7 @@
    - Value Objects: Size, Rows, Weight
    - Repository: RackRepository
 
-2. Domain function: `calculateRack`
+2. Domain function: `calculateRack` (алгоритм в `RACK_ALGORITHM_BUSINESS.md`)
 3. Use-case: `calculateRackUseCase`
 4. Controller: `RackController`
 5. Integration с RBAC и Audit
@@ -141,7 +163,7 @@
 
 ---
 
-## **Sprint 5 — Battery Module (производная от Rack)**
+## **Sprint 6 — Battery Module (производная от Rack)**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -165,7 +187,7 @@
 
 ---
 
-## **Sprint 6 — Export / Revisions / Soft Delete**
+## **Sprint 7 — Export / Revisions / Soft Delete**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -185,7 +207,7 @@
 
 ---
 
-## **Sprint 7 — Завершение и деплой**
+## **Sprint 8 — Завершение и деплой**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -207,20 +229,21 @@
 | -------- | -------------------------------- | ----------------- | ------------------------------ |
 | Sprint 0 | Подготовка проекта               | ✅ Завершён       | Настроено всё необходимое      |
 | Sprint 1 | User Management & Auth           | ✅ Завершён       | Без тестов и email-верификации |
-| Sprint 2 | Roles & RBAC                     | ⏳ Не начат       | —                              |
-| Sprint 3 | Audit / Logging                  | ⏳ Не начат       | —                              |
-| Sprint 4 | Core Business Module: Rack       | ⚠️ Частично начат | Только структура модуля        |
-| Sprint 5 | Battery Module                   | ⏳ Не начат       | —                              |
-| Sprint 6 | Export / Revisions / Soft Delete | ⏳ Не начат       | —                              |
-| Sprint 7 | Завершение и деплой              | ⏳ Не начат       | —                              |
+| Sprint 2 | Frontend Auth Pages              | ✅ Завершён       | В main                         |
+| Sprint 3 | Roles & RBAC                     | ⏳ Не начат       | —                              |
+| Sprint 4 | Audit / Logging                  | ⏳ Не начат       | —                              |
+| Sprint 5 | Core Business Module: Rack       | ⚠️ Частично начат | Только структура модуля        |
+| Sprint 6 | Battery Module                   | ⏳ Не начат       | —                              |
+| Sprint 7 | Export / Revisions / Soft Delete | ⏳ Не начат       | —                              |
+| Sprint 8 | Завершение и деплой              | ⏳ Не начат       | —                              |
 
 ---
 
 ## 🚀 Следующие шаги (приоритеты)
 
-1. **Sprint 4 (Rack)** — реализовать domain-логику расчёта стеллажей по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
-2. **Sprint 2 (RBAC)** — добавить middleware для проверки прав доступа
-3. **Sprint 3 (Audit)** — добавить логирование действий пользователей
+1. **Sprint 5 (Rack)** — реализовать domain-логику расчёта стеллажей по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
+2. **Sprint 3 (RBAC)** — добавить middleware для проверки прав доступа
+3. **Sprint 4 (Audit)** — добавить логирование действий пользователей
 4. **Тесты** — покрыть unit-тестами use-cases модуля auth
 
 ---
