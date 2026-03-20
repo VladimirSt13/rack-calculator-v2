@@ -1,4 +1,5 @@
 import { Email } from '../value-objects/email.vo.js'
+import { ObjectId } from 'mongodb'
 
 export type UserRole = 'USER' | 'ADMIN'
 
@@ -34,7 +35,7 @@ export class User {
   public updatedAt: Date
 
   constructor(props: UserProps) {
-    this.id = props.id || crypto.randomUUID()
+    this.id = props.id || new ObjectId().toHexString()
     this.email = props.email
     this.passwordHash = props.passwordHash
     this.firstName = props.firstName
