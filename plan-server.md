@@ -1,20 +1,25 @@
 # 🗂️ План разработки сервера
 
+> **Статус проекта:** Sprint 1 (Auth & Users) — ✅ Завершён
+> **Последнее обновление:** 20 марта 2026 г.
+> **Git статус:** main branch, последний коммит `cb65ef9` — feat: add monorepo structure и Sprint 1
+
+---
+
 ## **Sprint 0 — Подготовка проекта**
 
-**Цель:** создать каркас проекта, настроить инструменты разработки и CI/CD.
+**Статус:** ✅ **ЗАВЕРШЁН**
 
-**Задачи:**
+**Выполненные задачи:**
 
-1. Инициализация Node.js + TypeScript проекта
-2. Установка зависимостей:
-   - Backend: Express/Fastify, MongoDB (Mongoose / Prisma), Zod
+1. ✅ Инициализация Node.js + TypeScript проекта
+2. ✅ Установка зависимостей:
+   - Backend: Express, Prisma (MongoDB), Zod
    - Dev: ESLint, Prettier, Vitest, ts-node-dev
-
-3. Настройка линтинга и форматирования
-4. Настройка структуры проекта (модули + слои)
-5. Настройка тестов (unit + integration)
-6. Настройка конфигов: ENV, DB, JWT
+3. ✅ Настройка линтинга и форматирования
+4. ✅ Настройка структуры проекта (модули + слои)
+5. ✅ Настройка тестов (Vitest конфиг)
+6. ✅ Настройка конфигов: ENV, DB, JWT
 
 **Результат:** рабочий skeleton проекта, готовый к добавлению модулей
 
@@ -22,25 +27,38 @@
 
 ## **Sprint 1 — User Management & Auth**
 
-**Цель:** создать базовый модуль пользователей и аутентификации
+**Статус:** ✅ **ЗАВЕРШЁН**
 
-**Задачи:**
+**Выполненные задачи:**
 
-1. Модуль `users`:
-   - Entity: User
-   - Value Objects: Email, Password
+1. ✅ Модуль `users`:
+   - Entity: User (Prisma schema)
    - Repository: UserRepository
+   - Методы: findById, update, setRefreshToken
 
-2. Use-cases:
-   - `registerUser`
-   - `loginUser` (JWT + refresh tokens)
-   - `resetPassword`
-   - `verifyEmail`
+2. ✅ Use-cases:
+   - `registerUser` — регистрация
+   - `loginUser` — JWT + refresh tokens
+   - `resetPassword` (RequestResetPasswordUseCase, ResetPasswordUseCase)
+   - `verifyEmail` — use-case создан
 
-3. Controller: UsersController
-4. Маршруты API: `/auth/register`, `/auth/login`, `/auth/reset-password`
-5. Unit-тесты: domain и use-cases
-6. Integration-тесты: маршруты + use-cases
+3. ✅ Controller: AuthController (createAuthRouter)
+4. ✅ Маршруты API:
+   - `POST /api/auth/register`
+   - `POST /api/auth/login`
+   - `POST /api/auth/reset-password/request`
+   - `POST /api/auth/reset-password/confirm`
+   - `POST /api/auth/refresh`
+   - `POST /api/auth/logout`
+   - `GET /api/auth/me`
+5. ✅ JWT Service: JwtService (generateAccessToken, generateRefreshToken, verifyRefreshToken)
+6. ✅ Auth Middleware: authMiddleware
+
+**Недостающие элементы:**
+
+- ⚠️ Unit-тесты: domain и use-cases (не созданы)
+- ⚠️ Integration-тесты: маршруты + use-cases (не созданы)
+- ⚠️ Email verification — только use-case, без реализации отправки email
 
 **Результат:** пользователи могут регистрироваться, логиниться, сбрасывать пароль, JWT работает
 
@@ -48,7 +66,7 @@
 
 ## **Sprint 2 — Roles & RBAC**
 
-**Цель:** настроить систему ролей и прав
+**Статус:** ⏳ **НЕ НАЧАТ**
 
 **Задачи:**
 
@@ -73,7 +91,7 @@
 
 ## **Sprint 3 — Audit / Logging**
 
-**Цель:** фиксировать действия пользователей и системы
+**Статус:** ⏳ **НЕ НАЧАТ**
 
 **Задачи:**
 
@@ -94,7 +112,16 @@
 
 ## **Sprint 4 — Core Business Module: Rack**
 
-**Цель:** реализовать первую бизнес-фичу
+**Статус:** ⚠️ **ЧАСТИЧНО НАЧАТ** (создана структура модуля, без реализации)
+
+**Выполнено:**
+
+- ✅ Создана структура модуля `rack/`:
+  - `domain/entities/` — пусто
+  - `domain/value-objects/` — пусто
+  - `application/` — пусто
+  - `infrastructure/` — пусто
+  - `interfaces/` — пусто
 
 **Задачи:**
 
@@ -116,7 +143,9 @@
 
 ## **Sprint 5 — Battery Module (производная от Rack)**
 
-**Цель:** добавить фичу батарей
+**Статус:** ⏳ **НЕ НАЧАТ**
+
+**Примечание:** модуль `battery` существует в структуре (`server/src/modules/battery/`), но без реализации
 
 **Задачи:**
 
@@ -138,7 +167,7 @@
 
 ## **Sprint 6 — Export / Revisions / Soft Delete**
 
-**Цель:** добавить вспомогательные фичи
+**Статус:** ⏳ **НЕ НАЧАТ**
 
 **Задачи:**
 
@@ -158,7 +187,7 @@
 
 ## **Sprint 7 — Завершение и деплой**
 
-**Цель:** подготовить проект к продакшену
+**Статус:** ⏳ **НЕ НАЧАТ**
 
 **Задачи:**
 
@@ -172,11 +201,33 @@
 
 ---
 
+## 📊 Сводная таблица статусов
+
+| Спринт   | Название                         | Статус            | Примечание                     |
+| -------- | -------------------------------- | ----------------- | ------------------------------ |
+| Sprint 0 | Подготовка проекта               | ✅ Завершён       | Настроено всё необходимое      |
+| Sprint 1 | User Management & Auth           | ✅ Завершён       | Без тестов и email-верификации |
+| Sprint 2 | Roles & RBAC                     | ⏳ Не начат       | —                              |
+| Sprint 3 | Audit / Logging                  | ⏳ Не начат       | —                              |
+| Sprint 4 | Core Business Module: Rack       | ⚠️ Частично начат | Только структура модуля        |
+| Sprint 5 | Battery Module                   | ⏳ Не начат       | —                              |
+| Sprint 6 | Export / Revisions / Soft Delete | ⏳ Не начат       | —                              |
+| Sprint 7 | Завершение и деплой              | ⏳ Не начат       | —                              |
+
+---
+
+## 🚀 Следующие шаги (приоритеты)
+
+1. **Sprint 4 (Rack)** — реализовать domain-логику расчёта стеллажей по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
+2. **Sprint 2 (RBAC)** — добавить middleware для проверки прав доступа
+3. **Sprint 3 (Audit)** — добавить логирование действий пользователей
+4. **Тесты** — покрыть unit-тестами use-cases модуля auth
+
+---
+
 ✅ **Итоговая стратегия:**
 
 - Сначала строим **ядро системы** (пользователи, роли, аудит)
 - Потом добавляем **бизнес-модули** (rack → battery → export → revisions)
 - Каждый новый модуль сразу использует ядро auth/RBAC/audit
 - Все слои разделены (domain, application, infrastructure, interfaces) → легко тестировать и масштабировать
-
-
