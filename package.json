@@ -1,0 +1,35 @@
+{
+  "name": "rack-calculator-v2",
+  "version": "1.0.0",
+  "description": "Калькулятор расчёта стеллажного оборудования и их стоимости.",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "npm run dev:server",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "build": "npm run build --workspaces",
+    "build:server": "npm run build --workspace=server",
+    "build:client": "npm run build --workspace=client",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "npm run format --workspaces",
+    "db:generate": "npm run db:generate --workspace=server",
+    "db:push": "npm run db:push --workspace=server",
+    "db:studio": "npm run db:studio --workspace=server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladimirSt13/rack-calculator-v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VladimirSt13/rack-calculator-v2/issues"
+  },
+  "homepage": "https://github.com/VladimirSt13/rack-calculator-v2#readme"
+}
