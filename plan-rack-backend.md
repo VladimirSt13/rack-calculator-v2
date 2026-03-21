@@ -85,11 +85,53 @@
 - [ ] `RackSetRepository.ts`
   - Методы: `create()`, `findById()`, `findByUserId()`, `addRevision()`
 
-#### Price Service (Сервис цен, опционально)
+#### Price Service (Сервис цен)
+
+**Увага:** Це критично важливий сервіс! Без нього не буде розрахунку вартості.
 
 - [ ] `PriceService.ts`
-  - Методы: `getComponentPrice(type)`, `calculateTotal(components)`
-  - Интеграция с данными из папки `price/`
+  - Методи:
+    - `getComponentPrice(type: string, subtype?: string): number` — отримати ціну компонента
+    - `calculateTotal(components: RackComponents): TotalCost` — розрахувати загальну вартість
+    - `getPricesByRole(total: number, userRole: UserRole): PriceDisplay[]` — ціни за роллю
+  - Інтеграція з даними з папки `price/` або Price DB
+  - **Кешування:** Завантажувати прайс один раз при старті сервера
+
+- [ ] `PriceRepository.ts`
+  - Методи: `getCurrentPriceList()`, `getPriceByType(type)`
+  - Джерело: MongoDB або Excel файл з `price/`
+
+#### Cost Calculation Logic
+
+**Формули розрахунку:**
+
+```typescript
+// Базова ціна = сума всіх компонентів
+basePrice = Σ(component.quantity × component.price)
+
+// Без ізоляторів (для багатоповерхових)
+withoutIsolators = basePrice - isolatorsCost
+
+// Нульова ціна (для менеджерів)
+retailPrice = basePrice × 1.44
+```
+
+**Відображення цін за роллю:**
+
+```typescript
+// Admin бачить всі ціни
+adminPrices = [
+  { type: 'base', label: 'Базова ціна', value: basePrice },
+  { type: 'withoutIsolators', label: 'Без ізоляторів', value: withoutIsolators },
+  { type: 'retail', label: 'Нульова ціна', value: retailPrice },
+];
+
+// Manager бачить тільки нульову
+managerPrices = [{ type: 'retail', label: 'Нульова ціна', value: retailPrice }];
+
+// User не бачить цін
+userPrices = [];
+```
 
 ---
 
@@ -152,6 +194,76 @@ model RackRevision {
 
   @@map("rack_revisions")
 }
+```
+
+---
+
+## 🔄 Потік даних (Data Flow)
+
+### Розрахунок стелажа
+
+```
+1. Клієнт заповнює форму (levels, rows, spans, supportType)
+   ↓
+2. POST /api/rack/calculate → RackController
+   ↓
+3. AuthMiddleware → перевірка токена
+   ↓
+4. CheckPermission('rack', 'create') → RBAC
+   ↓
+5. calculateRack.use-case.ts
+   ↓
+6. calculateRack.domain.ts → чиста логіка розрахунку
+   ↓
+7. PriceService.getPrices() → отримати ціни
+   ↓
+8. PriceService.calculateTotal() → розрахувати вартість
+   ↓
+9. PriceService.getByRole() → фільтр цін за роллю
+   ↓
+10. Відповідь клієнту: {components, prices, name}
+```
+
+### Збереження комплекту
+
+```
+1. Клієнт натискає "Зберегти комплект"
+   ↓
+2. POST /api/rack/sets → RackController
+   ↓
+3. AuthMiddleware → перевірка токена
+   ↓
+4. CheckPermission('rack', 'create')
+   ↓
+5. createRackSet.use-case.ts
+   ↓
+6. RackSetRepository.create() → новий комплект
+   ↓
+7. RackSetRepository.addRevision() → перша версія
+   ↓
+8. Відповідь: {rackSetId, revisionId}
+```
+
+### Отримання списку комплектів
+
+```
+1. Клієнт переходить на /my-sets
+   ↓
+2. GET /api/rack/sets → RackController
+   ↓
+3. AuthMiddleware → перевірка токена
+   ↓
+4. CheckPermission('rack', 'read')
+   ↓
+5. listRackSets.use-case.ts
+   ↓
+6. RackSetRepository.findByUserId() → список комплектів
+   ↓
+7. Для кожного комплекту:
+   - Отримати останню ревизію
+   - Розрахувати актуальні ціни (PriceService)
+   ↓
+8. Відповідь: {items[], pagination}
 ```
 
 ---
