@@ -1,8 +1,8 @@
 # 🗂️ План разработки сервера
 
-> **Статус проекта:** Sprint 2 (Frontend Auth) — ✅ Завершён
+> **Статус проекта:** Sprint 3 (RBAC) — ✅ Завершён
 > **Последнее обновление:** 21 марта 2026 г.
-> **Git статус:** main branch, Sprint 1 & 2 влиты в main
+> **Git статус:** feature/sprint3-rbac, Sprint 3 завершён, ожидает мержа в main
 
 ---
 
@@ -34,7 +34,7 @@
 1. ✅ Модуль `users`:
    - Entity: User (Prisma schema)
    - Repository: UserRepository
-   - Методы: findById, update, setRefreshToken
+   - Методы: findById, update, setRefreshToken, setRoleId
 
 2. ✅ Use-cases:
    - `registerUser` — регистрация
@@ -51,7 +51,7 @@
    - `POST /api/auth/refresh`
    - `POST /api/auth/logout`
    - `GET /api/auth/me`
-5. ✅ JWT Service: JwtService (generateAccessToken, generateRefreshToken, verifyRefreshToken)
+5. ✅ JWT Service: JwtService (generateAccessToken, generateRefreshToken, verifyRefreshToken, roleId в токене)
 6. ✅ Auth Middleware: authMiddleware
 7. ✅ Prisma singleton (prisma.client.ts)
 
@@ -87,6 +87,45 @@
 ---
 
 ## **Sprint 3 — Roles & RBAC**
+
+**Статус:** ✅ **ЗАВЕРШЁН** (в feature/sprint3-rbac)
+
+**Выполненные задачи:**
+
+1. ✅ Prisma schema: Role, Permission
+2. ✅ Модуль `roles`:
+   - Entity: Role
+   - Repository: RoleRepository (CRUD + add/remove permissions)
+   - Use-cases: CheckPermissionUseCase, AssignRoleToUserUseCase
+   - PolicyService (canById, canAny, canAll)
+   - Controller: RolesController
+3. ✅ Модуль `permissions`:
+   - Entity: Permission
+   - Value Object: PermissionIdentifier
+   - Repository: PermissionRepository (CRUD + findByResource)
+   - Controller: PermissionsController
+4. ✅ RBAC Middleware:
+   - `requirePermission(resource, action)`
+   - `requireAnyPermission([...])`
+   - `requireRole(roleName)`
+5. ✅ Интеграция с User:
+   - User entity обновлён (roleId)
+   - JWT токены включают roleId
+
+**API Endpoints:**
+
+- `GET/POST /api/roles`
+- `GET/PUT/DELETE /api/roles/:id`
+- `POST/DELETE /api/roles/:id/permissions`
+- `GET/POST /api/permissions`
+- `GET/PUT/DELETE /api/permissions/:id`
+- `GET /api/permissions/resource/:resource`
+
+**Результат:** система ролей и прав доступа готова к использованию
+
+---
+
+## **Sprint 4 — Audit / Logging**
 
 **Статус:** ⏳ **НЕ НАЧАТ**
 
@@ -225,26 +264,26 @@
 
 ## 📊 Сводная таблица статусов
 
-| Спринт   | Название                         | Статус            | Примечание                     |
-| -------- | -------------------------------- | ----------------- | ------------------------------ |
-| Sprint 0 | Подготовка проекта               | ✅ Завершён       | Настроено всё необходимое      |
-| Sprint 1 | User Management & Auth           | ✅ Завершён       | Без тестов и email-верификации |
-| Sprint 2 | Frontend Auth Pages              | ✅ Завершён       | В main                         |
-| Sprint 3 | Roles & RBAC                     | ⏳ Не начат       | —                              |
-| Sprint 4 | Audit / Logging                  | ⏳ Не начат       | —                              |
-| Sprint 5 | Core Business Module: Rack       | ⚠️ Частично начат | Только структура модуля        |
-| Sprint 6 | Battery Module                   | ⏳ Не начат       | —                              |
-| Sprint 7 | Export / Revisions / Soft Delete | ⏳ Не начат       | —                              |
-| Sprint 8 | Завершение и деплой              | ⏳ Не начат       | —                              |
+| Спринт   | Название                         | Статус      | Примечание                            |
+| -------- | -------------------------------- | ----------- | ------------------------------------- |
+| Sprint 0 | Подготовка проекта               | ✅ Завершён | Настроено всё необходимое             |
+| Sprint 1 | User Management & Auth           | ✅ Завершён | Без тестов и email-верификации        |
+| Sprint 2 | Frontend Auth Pages              | ✅ Завершён | В main                                |
+| Sprint 3 | Roles & RBAC                     | ✅ Завершён | В feature/sprint3-rbac, ожидает мержа |
+| Sprint 4 | Audit / Logging                  | ⏳ Не начат | —                                     |
+| Sprint 5 | Core Business Module: Rack       | ⚠️ Частично | Только структура модуля               |
+| Sprint 6 | Battery Module                   | ⏳ Не начат | —                                     |
+| Sprint 7 | Export / Revisions / Soft Delete | ⏳ Не начат | —                                     |
+| Sprint 8 | Завершение и деплой              | ⏳ Не начат | —                                     |
 
 ---
 
 ## 🚀 Следующие шаги (приоритеты)
 
 1. **Sprint 5 (Rack)** — реализовать domain-логику расчёта стеллажей по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
-2. **Sprint 3 (RBAC)** — добавить middleware для проверки прав доступа
-3. **Sprint 4 (Audit)** — добавить логирование действий пользователей
-4. **Тесты** — покрыть unit-тестами use-cases модуля auth
+2. **Sprint 4 (Audit)** — добавить логирование действий пользователей
+3. **Sprint 5 (Rack UI)** — создать интерфейс калькулятора стеллажей
+4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac)
 
 ---
 
