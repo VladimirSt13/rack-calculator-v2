@@ -9,7 +9,8 @@ export interface UserProps {
   passwordHash: string
   firstName?: string
   lastName?: string
-  role: UserRole
+  roleId?: string
+  role?: UserRole
   emailVerified: boolean
   emailVerifiedAt?: Date
   refreshToken?: string
@@ -25,7 +26,8 @@ export class User {
   public passwordHash: string
   public firstName?: string
   public lastName?: string
-  public role: UserRole
+  public roleId?: string
+  public role?: UserRole
   public emailVerified: boolean
   public emailVerifiedAt?: Date
   public refreshToken?: string
@@ -40,6 +42,7 @@ export class User {
     this.passwordHash = props.passwordHash
     this.firstName = props.firstName
     this.lastName = props.lastName
+    this.roleId = props.roleId
     this.role = props.role
     this.emailVerified = props.emailVerified
     this.emailVerifiedAt = props.emailVerifiedAt
@@ -67,6 +70,11 @@ export class User {
     this.updatedAt = new Date()
   }
 
+  setRoleId(roleId: string | null): void {
+    this.roleId = roleId ?? undefined
+    this.updatedAt = new Date()
+  }
+
   setRefreshToken(token: string | null): void {
     this.refreshToken = token ?? undefined
     this.updatedAt = new Date()
@@ -85,6 +93,7 @@ export class User {
       password: this.passwordHash,
       firstName: this.firstName,
       lastName: this.lastName,
+      roleId: this.roleId,
       role: this.role,
       emailVerified: this.emailVerified,
       emailVerifiedAt: this.emailVerifiedAt,
@@ -103,6 +112,7 @@ export class User {
       passwordHash: data.password,
       firstName: data.firstName,
       lastName: data.lastName,
+      roleId: data.roleId,
       role: data.role,
       emailVerified: data.emailVerified,
       emailVerifiedAt: data.emailVerifiedAt,

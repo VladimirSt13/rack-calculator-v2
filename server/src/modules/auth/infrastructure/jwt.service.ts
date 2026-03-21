@@ -6,6 +6,7 @@ export interface TokenPayload {
   userId: string
   email: string
   role: string
+  roleId?: string
 }
 
 export interface Tokens {

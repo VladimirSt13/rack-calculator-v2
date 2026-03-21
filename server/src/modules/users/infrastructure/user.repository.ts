@@ -42,18 +42,27 @@ export class UserRepository {
   }
 
   async create(user: User): Promise<User> {
+    const data = user.toPersistence()
+    const { id, role, ...rest } = data
     const created = await this.prisma.user.create({
-      data: user.toPersistence(),
+      data: {
+        ...rest,
+        roleId: data.roleId || null,
+      },
     })
 
     return User.fromPersistence(created)
   }
 
   async update(user: User): Promise<User> {
-    const { id, ...data } = user.toPersistence()
+    const data = user.toPersistence()
+    const { id, role, ...rest } = data
     const updated = await this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        ...rest,
+        roleId: data.roleId || null,
+      },
     })
 
     return User.fromPersistence(updated)
