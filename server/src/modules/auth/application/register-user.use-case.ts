@@ -63,12 +63,14 @@ export class RegisterUserUseCase {
       accessToken: JwtService.generateAccessToken({
         userId: user.id,
         email: user.email.toString(),
-        role: user.role,
+        role: user.role || 'USER',
+        roleId: user.roleId,
       }),
       refreshToken: JwtService.generateRefreshToken({
         userId: user.id,
         email: user.email.toString(),
-        role: user.role,
+        role: user.role || 'USER',
+        roleId: user.roleId,
       }),
     }
   }
