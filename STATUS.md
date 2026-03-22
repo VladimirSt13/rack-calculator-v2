@@ -1,8 +1,8 @@
 # 📊 Статус проекта Rack Calculator V2
 
 > **Дата обновления:** 22 марта 2026 г.
-> **Ветка:** `feature/sprint3.5-frontend-foundation` (Sprint 3.5 завершён)
-> **Последний коммит:** — feat(client): Sprint 3.5 - Frontend Foundation
+> **Ветка:** `feature/sprint4-audit-backend` (Sprint 4 завершён)
+> **Последний коммит:** — feat(server): Sprint 4 - Audit / Logging Backend
 
 ---
 
@@ -10,7 +10,7 @@
 
 | Компонент        | Статус                          | Готовность |
 | ---------------- | ------------------------------- | ---------- |
-| **Backend**      | 🟢 Готово (Sprint 1-3)          | ~40%       |
+| **Backend**      | 🟢 Готово (Sprint 1-4)          | ~50%       |
 | **Frontend**     | 🟢 Дизайн-система (Sprint 3.5)  | ~25%       |
 | **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
 | **Тесты**        | 🔴 Отсутствуют                  | 0%         |
@@ -27,7 +27,7 @@
 | **Sprint 2**   | Frontend Auth Pages                 | ✅ Завершён | 100%       |
 | **Sprint 3**   | Roles & RBAC                        | ✅ Завершён | 100%       |
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершён | 100%       |
-| **Sprint 4**   | Audit / Logging                     | ⏳ Не начат | 0%         |
+| **Sprint 4**   | Audit / Logging                     | ✅ Завершён | 100%       |
 | **Sprint 5**   | Core Business Module: Rack          | ⚠️ Частично | 10%        |
 | **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
@@ -76,6 +76,21 @@
 - [x] `npm run dev` — запускает оба приложения одновременно
 - [x] concurrently установлен
 
+### Backend (Sprint 4)
+
+- [x] Модуль `audit`:
+  - [x] Prisma schema: AuditEvent (MongoDB)
+  - [x] AuditEvent entity, AuditAction VO, AuditResource VO
+  - [x] AuditRepository (CRUD, filters, pagination)
+  - [x] Use-cases: LogAuditAction, GetAuditLogs
+  - [x] AuditController (GET /api/audit, /my, /:id)
+  - [x] Audit middleware (auto-logging)
+- [x] Middleware `requireRole` для проверки ролей
+- [x] Интеграция с auth:
+  - [x] Логирование входа (успех/неудача/ошибка)
+  - [x] IP адрес, user agent
+  - [x] Метаданные (request/response)
+
 ### Frontend (Sprint 3.5)
 
 - [x] Настройка дизайн-системы:
@@ -115,8 +130,8 @@
 | ---------------------- | ---------- | -------------------------------------------- |
 | **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
 | **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
-| **Audit logging**      | 🟡 Средний | Логирование действий не реализовано          |
 | **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
+| **Audit Frontend**     | 🟡 Средний | UI для просмотра логов не реализован         |
 
 ---
 
@@ -138,10 +153,10 @@
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
-3. **Sprint 4: Audit Logging**
-   - Создать модуль `audit` (AuditEvent entity)
-   - Реализовать Audit middleware
-   - Логирование действий пользователей
+3. **Sprint 4: Audit Frontend**
+   - Страница `/admin/audit` для просмотра логов
+   - Таблица с фильтрами (action, resource, status, date range)
+   - Детали лога
 
 ### Среднесрочные (3-4 недели)
 
@@ -215,7 +230,7 @@
 ## 📈 Метрики прогресса
 
 ```
-Backend:  ████████████░░░░░░░░░░ 40%
+Backend:  ████████████████░░░░░░ 50%
 Frontend: █████████░░░░░░░░░░░░░ 25%
 Tests:    ░░░░░░░░░░░░░░░░░░░░░░  0%
 Docs:     ██████████████████████ 100%
