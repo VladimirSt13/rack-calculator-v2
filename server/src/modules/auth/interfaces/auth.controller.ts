@@ -102,10 +102,17 @@ export const createAuthRouter = () => {
   router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next) => {
     try {
       const userId = req.user!.userId
+      const userRoleId = req.user!.roleId
 
       const user = await userRepository.findById(userId)
       if (!user) {
         throw AppError.notFound('User not found', 'USER_NOT_FOUND')
+      }
+
+      // Если roleId есть в токене, но нет в БД — обновить пользователя
+      if (userRoleId && !user.roleId) {
+        user.setRoleId(userRoleId)
+        await userRepository.update(user)
       }
 
       res.json({
@@ -115,7 +122,8 @@ export const createAuthRouter = () => {
           email: user.email.toString(),
           firstName: user.firstName,
           lastName: user.lastName,
-          role: user.role,
+          role: req.user!.role, // Берём роль из токена
+          roleId: req.user!.roleId, // Добавляем roleId
           emailVerified: user.emailVerified,
           createdAt: user.createdAt,
         },

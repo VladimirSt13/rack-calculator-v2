@@ -57,6 +57,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     try {
       const user = await authService.getCurrentUser()
+      // Сервер теперь возвращает roleId в ответе
       set({ user, isAuthenticated: true, isLoading: false })
     } catch (error) {
       set({ user: null, isAuthenticated: false, isLoading: false })
