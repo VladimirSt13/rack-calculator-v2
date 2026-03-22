@@ -6,6 +6,7 @@ import { AppError } from '../../common/errors/app.error.js'
 import { JwtService, Tokens } from '../infrastructure/jwt.service.js'
 import { logAuthEvent } from '../../audit/infrastructure/audit.middleware.js'
 import { AuditActions } from '../../audit/domain/value-objects/AuditAction.js'
+import { prisma } from '../../../db/prisma.client.js'
 
 export interface LoginInput {
   email: string
@@ -37,6 +38,16 @@ export class LoginUserUseCase {
           input.userAgent
         )
         throw AppError.unauthorized('Invalid credentials', 'INVALID_CREDENTIALS')
+      }
+
+      // Загрузка роли из БД если есть roleId
+      if (user.roleId) {
+        const role = await prisma.role.findUnique({
+          where: { id: user.roleId },
+        })
+        if (role) {
+          user.role = role.name as 'USER' | 'ADMIN'
+        }
       }
 
       // Проверка пароля
