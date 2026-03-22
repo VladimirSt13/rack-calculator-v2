@@ -1,8 +1,8 @@
 # 📊 Статус проекта Rack Calculator V2
 
-> **Дата обновления:** 21 марта 2026 г.  
-> **Ветка:** `feature/sprint3-rbac` (Sprint 3 завершён, ожидает мержа)  
-> **Последний коммит:** `277391f` — feat(server): Sprint 3 - RBAC
+> **Дата обновления:** 22 марта 2026 г.
+> **Ветка:** `feature/sprint3.5-frontend-foundation` (Sprint 3.5 завершён)
+> **Последний коммит:** — feat(client): Sprint 3.5 - Frontend Foundation
 
 ---
 
@@ -11,7 +11,7 @@
 | Компонент        | Статус                          | Готовность |
 | ---------------- | ------------------------------- | ---------- |
 | **Backend**      | 🟢 Готово (Sprint 1-3)          | ~40%       |
-| **Frontend**     | 🟢 Готово (Sprint 2)            | ~15%       |
+| **Frontend**     | 🟢 Дизайн-система (Sprint 3.5)  | ~25%       |
 | **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
 | **Тесты**        | 🔴 Отсутствуют                  | 0%         |
 | **Документация** | 🟢 Актуальна                    | ✅         |
@@ -20,17 +20,18 @@
 
 ## 📅 Спринты
 
-| Спринт       | Название                         | Статус      | Completion |
-| ------------ | -------------------------------- | ----------- | ---------- |
-| **Sprint 0** | Подготовка проекта               | ✅ Завершён | 100%       |
-| **Sprint 1** | User Management & Auth           | ✅ Завершён | 100%       |
-| **Sprint 2** | Frontend Auth Pages              | ✅ Завершён | 100%       |
-| **Sprint 3** | Roles & RBAC                     | ✅ Завершён | 100%       |
-| **Sprint 4** | Audit / Logging                  | ⏳ Не начат | 0%         |
-| **Sprint 5** | Core Business Module: Rack       | ⚠️ Частично | 10%        |
-| **Sprint 6** | Battery Module                   | ⏳ Не начат | 0%         |
-| **Sprint 7** | Export / Revisions / Soft Delete | ⏳ Не начат | 0%         |
-| **Sprint 8** | Завершение и деплой              | ⏳ Не начат | 0%         |
+| Спринт         | Название                            | Статус      | Completion |
+| -------------- | ----------------------------------- | ----------- | ---------- |
+| **Sprint 0**   | Подготовка проекта                  | ✅ Завершён | 100%       |
+| **Sprint 1**   | User Management & Auth              | ✅ Завершён | 100%       |
+| **Sprint 2**   | Frontend Auth Pages                 | ✅ Завершён | 100%       |
+| **Sprint 3**   | Roles & RBAC                        | ✅ Завершён | 100%       |
+| **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершён | 100%       |
+| **Sprint 4**   | Audit / Logging                     | ⏳ Не начат | 0%         |
+| **Sprint 5**   | Core Business Module: Rack          | ⚠️ Частично | 10%        |
+| **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
+| **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
+| **Sprint 8**   | Завершение и деплой                 | ⏳ Не начат | 0%         |
 
 ---
 
@@ -75,11 +76,33 @@
 - [x] `npm run dev` — запускает оба приложения одновременно
 - [x] concurrently установлен
 
+### Frontend (Sprint 3.5)
+
+- [x] Настройка дизайн-системы:
+  - [x] Tailwind CSS v4
+  - [x] shadcn/ui (16 компонентов)
+  - [x] Storybook
+  - [x] prettier-plugin-tailwindcss
+- [x] UI-компоненты:
+  - [x] Button, Input, Label, Select, Checkbox, RadioGroup
+  - [x] Card, Table, Dialog, DropdownMenu
+  - [x] Sonner, Skeleton, Spinner, Avatar, Badge, ScrollArea, Separator
+- [x] Layout-компоненты:
+  - [x] Header (логотип, темы, уведомления, профиль)
+  - [x] Sidebar (навигация с разделами)
+  - [x] AppLayout (адаптивный)
+- [x] Роутинг:
+  - [x] ProtectedRoute
+  - [x] GuestRoute
+- [x] Страницы:
+  - [x] DashboardPage
+  - [x] LoginPage (обновлена)
+  - [x] RegisterPage (обновлена)
+
 ### Документация
 
 - [x] RACK_ALGORITHM_BUSINESS.md — бизнес-алгоритм расчёта стеллажей
-- [x] plan-server.md — план разработки сервера
-- [x] plan-client.md — план разработки клиента
+- [x] PLAN.md — **объединённый план разработки** (server + client)
 - [x] summory.md — техническое резюме
 - [x] backend-sturcure.md — структура бэкенда
 - [x] STATUS.md — статус проекта
@@ -107,10 +130,10 @@
    - Создать RackEntity
    - Реализовать RackRepository
    - Создать Use-case `calculateRackUseCase`
-   - Создать RackController + маршруты
+   - Создать RackController + маршруты `/api/rack/calculate`
 
-2. **Sprint 5: Rack UI (Frontend)**
-   - Страница калькулятора стеллажей
+2. **Sprint 5: Rack Module (Frontend)**
+   - Страница калькулятора стеллажей `/rack/calculator`
    - Форма ввода параметров
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
@@ -148,15 +171,17 @@
 
 ### Frontend структура
 
-| Компонент       | Статус        | Описание                 |
-| --------------- | ------------- | ------------------------ |
-| **components/** | 🔴 Пусто      | UI компоненты            |
-| **hooks/**      | 🔴 Пусто      | Кастомные хуки           |
-| **pages/**      | ✅ Auth       | Login, Register, Profile |
-| **services/**   | ✅ Auth       | API client, auth service |
-| **stores/**     | ✅ Auth       | Zustand auth store       |
-| **types/**      | 🔴 Пусто      | TypeScript типы          |
-| **utils/**      | ✅ Validation | Zod схемы                |
+| Компонент               | Статус            | Описание                            |
+| ----------------------- | ----------------- | ----------------------------------- |
+| **components/ui/**      | ✅ 16 компонентов | shadcn/ui компоненты                |
+| **components/layout/**  | ✅                | Header, Sidebar, AppLayout          |
+| **components/routing/** | ✅                | ProtectedRoute, GuestRoute          |
+| **hooks/**              | 🔴 Пусто          | Кастомные хуки                      |
+| **pages/**              | ✅ 4 страницы     | Dashboard, Login, Register, Profile |
+| **services/**           | ✅ Auth           | API client, auth service            |
+| **stores/**             | ✅ Auth           | Zustand auth store                  |
+| **types/**              | 🔴 Пусто          | TypeScript типы                     |
+| **utils/**              | ✅ Validation     | Zod схемы                           |
 
 ---
 
@@ -190,8 +215,8 @@
 ## 📈 Метрики прогресса
 
 ```
-Backend:  ████████████░░░░░░░░░░ 25%
-Frontend: ███████░░░░░░░░░░░░░░░ 15%
+Backend:  ████████████░░░░░░░░░░ 40%
+Frontend: █████████░░░░░░░░░░░░░ 25%
 Tests:    ░░░░░░░░░░░░░░░░░░░░░░  0%
 Docs:     ██████████████████████ 100%
 ```
@@ -201,7 +226,7 @@ Docs:     ██████████████████████ 100
 ## 🔗 Ресурсы
 
 - **Репозиторий:** https://github.com/VladimirSt13/rack-calculator-v2
-- **План сервера:** [plan-server.md](./plan-server.md)
-- **План клиента:** [plan-client.md](./plan-client.md)
-- **Общий план:** [план.md](./план.md)
+- **План разработки:** [PLAN.md](./PLAN.md)
 - **Алгоритм:** [RACK_ALGORITHM_BUSINESS.md](./RACK_ALGORITHM_BUSINESS.md)
+- **Структура бэкенда:** [backend-sturcure.md](./backend-sturcure.md)
+- **Техническое резюме:** [summory.md](./summory.md)
