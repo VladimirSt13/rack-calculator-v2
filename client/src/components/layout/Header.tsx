@@ -52,16 +52,7 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           {/* User menu */}
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/user.png" alt="User" />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
+            <DropdownMenuTrigger render={<UserTriggerButton />} />
             <DropdownMenuContent className="w-56" align="end">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
@@ -79,5 +70,18 @@ export function Header({ onMenuClick }: HeaderProps) {
         </div>
       </div>
     </header>
+  )
+}
+
+function UserTriggerButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <Button variant="ghost" className="relative h-8 w-8 rounded-full" {...props}>
+      <Avatar className="h-8 w-8">
+        <AvatarImage src="/avatars/user.png" alt="User" />
+        <AvatarFallback>
+          <User className="h-4 w-4" />
+        </AvatarFallback>
+      </Avatar>
+    </Button>
   )
 }
