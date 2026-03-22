@@ -28,7 +28,8 @@ const mainMenu = [
   {
     title: 'Админка',
     icon: Shield,
-    href: '/admin',
+    href: '#',
+    children: [{ title: 'Аудит логов', href: '/admin/audit' }],
   },
 ]
 
