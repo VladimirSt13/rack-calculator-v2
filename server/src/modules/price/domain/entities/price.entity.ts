@@ -6,15 +6,17 @@ export interface PriceComponent {
   category: string
 }
 
+export interface SupportType {
+  edge: PriceComponent
+  intermediate: PriceComponent
+}
+
 export interface PriceData {
-  [key: string]: Record<string, PriceComponent> | undefined
-  supports?: Record<string, PriceComponent>
-  spans?: Record<string, PriceComponent>
-  isolator?: Record<string, PriceComponent>
-  vertical_supports?: Record<string, PriceComponent>
-  diagonal_brace?: Record<string, PriceComponent>
-  rack_components?: Record<string, PriceComponent>
-  battery_racks?: Record<string, PriceComponent>
+  supports: Record<string, SupportType> // { "215": { edge: {...}, intermediate: {...} } }
+  spans: Record<string, PriceComponent> // { "600": {...}, "750": {...} }
+  vertical_supports: Record<string, PriceComponent>
+  diagonal_brace: PriceComponent
+  isolator: PriceComponent
 }
 
 export interface PriceProps {

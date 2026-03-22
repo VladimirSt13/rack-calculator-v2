@@ -65,7 +65,10 @@ export class PriceService {
    * Calculate rack components cost
    */
   calculateRackCost(components: {
-    supports?: { edge: { quantity: number; type: string }; intermediate: { quantity: number; type: string } }
+    supports?: {
+      edge: { quantity: number; type: string }
+      intermediate: { quantity: number; type: string }
+    }
     beams?: Array<{ length: number; quantity: number }>
     uprights?: { quantity: number; type: string }
     braces?: { quantity: number }
@@ -77,82 +80,93 @@ export class PriceService {
 
     const prices: RackPrices = {}
 
-    // Supports (опори)
+    // Supports (опори) - нова структура: supports[type].edge / supports[type].intermediate
     if (components.supports) {
       const { edge, intermediate } = components.supports
-      const edgePrice = this.currentPrice.getComponentPrice('supports', `${edge.type} кр`)
-      const intermediatePrice = this.currentPrice.getComponentPrice('supports', `${intermediate.type} пром`)
+      const supportsData = this.currentPrice.data.supports || {}
 
       prices.supports = []
-      if (edge.quantity > 0 && edgePrice) {
-        prices.supports.push({
-          name: `Опора ${edge.type} (крайня)`,
-          amount: edge.quantity,
-          price: edgePrice,
-          total: edge.quantity * edgePrice,
-        })
+
+      // Edge support
+      if (edge.quantity > 0 && supportsData[edge.type]) {
+        const edgeComponent = supportsData[edge.type].edge
+        if (edgeComponent) {
+          prices.supports.push({
+            name: `Опора ${edge.type} (крайня)`,
+            amount: edge.quantity,
+            price: edgeComponent.price,
+            total: edge.quantity * edgeComponent.price,
+          })
+        }
       }
-      if (intermediate.quantity > 0 && intermediatePrice) {
-        prices.supports.push({
-          name: `Опора ${intermediate.type} (пром)`,
-          amount: intermediate.quantity,
-          price: intermediatePrice,
-          total: intermediate.quantity * intermediatePrice,
-        })
+
+      // Intermediate support
+      if (intermediate.quantity > 0 && supportsData[intermediate.type]) {
+        const intermediateComponent = supportsData[intermediate.type].intermediate
+        if (intermediateComponent) {
+          prices.supports.push({
+            name: `Опора ${intermediate.type} (пром)`,
+            amount: intermediate.quantity,
+            price: intermediateComponent.price,
+            total: intermediate.quantity * intermediateComponent.price,
+          })
+        }
       }
     }
 
     // Beams (балки)
     if (components.beams) {
-      prices.beams = components.beams.map(beam => {
-        const beamPrice = this.currentPrice!.getComponentPrice('spans', String(beam.length))
+      const spansData = this.currentPrice.data.spans || {}
+      prices.beams = components.beams.map((beam) => {
+        const beamComponent = spansData[String(beam.length)]
         return {
           name: `Балка ${beam.length}`,
           amount: beam.quantity,
-          price: beamPrice || 0,
-          total: beam.quantity * (beamPrice || 0),
+          price: beamComponent?.price || 0,
+          total: beam.quantity * (beamComponent?.price || 0),
         }
       })
     }
 
     // Uprights (вертикальні стійки)
     if (components.uprights) {
-      const uprightPrice = this.currentPrice.getComponentPrice('vertical_supports', components.uprights.type)
+      const uprightsData = this.currentPrice.data.vertical_supports || {}
+      const uprightComponent = uprightsData[components.uprights.type]
       prices.uprights = []
-      if (components.uprights.quantity > 0 && uprightPrice) {
+      if (components.uprights.quantity > 0 && uprightComponent) {
         prices.uprights.push({
           name: `Вертикальна стійка ${components.uprights.type}`,
           amount: components.uprights.quantity,
-          price: uprightPrice,
-          total: components.uprights.quantity * uprightPrice,
+          price: uprightComponent.price,
+          total: components.uprights.quantity * uprightComponent.price,
         })
       }
     }
 
     // Braces (розкоси)
     if (components.braces) {
-      const bracePrice = this.currentPrice.getComponentPrice('diagonal_brace', 'diagonal_brace')
+      const braceComponent = this.currentPrice.data.diagonal_brace
       prices.braces = []
-      if (components.braces.quantity > 0 && bracePrice) {
+      if (components.braces.quantity > 0 && braceComponent) {
         prices.braces.push({
           name: 'Розкос',
           amount: components.braces.quantity,
-          price: bracePrice,
-          total: components.braces.quantity * bracePrice,
+          price: braceComponent.price,
+          total: components.braces.quantity * braceComponent.price,
         })
       }
     }
 
     // Isolators (ізолятори)
     if (components.isolators) {
-      const isolatorPrice = this.currentPrice.getComponentPrice('isolator', 'isolator')
+      const isolatorComponent = this.currentPrice.data.isolator
       prices.isolators = []
-      if (components.isolators.quantity > 0 && isolatorPrice) {
+      if (components.isolators.quantity > 0 && isolatorComponent) {
         prices.isolators.push({
           name: 'Ізолятор',
           amount: components.isolators.quantity,
-          price: isolatorPrice,
-          total: components.isolators.quantity * isolatorPrice,
+          price: isolatorComponent.price,
+          total: components.isolators.quantity * isolatorComponent.price,
         })
       }
     }

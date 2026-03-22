@@ -69,7 +69,7 @@ export class PriceRepository {
     const created = await this.prisma.price.create({
       data: {
         category: data.category,
-        data: data.data as Prisma.InputJsonValue,
+        data: data.data as unknown as Prisma.InputJsonValue,
         isActive: data.isActive,
         validFrom: data.validFrom,
         validUntil: data.validUntil,
@@ -87,7 +87,7 @@ export class PriceRepository {
     const updated = await this.prisma.price.update({
       where: { id: data.id },
       data: {
-        data: data.data as Prisma.InputJsonValue,
+        data: data.data as unknown as Prisma.InputJsonValue,
         isActive: data.isActive,
         validFrom: data.validFrom,
         validUntil: data.validUntil,
