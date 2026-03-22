@@ -11,32 +11,33 @@ datasource db {
 }
 
 model User {
-  id              String     @id @default(auto()) @map("_id") @db.ObjectId
-  email           String     @unique
-  password        String
-  firstName       String?
-  lastName        String?
-  roleId          String?    @db.ObjectId
-  role            Role?      @relation(fields: [roleId], references: [id])
-  emailVerified   Boolean    @default(false)
-  emailVerifiedAt DateTime?
-  refreshToken    String?
-  resetToken      String?
+  id               String       @id @default(auto()) @map("_id") @db.ObjectId
+  email            String       @unique
+  password         String
+  firstName        String?
+  lastName         String?
+  roleId           String?      @db.ObjectId
+  role             Role?        @relation(fields: [roleId], references: [id])
+  emailVerified    Boolean      @default(false)
+  emailVerifiedAt  DateTime?
+  refreshToken     String?
+  resetToken       String?
   resetTokenExpiry DateTime?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  auditEvents      AuditEvent[]
 
   @@map("users")
 }
 
 model Role {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  name          String       @unique
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String   @unique
   description   String?
-  permissionIds String[]     @db.ObjectId
+  permissionIds String[] @db.ObjectId
   users         User[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("roles")
 }
@@ -44,8 +45,8 @@ model Role {
 model Permission {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String   @unique
-  resource  String   // e.g., "users", "rack", "battery"
-  action    String   // e.g., "create", "read", "update", "delete"
+  resource  String // e.g., "users", "rack", "battery"
+  action    String // e.g., "create", "read", "update", "delete"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -53,14 +54,35 @@ model Permission {
 }
 
 model Price {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  category    String   @unique // "rack", "battery", etc.
-  data        Json     // { supports: {...}, spans: {...}, isolator: {...} }
-  isActive    Boolean  @default(true)
-  validFrom   DateTime?
-  validUntil  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  category   String    @unique // "rack", "battery", etc.
+  data       Json // { supports: {...}, spans: {...}, isolator: {...} }
+  isActive   Boolean   @default(true)
+  validFrom  DateTime?
+  validUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@map("prices")
+}
+
+model AuditEvent {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  action     String // e.g., "LOGIN", "CREATE", "UPDATE", "DELETE"
+  resource   String // e.g., "users", "roles", "rack"
+  resourceId String?  @db.ObjectId // ID affected resource
+  userId     String?  @db.ObjectId // Who performed the action
+  user       User?    @relation(fields: [userId], references: [id])
+  metadata   Json? // Additional context { ipAddress, userAgent, changes, etc. }
+  ipAddress  String?
+  userAgent  String?
+  status     String   @default("SUCCESS") // "SUCCESS", "FAILURE", "ERROR"
+  message    String? // Human-readable description
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_events")
 }

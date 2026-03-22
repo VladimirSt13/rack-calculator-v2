@@ -8,6 +8,10 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { DashboardPage } from './pages/DashboardPage'
+import { AuditPage } from './pages/AuditPage'
+import { RackCalculatorPage } from './pages/RackCalculatorPage'
+import { BatterySelectionPage } from './pages/BatterySelectionPage'
+import { SettingsPage } from './pages/SettingsPage'
 import './App.css'
 
 const queryClient = new QueryClient({
@@ -54,6 +58,38 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/audit"
+            element={
+              <ProtectedRoute>
+                <AuditPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rack/calculator"
+            element={
+              <ProtectedRoute>
+                <RackCalculatorPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rack/battery"
+            element={
+              <ProtectedRoute>
+                <BatterySelectionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
               </ProtectedRoute>
             }
           />

@@ -18,6 +18,7 @@ export interface User {
   firstName?: string
   lastName?: string
   role: 'USER' | 'ADMIN'
+  roleId?: string
   emailVerified: boolean
   createdAt: string
 }

@@ -238,9 +238,9 @@ client/src/
 
 ---
 
-### Sprint 4 — Audit / Logging ⏳
+### Sprint 4 — Audit / Logging ✅
 
-**Статус:** ⏳ **НЕ НАЧАТ**
+**Статус:** ✅ **Backend завершён** | ⏳ **Frontend в работе**
 
 | Компонент    | Задачи                                                                                                        | Приоритет  |
 | ------------ | ------------------------------------------------------------------------------------------------------------- | ---------- |
@@ -248,6 +248,44 @@ client/src/
 | **Frontend** | UI для просмотра логов (админ-панель)                                                                         | 🟡 Средний |
 
 **Результат:** все критичные действия пользователей и системы логируются
+
+**API Endpoints:**
+
+- `GET /api/audit` — все логи (ADMIN)
+- `GET /api/audit/my` — логи пользователя
+- `GET /api/audit/:id` — лог по ID (ADMIN)
+
+**Фичи:**
+
+- Логирование входа (успех/неудача/ошибка)
+- IP адрес, user agent
+- Метаданные (request/response)
+- Фильтрация (userId, action, resource, status, date range)
+- Пагинация (limit, skip)
+
+---
+
+### Sprint 4.5 — Audit Frontend ✅
+
+**Статус:** ✅ **ЗАВЕРШЁН** | **Приоритет:** 🟡 Средний
+
+| Компонент      | Задачи                                             | Статус |
+| -------------- | -------------------------------------------------- | ------ |
+| **Services**   | Audit API service (getLogs, getMyLogs, getLogById) | ✅     |
+| **Types**      | AuditLog, AuditFilters, AuditStatus типы           | ✅     |
+| **Components** | AuditLogTable, AuditLogFilters, AuditLogDetail     | ✅     |
+| **Pages**      | AuditPage (/admin/audit)                           | ✅     |
+| **Routes**     | Интеграция с роутингом, ADMIN only                 | ✅     |
+
+**Функционал:**
+
+- ✅ Таблица логов с сортировкой
+- ✅ Фильтры (action, resource, status, date range)
+- ✅ Пагинация (limit, skip)
+- ✅ Детали лога (modal)
+- ⏳ Экспорт логов (CSV/Excel) — опционально
+
+**Результат:** админ-панель для просмотра и анализа логов
 
 ---
 
@@ -323,7 +361,8 @@ client/src/
 | **Sprint 2**   | Frontend Auth Pages                             | ✅      | ✅       | ✅ Завершён  |
 | **Sprint 3**   | Roles & RBAC                                    | ✅      | —        | ✅ Завершён  |
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система и структура | —       | ✅       | ✅ Завершён  |
-| **Sprint 4**   | Audit / Logging                                 | ⏳      | ⏳       | ⏳ Не начат  |
+| **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ✅ Завершён  |
+| **Sprint 4.5** | Audit Frontend                                  | —       | ✅       | ✅ Завершён  |
 | **Sprint 5**   | Core Business Module: Rack                      | ⚠️      | ⏳       | ⚠️ Частично  |
 | **Sprint 6**   | Battery Module                                  | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 7**   | Export / Revisions / Soft Delete                | ⏳      | ⏳       | ⏳ Не начат  |
@@ -334,7 +373,7 @@ client/src/
 ## 📈 Прогресс проекта
 
 ```
-Backend:  ████████████░░░░░░░░░░ 40%
+Backend:  ████████████████░░░░░░ 50%
 Frontend: █████████░░░░░░░░░░░░░ 25%
 Tests:    ░░░░░░░░░░░░░░░░░░░░░░  0%
 Docs:     ██████████████████████ 100%
@@ -348,8 +387,8 @@ Docs:     ██████████████████████ 100
 | ---------------------- | ---------- | -------------------------------------------- |
 | **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
 | **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
-| **Audit logging**      | 🟡 Средний | Логирование действий не реализовано          |
 | **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
+| **Audit Frontend**     | 🟡 Средний | UI для просмотра логов не реализован         |
 
 ---
 
@@ -368,9 +407,7 @@ Docs:     ██████████████████████ 100
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
-3. **Sprint 4 (Audit)** — добавить логирование действий пользователей
-
-4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, rack)
+3. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, rack)
 
 ---
 

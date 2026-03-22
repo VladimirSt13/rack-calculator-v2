@@ -4,6 +4,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { ChevronDown, Home, Settings, Shield, ShoppingCart, Warehouse } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '@/stores/auth.store'
 
 const mainMenu = [
   {
@@ -25,10 +27,14 @@ const mainMenu = [
     icon: Settings,
     href: '/settings',
   },
+]
+
+const adminMenu = [
   {
-    title: 'Админка',
+    title: 'Админ-панель',
     icon: Shield,
-    href: '/admin',
+    href: '#',
+    children: [{ title: 'Аудит логов', href: '/admin/audit' }],
   },
 ]
 
@@ -37,7 +43,10 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
+  const navigate = useNavigate()
+  const { user } = useAuthStore()
   const [openItems, setOpenItems] = useState<string[]>([])
+  const isAdmin = user?.role === 'ADMIN'
 
   const toggleItem = (title: string) => {
     setOpenItems((prev) =>
@@ -45,10 +54,17 @@ export function Sidebar({ className }: SidebarProps) {
     )
   }
 
+  const handleNavigation = (href: string) => {
+    if (href && href !== '#') {
+      navigate(href)
+    }
+  }
+
   return (
     <div className={cn('flex h-full flex-col bg-muted/40', className)}>
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
+          {/* Main menu */}
           {mainMenu.map((item) => (
             <div key={item.title}>
               {item.children ? (
@@ -74,7 +90,7 @@ export function Sidebar({ className }: SidebarProps) {
                           key={child.title}
                           variant="ghost"
                           className="w-full justify-start text-sm"
-                          onClick={() => (window.location.href = child.href)}
+                          onClick={() => handleNavigation(child.href)}
                         >
                           {child.title}
                         </Button>
@@ -86,7 +102,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
-                  onClick={() => (window.location.href = item.href)}
+                  onClick={() => handleNavigation(item.href)}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
                   {item.title}
@@ -94,6 +110,54 @@ export function Sidebar({ className }: SidebarProps) {
               )}
             </div>
           ))}
+
+          {/* Admin menu (only for ADMIN) */}
+          {isAdmin &&
+            adminMenu.map((item) => (
+              <div key={item.title}>
+                {item.children ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start"
+                      onClick={() => toggleItem(item.title)}
+                    >
+                      <item.icon className="mr-2 h-4 w-4" />
+                      {item.title}
+                      <ChevronDown
+                        className={cn(
+                          'ml-auto h-4 w-4 transition-transform',
+                          openItems.includes(item.title) && 'rotate-180'
+                        )}
+                      />
+                    </Button>
+                    {openItems.includes(item.title) && (
+                      <div className="ml-4 mt-1 space-y-1 border-l pl-4">
+                        {item.children.map((child) => (
+                          <Button
+                            key={child.title}
+                            variant="ghost"
+                            className="w-full justify-start text-sm"
+                            onClick={() => handleNavigation(child.href)}
+                          >
+                            {child.title}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => handleNavigation(item.href)}
+                  >
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.title}
+                  </Button>
+                )}
+              </div>
+            ))}
         </nav>
 
         <Separator className="my-4" />
@@ -103,7 +167,7 @@ export function Sidebar({ className }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => (window.location.href = '/profile')}
+            onClick={() => handleNavigation('/profile')}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />
             Профиль
