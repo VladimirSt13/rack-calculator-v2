@@ -2,9 +2,11 @@ import { UserRepository } from '../../users/infrastructure/user.repository.js'
 import { Email } from '../../users/domain/value-objects/email.vo.js'
 import { Password } from '../../users/domain/value-objects/password.vo.js'
 import { AppError } from '../../common/errors/app.error.js'
+import { emailService } from '../../email/email.service.js'
 
 export interface ResetPasswordInput {
   token: string
+  userId: string
   newPassword: string
 }
 
@@ -12,9 +14,14 @@ export class ResetPasswordUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(input: ResetPasswordInput): Promise<void> {
-    // Поиск пользователя по токену
-    const user = await this.userRepository.findByResetToken(input.token)
+    // Поиск пользователя по ID
+    const user = await this.userRepository.findById(input.userId)
     if (!user) {
+      throw AppError.unauthorized('Invalid reset token', 'INVALID_RESET_TOKEN')
+    }
+
+    // Проверка токена
+    if (user.resetToken !== input.token) {
       throw AppError.unauthorized('Invalid reset token', 'INVALID_RESET_TOKEN')
     }
 
@@ -41,13 +48,13 @@ export interface RequestResetPasswordInput {
 export class RequestResetPasswordUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(input: RequestResetPasswordInput): Promise<{ token: string }> {
+  async execute(input: RequestResetPasswordInput): Promise<{ success: boolean; message: string }> {
     const email = new Email(input.email)
 
     const user = await this.userRepository.findByEmail(email)
     if (!user) {
       // Не раскрываем информацию о существовании пользователя
-      return { token: '' }
+      return { success: true, message: 'Если email существует, письмо отправлено' }
     }
 
     // Генерация токена
@@ -57,9 +64,14 @@ export class RequestResetPasswordUseCase {
     user.setResetToken(token, expiry)
     await this.userRepository.update(user)
 
-    // В реальном приложении здесь была бы отправка email
-    // await emailService.sendResetPassword(user.email.toString(), token)
+    // Отправка email
+    try {
+      await emailService.sendResetPasswordEmail(user.email.toString(), token, user.id)
+    } catch (error) {
+      console.error('Failed to send reset password email:', error)
+      // Не показываем ошибку пользователю для безопасности
+    }
 
-    return { token }
+    return { success: true, message: 'Если email существует, письмо отправлено' }
   }
 }

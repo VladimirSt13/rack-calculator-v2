@@ -8,8 +8,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "npx jest",
+    "test:watch": "npx jest --watch",
+    "test:coverage": "npx jest --coverage",
     "lint": "eslint src --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "db:generate": "prisma generate",
@@ -24,22 +25,25 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
+    "nodemailer": "^8.0.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@prisma/client": "5.22.0",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
-    "@vitest/eslint-plugin": "^1.6.12",
+    "@types/nodemailer": "^7.0.11",
     "concurrently": "^9.1.2",
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.3.0",
     "prettier": "^3.8.1",
     "prisma": "5.22.0",
+    "ts-jest": "^29.4.6",
     "ts-node-dev": "^2.0.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vitest": "^4.1.0"
+    "typescript": "^5.9.3"
   }
 }

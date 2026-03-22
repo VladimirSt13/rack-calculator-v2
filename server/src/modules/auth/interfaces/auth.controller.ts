@@ -7,6 +7,7 @@ import {
   RequestResetPasswordUseCase,
   ResetPasswordUseCase,
 } from '../application/reset-password.use-case.js'
+import { SendVerificationEmailUseCase } from '../application/verify-email.use-case.js'
 import { AppError } from '../../common/errors/app.error.js'
 import { JwtService } from '../infrastructure/jwt.service.js'
 import { authMiddleware, AuthRequest } from './auth.middleware.js'
@@ -205,11 +206,11 @@ export const createAuthRouter = () => {
       const { email } = req.body
 
       const useCase = new RequestResetPasswordUseCase(userRepository)
-      await useCase.execute({ email })
+      const result = await useCase.execute({ email })
 
       res.json({
         success: true,
-        message: 'If the email exists, a reset link has been sent',
+        message: result.message,
       })
     } catch (error) {
       next(error)
@@ -222,14 +223,42 @@ export const createAuthRouter = () => {
    */
   router.post('/reset-password/confirm', async (req: Request, res: Response, next) => {
     try {
-      const { token, newPassword } = req.body
+      const { token, newPassword, userId } = req.body
+
+      if (!userId) {
+        throw AppError.badRequest('userId is required', 'USER_ID_REQUIRED')
+      }
 
       const useCase = new ResetPasswordUseCase(userRepository)
-      await useCase.execute({ token, newPassword })
+      await useCase.execute({ token, userId, newPassword })
 
       res.json({
         success: true,
         message: 'Password has been reset successfully',
+      })
+    } catch (error) {
+      next(error)
+    }
+  })
+
+  /**
+   * POST /api/auth/resend-verification
+   * Повторная отправка verification email
+   */
+  router.post('/resend-verification', async (req: Request, res: Response, next) => {
+    try {
+      const { email } = req.body
+
+      if (!email) {
+        throw AppError.badRequest('Email is required', 'EMAIL_REQUIRED')
+      }
+
+      const useCase = new SendVerificationEmailUseCase(userRepository)
+      const result = await useCase.execute(email)
+
+      res.json({
+        success: true,
+        message: result.message,
       })
     } catch (error) {
       next(error)

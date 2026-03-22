@@ -1,8 +1,8 @@
 # 📊 Статус проекта Rack Calculator V2
 
 > **Дата обновления:** 22 марта 2026 г.
-> **Ветка:** `feature/sprint4.5-audit-frontend` (Sprint 4.5 завершён)
-> **Последний коммит:** — feat(client): Sprint 4.5 - Audit Frontend
+> **Ветка:** `feature/tech-debts-fix` (Email Verification ✅)
+> **Последний коммит:** — feat(server): Email Verification Implementation
 
 ---
 
@@ -10,10 +10,10 @@
 
 | Компонент        | Статус                          | Готовность |
 | ---------------- | ------------------------------- | ---------- |
-| **Backend**      | 🟢 Готово (Sprint 1-4)          | ~50%       |
+| **Backend**      | 🟢 Готово (Sprint 1-4.7)        | ~60%       |
 | **Frontend**     | 🟢 Audit UI (Sprint 4.5)        | ~35%       |
 | **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
-| **Тесты**        | 🔴 Отсутствуют                  | 0%         |
+| **Тесты**        | 🟡 Jest настроен (9 тестов)     | 20%        |
 | **Документация** | 🟢 Актуальна                    | ✅         |
 
 ---
@@ -29,6 +29,7 @@
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершён | 100%       |
 | **Sprint 4**   | Audit / Logging                     | ✅ Завершён | 100%       |
 | **Sprint 4.5** | Audit Frontend                      | ✅ Завершён | 100%       |
+| **Sprint 4.7** | Email Verification                  | ✅ Завершён | 100%       |
 | **Sprint 5**   | Core Business Module: Rack          | ⚠️ Частично | 10%        |
 | **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
