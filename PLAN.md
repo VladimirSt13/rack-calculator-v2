@@ -240,7 +240,7 @@ client/src/
 
 ### Sprint 4 — Audit / Logging ✅
 
-**Статус:** ✅ **ЗАВЕРШЁН**
+**Статус:** ✅ **Backend завершён** | ⏳ **Frontend в работе**
 
 | Компонент    | Задачи                                                                                                        | Приоритет  |
 | ------------ | ------------------------------------------------------------------------------------------------------------- | ---------- |
@@ -262,6 +262,30 @@ client/src/
 - Метаданные (request/response)
 - Фильтрация (userId, action, resource, status, date range)
 - Пагинация (limit, skip)
+
+---
+
+### Sprint 4.5 — Audit Frontend ⏳
+
+**Статус:** ⏳ **НЕ НАЧАТ** | **Приоритет:** 🟡 Средний
+
+| Компонент      | Задачи                                             | Статус |
+| -------------- | -------------------------------------------------- | ------ |
+| **Services**   | Audit API service (getLogs, getMyLogs, getLogById) | ⏳     |
+| **Types**      | AuditLog, AuditFilters, AuditStatus типы           | ⏳     |
+| **Components** | AuditLogTable, AuditLogFilters, AuditLogDetail     | ⏳     |
+| **Pages**      | AuditPage (/admin/audit)                           | ⏳     |
+| **Routes**     | Интеграция с роутингом, ADMIN only                 | ⏳     |
+
+**Функционал:**
+
+- Таблица логов с сортировкой
+- Фильтры (action, resource, status, date range)
+- Пагинация (limit, skip)
+- Детали лога (modal)
+- Экспорт логов (CSV/Excel) — опционально
+
+**Результат:** админ-панель для просмотра и анализа логов
 
 ---
 
@@ -338,6 +362,7 @@ client/src/
 | **Sprint 3**   | Roles & RBAC                                    | ✅      | —        | ✅ Завершён  |
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система и структура | —       | ✅       | ✅ Завершён  |
 | **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ⚠️ Частично  |
+| **Sprint 4.5** | Audit Frontend                                  | —       | ⏳       | ⏳ Не начат  |
 | **Sprint 5**   | Core Business Module: Rack                      | ⚠️      | ⏳       | ⚠️ Частично  |
 | **Sprint 6**   | Battery Module                                  | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 7**   | Export / Revisions / Soft Delete                | ⏳      | ⏳       | ⏳ Не начат  |
@@ -362,30 +387,32 @@ Docs:     ██████████████████████ 100
 | ---------------------- | ---------- | -------------------------------------------- |
 | **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
 | **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
-| **Audit logging**      | 🟡 Средний | Логирование действий не реализовано          |
 | **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
+| **Audit Frontend**     | 🟡 Средний | UI для просмотра логов не реализован         |
 
 ---
 
 ## 🚀 Следующие шаги (приоритеты)
 
-1. **Sprint 5 (Rack Backend)** — реализовать domain-логику расчёта стеллажей:
+1. **Sprint 4.5 (Audit Frontend)** — UI для просмотра логов:
+   - Audit API service (getLogs, getMyLogs, getLogById)
+   - AuditLog, AuditFilters, AuditStatus типы
+   - Страница `/admin/audit` с таблицей и фильтрами
+   - Детали лога (modal/dialog)
+   - Интеграция с роутингом (ADMIN only)
+
+2. **Sprint 5 (Rack Backend)** — реализовать domain-логику расчёта стеллажей:
    - Domain: `calculateRack()` по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
    - Value Objects: Size, Rows, Weight
    - RackEntity, RackRepository
    - Use-case: `calculateRackUseCase`
    - RackController + Routes: `/api/rack/calculate`
 
-2. **Sprint 5 (Rack Frontend)** — создать интерфейс калькулятора стеллажей:
+3. **Sprint 5 (Rack Frontend)** — создать интерфейс калькулятора стеллажей:
    - Страница `/rack/calculator`
    - Форма ввода параметров
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
-
-3. **Sprint 4 (Audit Frontend)** — UI для просмотра логов:
-   - Страница `/admin/audit`
-   - Таблица с фильтрами
-   - Детали лога
 
 4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, rack)
 
