@@ -1,8 +1,8 @@
 # 📊 Статус проекта Rack Calculator V2
 
 > **Дата обновления:** 22 марта 2026 г.
-> **Ветка:** `feature/sprint4-audit-backend` (Sprint 4 завершён)
-> **Последний коммит:** — feat(server): Sprint 4 - Audit / Logging Backend
+> **Ветка:** `feature/sprint4.5-audit-frontend` (Sprint 4.5 завершён)
+> **Последний коммит:** — feat(client): Sprint 4.5 - Audit Frontend
 
 ---
 
@@ -11,7 +11,7 @@
 | Компонент        | Статус                          | Готовность |
 | ---------------- | ------------------------------- | ---------- |
 | **Backend**      | 🟢 Готово (Sprint 1-4)          | ~50%       |
-| **Frontend**     | 🟢 Дизайн-система (Sprint 3.5)  | ~25%       |
+| **Frontend**     | 🟢 Audit UI (Sprint 4.5)        | ~35%       |
 | **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
 | **Тесты**        | 🔴 Отсутствуют                  | 0%         |
 | **Документация** | 🟢 Актуальна                    | ✅         |
@@ -28,6 +28,7 @@
 | **Sprint 3**   | Roles & RBAC                        | ✅ Завершён | 100%       |
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершён | 100%       |
 | **Sprint 4**   | Audit / Logging                     | ✅ Завершён | 100%       |
+| **Sprint 4.5** | Audit Frontend                      | ✅ Завершён | 100%       |
 | **Sprint 5**   | Core Business Module: Rack          | ⚠️ Частично | 10%        |
 | **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
@@ -114,6 +115,23 @@
   - [x] LoginPage (обновлена)
   - [x] RegisterPage (обновлена)
 
+### Frontend (Sprint 4.5)
+
+- [x] Types:
+  - [x] AuditLog, AuditFilters, AuditStatus
+  - [x] AuditAction, AuditResource
+- [x] Services:
+  - [x] audit.service.ts (getLogs, getMyLogs, getLogById)
+- [x] Components:
+  - [x] AuditLogFilters (фильтры по статусу, ресурсу, действию, датам)
+  - [x] AuditLogTable (таблица с badges)
+  - [x] AuditLogDetail (modal с деталями)
+- [x] Pages:
+  - [x] AuditPage (/admin/audit)
+- [x] Routes:
+  - [x] /admin/audit (ADMIN only)
+  - [x] Sidebar link updated
+
 ### Документация
 
 - [x] RACK_ALGORITHM_BUSINESS.md — бизнес-алгоритм расчёта стеллажей
@@ -131,7 +149,6 @@
 | **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
 | **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
 | **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
-| **Audit Frontend**     | 🟡 Средний | UI для просмотра логов не реализован         |
 
 ---
 
@@ -153,19 +170,14 @@
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
-3. **Sprint 4: Audit Frontend**
-   - Страница `/admin/audit` для просмотра логов
-   - Таблица с фильтрами (action, resource, status, date range)
-   - Детали лога
-
 ### Среднесрочные (3-4 недели)
 
-4. **Sprint 6: Battery Module**
+3. **Sprint 6: Battery Module**
    - Domain-логика подбора батарей
    - UI для расчёта
 
-5. **Тестирование**
-   - Покрыть unit-тестами use-cases (auth, rack, rbac)
+4. **Тестирование**
+   - Покрыть unit-тестами use-cases (auth, rack, rbac, audit)
    - Integration тесты для API endpoints
 
 ---

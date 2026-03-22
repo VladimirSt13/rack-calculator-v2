@@ -265,25 +265,25 @@ client/src/
 
 ---
 
-### Sprint 4.5 — Audit Frontend ⏳
+### Sprint 4.5 — Audit Frontend ✅
 
-**Статус:** ⏳ **НЕ НАЧАТ** | **Приоритет:** 🟡 Средний
+**Статус:** ✅ **ЗАВЕРШЁН** | **Приоритет:** 🟡 Средний
 
 | Компонент      | Задачи                                             | Статус |
 | -------------- | -------------------------------------------------- | ------ |
-| **Services**   | Audit API service (getLogs, getMyLogs, getLogById) | ⏳     |
-| **Types**      | AuditLog, AuditFilters, AuditStatus типы           | ⏳     |
-| **Components** | AuditLogTable, AuditLogFilters, AuditLogDetail     | ⏳     |
-| **Pages**      | AuditPage (/admin/audit)                           | ⏳     |
-| **Routes**     | Интеграция с роутингом, ADMIN only                 | ⏳     |
+| **Services**   | Audit API service (getLogs, getMyLogs, getLogById) | ✅     |
+| **Types**      | AuditLog, AuditFilters, AuditStatus типы           | ✅     |
+| **Components** | AuditLogTable, AuditLogFilters, AuditLogDetail     | ✅     |
+| **Pages**      | AuditPage (/admin/audit)                           | ✅     |
+| **Routes**     | Интеграция с роутингом, ADMIN only                 | ✅     |
 
 **Функционал:**
 
-- Таблица логов с сортировкой
-- Фильтры (action, resource, status, date range)
-- Пагинация (limit, skip)
-- Детали лога (modal)
-- Экспорт логов (CSV/Excel) — опционально
+- ✅ Таблица логов с сортировкой
+- ✅ Фильтры (action, resource, status, date range)
+- ✅ Пагинация (limit, skip)
+- ✅ Детали лога (modal)
+- ⏳ Экспорт логов (CSV/Excel) — опционально
 
 **Результат:** админ-панель для просмотра и анализа логов
 
@@ -361,8 +361,8 @@ client/src/
 | **Sprint 2**   | Frontend Auth Pages                             | ✅      | ✅       | ✅ Завершён  |
 | **Sprint 3**   | Roles & RBAC                                    | ✅      | —        | ✅ Завершён  |
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система и структура | —       | ✅       | ✅ Завершён  |
-| **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ⚠️ Частично  |
-| **Sprint 4.5** | Audit Frontend                                  | —       | ⏳       | ⏳ Не начат  |
+| **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ✅ Завершён  |
+| **Sprint 4.5** | Audit Frontend                                  | —       | ✅       | ✅ Завершён  |
 | **Sprint 5**   | Core Business Module: Rack                      | ⚠️      | ⏳       | ⚠️ Частично  |
 | **Sprint 6**   | Battery Module                                  | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 7**   | Export / Revisions / Soft Delete                | ⏳      | ⏳       | ⏳ Не начат  |
@@ -394,27 +394,20 @@ Docs:     ██████████████████████ 100
 
 ## 🚀 Следующие шаги (приоритеты)
 
-1. **Sprint 4.5 (Audit Frontend)** — UI для просмотра логов:
-   - Audit API service (getLogs, getMyLogs, getLogById)
-   - AuditLog, AuditFilters, AuditStatus типы
-   - Страница `/admin/audit` с таблицей и фильтрами
-   - Детали лога (modal/dialog)
-   - Интеграция с роутингом (ADMIN only)
-
-2. **Sprint 5 (Rack Backend)** — реализовать domain-логику расчёта стеллажей:
+1. **Sprint 5 (Rack Backend)** — реализовать domain-логику расчёта стеллажей:
    - Domain: `calculateRack()` по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
    - Value Objects: Size, Rows, Weight
    - RackEntity, RackRepository
    - Use-case: `calculateRackUseCase`
    - RackController + Routes: `/api/rack/calculate`
 
-3. **Sprint 5 (Rack Frontend)** — создать интерфейс калькулятора стеллажей:
+2. **Sprint 5 (Rack Frontend)** — создать интерфейс калькулятора стеллажей:
    - Страница `/rack/calculator`
    - Форма ввода параметров
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
-4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, rack)
+3. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, rack)
 
 ---
 
