@@ -289,6 +289,49 @@ client/src/
 
 ---
 
+### Sprint 4.7 — Email Verification ✅
+
+**Статус:** ✅ **ЗАВЕРШЁН** | **Приоритет:** 🟡 Средний
+
+| Компонент                | Задачи                                                                  | Статус |
+| ------------------------ | ----------------------------------------------------------------------- | ------ |
+| **Email Service**        | Nodemailer, SMTP transport, HTML templates                              | ✅     |
+| **Verification Email**   | sendVerificationEmail() с токеном                                       | ✅     |
+| **Reset Password Email** | sendResetPasswordEmail() с токеном                                      | ✅     |
+| **Use-Cases**            | VerifyEmail, SendVerificationEmail, RequestResetPassword, ResetPassword | ✅     |
+| **Routes**               | /resend-verification, /reset-password/\*                                | ✅     |
+
+**Функционал:**
+
+- ✅ Email Service с SMTP (Gmail по умолчанию)
+- ✅ HTML шаблоны писем (responsive design)
+- ✅ Verification email с токеном (24 часа)
+- ✅ Reset password email с токеном (1 час)
+- ✅ Безопасность (не раскрывает существование email)
+- ✅ Конфигурация через ENV
+
+**API Endpoints:**
+
+- `POST /api/auth/resend-verification` — повторная отправка
+- `POST /api/auth/reset-password/request` — запрос сброса пароля
+- `POST /api/auth/reset-password/confirm` — подтверждение сброса
+
+**Конфигурация:**
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+EMAIL_FROM=noreply@example.com
+EMAIL_FROM_NAME=Rack Calculator
+```
+
+**Результат:** полная система подтверждения email и сброса пароля
+
+---
+
 ### Sprint 5 — Core Business Module: Rack ⚠️
 
 **Статус:** ⚠️ **ЧАСТИЧНО НАЧАТ** (создана структура модуля)
@@ -363,6 +406,7 @@ client/src/
 | **Sprint 3.5** | Frontend Foundation: Дизайн-система и структура | —       | ✅       | ✅ Завершён  |
 | **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ✅ Завершён  |
 | **Sprint 4.5** | Audit Frontend                                  | —       | ✅       | ✅ Завершён  |
+| **Sprint 4.7** | Email Verification                              | ✅      | ⏳       | ✅ Завершён  |
 | **Sprint 5**   | Core Business Module: Rack                      | ⚠️      | ⏳       | ⚠️ Частично  |
 | **Sprint 6**   | Battery Module                                  | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 7**   | Export / Revisions / Soft Delete                | ⏳      | ⏳       | ⏳ Не начат  |
@@ -373,9 +417,9 @@ client/src/
 ## 📈 Прогресс проекта
 
 ```
-Backend:  ████████████████░░░░░░ 50%
+Backend:  ██████████████████░░░░ 60%
 Frontend: █████████░░░░░░░░░░░░░ 25%
-Tests:    ░░░░░░░░░░░░░░░░░░░░░░  0%
+Tests:    █████░░░░░░░░░░░░░░░░░ 20%
 Docs:     ██████████████████████ 100%
 ```
 
@@ -383,12 +427,11 @@ Docs:     ██████████████████████ 100
 
 ## ⚠️ Технические долги
 
-| Проблема               | Приоритет  | Описание                                     |
-| ---------------------- | ---------- | -------------------------------------------- |
-| **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
-| **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
-| **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
-| **Audit Frontend**     | 🟡 Средний | UI для просмотра логов не реализован         |
+| Проблема              | Приоритет  | Описание                                      |
+| --------------------- | ---------- | --------------------------------------------- |
+| **Rack domain logic** | 🔴 Высокий | Структура есть, алгоритм не реализован        |
+| **Frontend тесты**    | 🟡 Средний | Тесты UI компонентов не созданы               |
+| **Email integration** | 🟡 Средний | Frontend страницы verification/reset-password |
 
 ---
 
@@ -407,7 +450,12 @@ Docs:     ██████████████████████ 100
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
-3. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, rack)
+3. **Email Integration (Frontend)** — страницы для email verification:
+   - Страница `/verify-email` — подтверждение email
+   - Страница `/reset-password` — сброс пароля
+   - Интеграция с backend API
+
+4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, email, rack)
 
 ---
 
