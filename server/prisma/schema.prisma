@@ -51,3 +51,16 @@ model Permission {
 
   @@map("permissions")
 }
+
+model Price {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  category    String   @unique // "rack", "battery", etc.
+  data        Json     // { supports: {...}, spans: {...}, isolator: {...} }
+  isActive    Boolean  @default(true)
+  validFrom   DateTime?
+  validUntil  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("prices")
+}
