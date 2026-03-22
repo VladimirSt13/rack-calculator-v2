@@ -4,6 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import { ChevronDown, Home, Settings, Shield, ShoppingCart, Warehouse } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const mainMenu = [
   {
@@ -26,7 +27,7 @@ const mainMenu = [
     href: '/settings',
   },
   {
-    title: 'Админка',
+    title: 'Админ-панель',
     icon: Shield,
     href: '#',
     children: [{ title: 'Аудит логов', href: '/admin/audit' }],
@@ -38,12 +39,19 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className }: SidebarProps) {
+  const navigate = useNavigate()
   const [openItems, setOpenItems] = useState<string[]>([])
 
   const toggleItem = (title: string) => {
     setOpenItems((prev) =>
       prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title]
     )
+  }
+
+  const handleNavigation = (href: string) => {
+    if (href && href !== '#') {
+      navigate(href)
+    }
   }
 
   return (
@@ -75,7 +83,7 @@ export function Sidebar({ className }: SidebarProps) {
                           key={child.title}
                           variant="ghost"
                           className="w-full justify-start text-sm"
-                          onClick={() => (window.location.href = child.href)}
+                          onClick={() => handleNavigation(child.href)}
                         >
                           {child.title}
                         </Button>
@@ -87,7 +95,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <Button
                   variant="ghost"
                   className="w-full justify-start"
-                  onClick={() => (window.location.href = item.href)}
+                  onClick={() => handleNavigation(item.href)}
                 >
                   <item.icon className="mr-2 h-4 w-4" />
                   {item.title}
@@ -104,7 +112,7 @@ export function Sidebar({ className }: SidebarProps) {
           <Button
             variant="ghost"
             className="w-full justify-start"
-            onClick={() => (window.location.href = '/profile')}
+            onClick={() => handleNavigation('/profile')}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />
             Профиль
