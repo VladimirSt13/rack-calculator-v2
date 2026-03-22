@@ -5,6 +5,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['**/*.test.ts'],
-    setupFiles: ['./src/test/setup.ts'],
+    esm: {
+      interopDefault: true,
+    },
   },
 })
