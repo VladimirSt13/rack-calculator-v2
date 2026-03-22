@@ -1,14 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from '@jest/globals'
 import { PrismaClient } from '@prisma/client'
 import { UserRepository } from '../../users/infrastructure/user.repository.js'
 import { LoginUserUseCase } from './login-user.use-case.js'
 import { AppError } from '../../common/errors/app.error.js'
 
 // Integration tests
-describe('LoginUserUseCase - Integration', () => {
+describe('LoginUserUseCase', () => {
   const prisma = new PrismaClient()
   const userRepository = new UserRepository(prisma)
   const useCase = new LoginUserUseCase(userRepository)
+
+  afterAll(async () => {
+    await prisma.$disconnect()
+  })
 
   describe('execute', () => {
     it('should reject non-existent user', async () => {
@@ -21,7 +25,6 @@ describe('LoginUserUseCase - Integration', () => {
     })
 
     it('should reject invalid password', async () => {
-      // First create a test user
       const testEmail = `test_${Date.now()}@example.com`
 
       await expect(
@@ -31,9 +34,5 @@ describe('LoginUserUseCase - Integration', () => {
         })
       ).rejects.toThrow()
     })
-  })
-
-  afterAll(async () => {
-    await prisma.$disconnect()
   })
 })
