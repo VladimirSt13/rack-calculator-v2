@@ -163,7 +163,12 @@ export const createAuthRouter = () => {
       const { email, password } = req.body
 
       const useCase = new LoginUserUseCase(userRepository)
-      const result = await useCase.execute({ email, password })
+      const result = await useCase.execute({
+        email,
+        password,
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+      })
 
       res.json({
         success: true,
