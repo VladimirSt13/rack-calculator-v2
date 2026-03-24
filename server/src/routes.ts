@@ -4,6 +4,7 @@ import { createRolesRouter } from './modules/roles/interfaces/roles.controller.j
 import { createPermissionsRouter } from './modules/permissions/interfaces/permissions.controller.js'
 import { createPricesRouter } from './modules/price/interfaces/prices.controller.js'
 import { AuditController } from './modules/audit/interfaces/AuditController.js'
+import { createRackRouter } from './modules/rack/interfaces/rack.controller.js'
 
 export const registerRoutes = (app: Express) => {
   // Auth routes
@@ -19,7 +20,6 @@ export const registerRoutes = (app: Express) => {
   // Price routes
   app.use('/api/prices', createPricesRouter())
 
-  // Placeholder для будущих модулей
-  // app.use('/api/rack', createRackRouter())
-  // app.use('/api/users', createUsersRouter())
+  // Rack routes
+  app.use('/api/rack', createRackRouter())
 }

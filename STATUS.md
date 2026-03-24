@@ -1,8 +1,8 @@
 # 📊 Статус проекта Rack Calculator V2
 
-> **Дата обновления:** 22 марта 2026 г.
-> **Ветка:** `feature/tech-debts-fix` (Email Verification ✅)
-> **Последний коммит:** — feat(server): Email Verification Implementation
+> **Дата обновления:** 23 марта 2026 г.
+> **Ветка:** `main` ✅
+> **Последний коммит:** 8db744c — Merge pull request #7 (feature/tech-debts-fix)
 
 ---
 
@@ -13,7 +13,7 @@
 | **Backend**      | 🟢 Готово (Sprint 1-4.7)        | ~60%       |
 | **Frontend**     | 🟢 Audit UI (Sprint 4.5)        | ~35%       |
 | **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
-| **Тесты**        | 🟡 Jest настроен (9 тестов)     | 20%        |
+| **Тесты**        | 🟡 Jest настроен                | 5%         |
 | **Документация** | 🟢 Актуальна                    | ✅         |
 
 ---
@@ -30,7 +30,7 @@
 | **Sprint 4**   | Audit / Logging                     | ✅ Завершён | 100%       |
 | **Sprint 4.5** | Audit Frontend                      | ✅ Завершён | 100%       |
 | **Sprint 4.7** | Email Verification                  | ✅ Завершён | 100%       |
-| **Sprint 5**   | Core Business Module: Rack          | ⚠️ Частично | 10%        |
+| **Sprint 5**   | Core Business Module: Rack          | 🔴 Не начат | 0%         |
 | **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
 | **Sprint 8**   | Завершение и деплой                 | ⏳ Не начат | 0%         |
@@ -145,11 +145,12 @@
 
 ## ⚠️ Технические долги
 
-| Проблема               | Приоритет  | Описание                                     |
-| ---------------------- | ---------- | -------------------------------------------- |
-| **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы          |
-| **Email verification** | 🟡 Средний | Use-case есть, отправка email не реализована |
-| **Rack domain logic**  | 🟡 Средний | Структура есть, алгоритм не реализован       |
+| Проблема               | Приоритет  | Описание                                      |
+| ---------------------- | ---------- | --------------------------------------------- |
+| **Rack domain logic**  | 🔴 Высокий | Структура есть, алгоритм не реализован        |
+| **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы           |
+| **Email verification** | 🟡 Средний | Frontend страницы verification/reset-password |
+| **Battery logic**      | 🟡 Средний | Модуль не начат                               |
 
 ---
 
@@ -157,7 +158,7 @@
 
 ### Краткосрочные (1-2 недели)
 
-1. **Sprint 5: Rack Module (Backend)**
+1. **Sprint 5: Rack Module (Backend)** — 🔴 ПРИОРИТЕТ
    - Реализовать domain-функцию `calculateRack()` по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
    - Создать Value Objects (Size, Rows, Weight)
    - Создать RackEntity
@@ -181,6 +182,9 @@
    - Покрыть unit-тестами use-cases (auth, rack, rbac, audit)
    - Integration тесты для API endpoints
 
+5. **Email Frontend**
+   - Страницы `/verify-email` и `/reset-password`
+
 ---
 
 ## 📦 Структура модулей (реализовано / требуется)
@@ -193,9 +197,11 @@
 | **users**   | ✅     | —           | ✅             | —          | ✅ Завершён |
 | **roles**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершён |
 | **perms**   | ✅     | —           | ✅             | ✅         | ✅ Завершён |
-| **rack**    | ⚠️     | ⚠️          | ⚠️             | ⚠️         | ⚠️ Частично |
-| **battery** | —      | —           | —              | —          | 🔴 Не начат |
-| **audit**   | —      | —           | —              | —          | 🔴 Не начат |
+| **rack**    | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не начат |
+| **battery** | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не начат |
+| **audit**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершён |
+| **email**   | —      | ✅          | ✅             | ✅         | ✅ Завершён |
+| **price**   | —      | —           | ✅             | ✅         | ✅ Завершён |
 
 ### Frontend структура
 
@@ -243,9 +249,9 @@
 ## 📈 Метрики прогресса
 
 ```
-Backend:  ████████████████░░░░░░ 50%
-Frontend: █████████░░░░░░░░░░░░░ 25%
-Tests:    ░░░░░░░░░░░░░░░░░░░░░░  0%
+Backend:  ████████████████░░░░░░ 60%
+Frontend: █████████░░░░░░░░░░░░░ 35%
+Tests:    █░░░░░░░░░░░░░░░░░░░░░  5%
 Docs:     ██████████████████████ 100%
 ```
 

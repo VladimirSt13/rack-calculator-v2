@@ -26,6 +26,7 @@ model User {
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   auditEvents      AuditEvent[]
+  rackSets         RackSet[]
 
   @@map("users")
 }
@@ -85,4 +86,38 @@ model AuditEvent {
   @@index([resource])
   @@index([createdAt])
   @@map("audit_events")
+}
+
+model RackSet {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String
+  configuration Json     // { levels, rows, beamsPerRow, supportType, verticalStandType?, spans }
+  components    Json     // { supports, beams, verticalStands?, braces?, isolators? }
+  totalLength   Int      // общая длина в мм
+  pricing       Json?    // { base, withoutIsolators, zero }
+  userId        String   @db.ObjectId
+  user          User     @relation(fields: [userId], references: [id])
+  revisions     RackRevision[]
+  isDeleted     Boolean  @default(false)
+  deletedAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("rack_sets")
+}
+
+model RackRevision {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rackSetId String   @db.ObjectId
+  rackSet   RackSet  @relation(fields: [rackSetId], references: [id], onDelete: Cascade)
+  version   Int
+  data      Json     // snapshot конфигурации
+  createdAt DateTime @default(now())
+
+  @@unique([rackSetId, version])
+  @@index([rackSetId])
+  @@map("rack_revisions")
 }

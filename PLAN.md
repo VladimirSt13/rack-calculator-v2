@@ -1,8 +1,8 @@
 # 📋 План разработки Rack Calculator V2
 
-> **Статус:** Sprint 3.5 (Frontend Foundation) — ✅ Завершён
-> **Последнее обновление:** 22 марта 2026 г.
-> **Git:** `feature/sprint3.5-frontend-foundation`
+> **Статус:** Sprint 5 (Rack Module) — 🔴 НЕ НАЧАТ
+> **Последнее обновление:** 23 марта 2026 г.
+> **Git:** `main` (актуальна)
 
 ---
 
@@ -332,9 +332,9 @@ EMAIL_FROM_NAME=Rack Calculator
 
 ---
 
-### Sprint 5 — Core Business Module: Rack ⚠️
+### Sprint 5 — Core Business Module: Rack 🔴
 
-**Статус:** ⚠️ **ЧАСТИЧНО НАЧАТ** (создана структура модуля)
+**Статус:** 🔴 **НЕ НАЧАТ** | **Приоритет:** 🔴 Высокий
 
 | Компонент    | Задачи                                                                                                                                                                                                                | Приоритет  |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
@@ -407,7 +407,7 @@ EMAIL_FROM_NAME=Rack Calculator
 | **Sprint 4**   | Audit / Logging                                 | ✅      | ⏳       | ✅ Завершён  |
 | **Sprint 4.5** | Audit Frontend                                  | —       | ✅       | ✅ Завершён  |
 | **Sprint 4.7** | Email Verification                              | ✅      | ⏳       | ✅ Завершён  |
-| **Sprint 5**   | Core Business Module: Rack                      | ⚠️      | ⏳       | ⚠️ Частично  |
+| **Sprint 5**   | Core Business Module: Rack                      | 🔴      | 🔴       | 🔴 Не начат  |
 | **Sprint 6**   | Battery Module                                  | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 7**   | Export / Revisions / Soft Delete                | ⏳      | ⏳       | ⏳ Не начат  |
 | **Sprint 8**   | Завершение и деплой                             | ⏳      | ⏳       | ⏳ Не начат  |
@@ -418,8 +418,8 @@ EMAIL_FROM_NAME=Rack Calculator
 
 ```
 Backend:  ██████████████████░░░░ 60%
-Frontend: █████████░░░░░░░░░░░░░ 25%
-Tests:    █████░░░░░░░░░░░░░░░░░ 20%
+Frontend: ██████████████░░░░░░░░ 35%
+Tests:    █░░░░░░░░░░░░░░░░░░░░░  5%
 Docs:     ██████████████████████ 100%
 ```
 
@@ -430,12 +430,15 @@ Docs:     ██████████████████████ 100
 | Проблема              | Приоритет  | Описание                                      |
 | --------------------- | ---------- | --------------------------------------------- |
 | **Rack domain logic** | 🔴 Высокий | Структура есть, алгоритм не реализован        |
-| **Frontend тесты**    | 🟡 Средний | Тесты UI компонентов не созданы               |
+| **Frontend тесты**    | 🔴 Высокий | Тесты UI компонентов не созданы               |
+| **Backend тесты**     | 🔴 Высокий | Unit/integration тесты не написаны            |
 | **Email integration** | 🟡 Средний | Frontend страницы verification/reset-password |
 
 ---
 
 ## 🚀 Следующие шаги (приоритеты)
+
+### 🔴 Спринт 5: Rack Module (1-2 недели)
 
 1. **Sprint 5 (Rack Backend)** — реализовать domain-логику расчёта стеллажей:
    - Domain: `calculateRack()` по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
@@ -450,12 +453,16 @@ Docs:     ██████████████████████ 100
    - Отображение результатов
    - Сохранение конфигураций (RackSet)
 
+### 🟡 Следующие приоритеты
+
 3. **Email Integration (Frontend)** — страницы для email verification:
    - Страница `/verify-email` — подтверждение email
    - Страница `/reset-password` — сброс пароля
    - Интеграция с backend API
 
 4. **Тесты** — покрыть unit-тестами use-cases (auth, rbac, audit, email, rack)
+
+5. **Sprint 6 (Battery Module)** — подбор батарей
 
 ---
 
