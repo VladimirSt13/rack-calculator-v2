@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AppLayout } from '@/components/layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,30 +14,48 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Plus, Trash2, Save, Calculator } from 'lucide-react'
-import { useMutation } from '@tanstack/react-query'
-import { rackService } from '@/services/rack.service'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { rackService, type RackOptions } from '@/services/rack.service'
 import { rackCalculationSchema } from '@/utils/validation/rack.validation'
 import type { RackResult, SpanInput } from '@/types/rack'
 import { toast } from 'sonner'
-
-const SUPPORT_TYPES = ['C80', '430', '430C', '290', '215']
-const VERTICAL_STAND_TYPES = ['632', '1190', '1500']
-const SPAN_TYPES = ['600', '750', '900', '1000', '1200']
 
 /**
  * Страница калькулятора стеллажей
  */
 export function RackCalculatorPage() {
+  // Загрузка опций из прайса
+  const { data: options, isLoading: optionsLoading } = useQuery({
+    queryKey: ['rackOptions'],
+    queryFn: () => rackService.getOptions(),
+  })
+
   // Форма
   const [levels, setLevels] = useState(1)
   const [rows, setRows] = useState(1)
   const [beamsPerRow, setBeamsPerRow] = useState(2)
-  const [supportType, setSupportType] = useState('C80')
+  const [supportType, setSupportType] = useState('')
   const [verticalStandType, setVerticalStandType] = useState('')
-  const [spans, setSpans] = useState<SpanInput[]>([{ type: '600', quantity: 2 }])
+  const [spans, setSpans] = useState<SpanInput[]>([])
 
   // Результат
   const [result, setResult] = useState<RackResult | null>(null)
+
+  // Инициализация значений после загрузки опций
+  useEffect(() => {
+    if (options) {
+      // Установить значения по умолчанию из прайса
+      if (!supportType && options.supports.length > 0) {
+        setSupportType(options.supports[0].value)
+      }
+      if (!verticalStandType && options.verticalStands.length > 0) {
+        setVerticalStandType(options.verticalStands[0].value)
+      }
+      if (spans.length === 0 && options.spans.length > 0) {
+        setSpans([{ type: options.spans[0].value, quantity: 2 }])
+      }
+    }
+  }, [options])
 
   // Мутация для расчёта
   const calculateMutation = useMutation({
@@ -55,7 +73,8 @@ export function RackCalculatorPage() {
 
   // Добавление пролёта
   const addSpan = () => {
-    setSpans([...spans, { type: '600', quantity: 1 }])
+    const defaultSpan = options?.spans[0]?.value || '600'
+    setSpans([...spans, { type: defaultSpan, quantity: 1 }])
   }
 
   // Удаление пролёта
@@ -101,6 +120,16 @@ export function RackCalculatorPage() {
     } else {
       toast.info('Для сохранения необходимо авторизоваться')
     }
+  }
+
+  if (optionsLoading) {
+    return (
+      <AppLayout>
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-muted-foreground">Загрузка параметров...</p>
+        </div>
+      </AppLayout>
+    )
   }
 
   return (
@@ -166,24 +195,24 @@ export function RackCalculatorPage() {
                 />
               </div>
 
-              {/* Тип опоры */}
+              {/* Тип опоры - из прайса */}
               <div className="space-y-2">
                 <Label htmlFor="support">Тип опоры</Label>
                 <Select value={supportType} onValueChange={(v) => setSupportType(v ?? '')}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Выберите тип опоры" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SUPPORT_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type} {type.toUpperCase().includes('C') ? '(ступенчатая)' : '(прямая)'}
+                    {options?.supports.map((support) => (
+                      <SelectItem key={support.value} value={support.value}>
+                        {support.value} {support.stepped ? '(ступенчатая)' : '(прямая)'}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Тип верт. стоек (для 2+ этажей) */}
+              {/* Тип верт. стоек - из прайса (для 2+ этажей) */}
               {levels >= 2 && (
                 <div className="space-y-2">
                   <Label htmlFor="vertical">Тип вертикальных стоек</Label>
@@ -195,9 +224,9 @@ export function RackCalculatorPage() {
                       <SelectValue placeholder="Выберите тип" />
                     </SelectTrigger>
                     <SelectContent>
-                      {VERTICAL_STAND_TYPES.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
+                      {options?.verticalStands.map((stand) => (
+                        <SelectItem key={stand.value} value={stand.value}>
+                          {stand.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -205,19 +234,19 @@ export function RackCalculatorPage() {
                 </div>
               )}
 
-              {/* Пролёты */}
+              {/* Пролёты - из прайса */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Пролёты</Label>
                   <Button type="button" size="sm" variant="outline" onClick={addSpan}>
-                    <Plus className="h-4 w-4 mr-1" />
+                    <Plus className="mr-1 h-4 w-4" />
                     Добавить
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   {spans.map((span, index) => (
-                    <div key={index} className="flex gap-2 items-center">
+                    <div key={index} className="flex items-center gap-2">
                       <Select
                         value={span.type}
                         onValueChange={(v) => updateSpan(index, 'type', v ?? '')}
@@ -226,9 +255,9 @@ export function RackCalculatorPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {SPAN_TYPES.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type} мм
+                          {options?.spans.map((spanType) => (
+                            <SelectItem key={spanType.value} value={spanType.value}>
+                              {spanType.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -262,9 +291,9 @@ export function RackCalculatorPage() {
               <Button
                 className="w-full"
                 onClick={handleCalculate}
-                disabled={calculateMutation.isPending}
+                disabled={calculateMutation.isPending || !options}
               >
-                <Calculator className="h-4 w-4 mr-2" />
+                <Calculator className="mr-2 h-4 w-4" />
                 {calculateMutation.isPending ? 'Расчёт...' : 'Рассчитать'}
               </Button>
             </CardContent>
@@ -282,15 +311,15 @@ export function RackCalculatorPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               {!result ? (
-                <div className="flex h-48 items-center justify-center text-muted-foreground">
+                <div className="text-muted-foreground flex h-48 items-center justify-center">
                   <Calculator className="h-12 w-12 opacity-50" />
                 </div>
               ) : (
                 <>
                   {/* Название */}
                   <div>
-                    <h3 className="font-semibold text-lg">{result.name}</h3>
-                    <p className="text-sm text-muted-foreground">{result.description}</p>
+                    <h3 className="text-lg font-semibold">{result.name}</h3>
+                    <p className="text-muted-foreground text-sm">{result.description}</p>
                   </div>
 
                   <Separator />
@@ -365,7 +394,7 @@ export function RackCalculatorPage() {
                             {result.pricing.base.toLocaleString()} ₴
                           </span>
                         </div>
-                        <div className="flex justify-between text-muted-foreground">
+                        <div className="text-muted-foreground flex justify-between">
                           <span>Без изоляторов:</span>
                           <span>{result.pricing.withoutIsolators.toLocaleString()} ₴</span>
                         </div>
@@ -380,7 +409,7 @@ export function RackCalculatorPage() {
                   <Separator />
 
                   <Button className="w-full" onClick={handleSave}>
-                    <Save className="h-4 w-4 mr-2" />
+                    <Save className="mr-2 h-4 w-4" />
                     Сохранить расчёт
                   </Button>
                 </>

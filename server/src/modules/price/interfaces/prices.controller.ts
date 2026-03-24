@@ -1,11 +1,12 @@
 import { Router, Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { PriceRepository } from '../infrastructure/price.repository.js'
-import { PriceService } from '../infrastructure/price.service.js'
-import { Price } from '../domain/entities/price.entity.js'
-import { authMiddleware } from '../../auth/interfaces/auth.middleware.js'
-import { requirePermission } from '../../common/middleware/rbac.middleware.js'
+import { PriceRepository } from '../infrastructure/price.repository'
+import { PriceService } from '../infrastructure/price.service'
+import type { Price } from '../domain/entities/price.entity'
 
+/**
+ * Отримати доступні типи компонентів з прайсу
+ */
 export const createPricesRouter = () => {
   const router = Router()
   const prisma = new PrismaClient()
@@ -23,7 +24,7 @@ export const createPricesRouter = () => {
 
       res.json({
         success: true,
-        data: prices.map((p) => ({
+        data: prices.map((p: Price) => ({
           id: p.id,
           category: p.category,
           isActive: p.isActive,
@@ -37,14 +38,15 @@ export const createPricesRouter = () => {
 
   /**
    * GET /api/prices/:category
-   * Get price list by category (with prices visible based on role)
+   * Get price list by category
    */
   router.get('/:category', async (req: Request, res: Response, next) => {
     try {
       const { category } = req.params as { category: string }
-      const price = await priceRepository.findActiveByCategory(category)
+      await priceService.loadCurrentPrice()
+      const price = priceService.getCurrentPrice()
 
-      if (!price) {
+      if (!price || price.category !== category) {
         return res.status(404).json({
           success: false,
           error: 'Price list not found',
@@ -53,164 +55,69 @@ export const createPricesRouter = () => {
 
       return res.json({
         success: true,
-        data: price,
+        data: price.data,
       })
-    } catch (_error) {
-      return next(_error)
+    } catch (error) {
+      return next(error)
     }
   })
 
   /**
-   * POST /api/prices
-   * Create new price list (admin only)
+   * GET /api/prices/rack/options
+   * Get available options for rack calculator (supports, spans, vertical supports)
    */
-  router.post(
-    '/',
-    authMiddleware,
-    requirePermission('prices', 'create'),
-    async (req: Request, res: Response, next) => {
-      try {
-        const { category, data, validFrom, validUntil } = req.body
+  router.get('/rack/options', async (_req: Request, res: Response, next) => {
+    try {
+      await priceService.loadCurrentPrice()
+      const price = priceService.getCurrentPrice()
 
-        const exists = await priceRepository.existsByCategory(category)
-        if (exists) {
-          return res.status(400).json({
-            success: false,
-            error: 'Price list with this category already exists',
-          })
-        }
-
-        const price = new Price({
-          category,
-          data,
-          validFrom: validFrom ? new Date(validFrom) : undefined,
-          validUntil: validUntil ? new Date(validUntil) : undefined,
-          isActive: true,
+      if (!price) {
+        return res.status(404).json({
+          success: false,
+          error: 'Price list not found',
         })
-
-        const created = await priceRepository.create(price)
-
-        return res.status(201).json({
-          success: true,
-          data: created,
-        })
-      } catch (_error) {
-        return next(_error)
       }
-    }
-  )
 
-  /**
-   * PUT /api/prices/:id
-   * Update price list (admin only)
-   */
-  router.put(
-    '/:id',
-    authMiddleware,
-    requirePermission('prices', 'update'),
-    async (req: Request, res: Response, next) => {
-      try {
-        const { id } = req.params as { id: string }
-        const { data, validFrom, validUntil } = req.body
-
-        const price = await priceRepository.findById(id)
-        if (!price) {
-          return res.status(404).json({
-            success: false,
-            error: 'Price list not found',
-          })
+      // Extract available options from price data
+      // supports structure: { "215": { edge: PriceComponent, intermediate: PriceComponent } }
+      const supports = Object.keys(price.data.supports || {}).map((key) => {
+        const code = key.split(' ')[0] // e.g., "430 кр" -> "430"
+        return {
+          value: code,
+          label: code, // Только код для дропдауна
+          stepped: code.toUpperCase().includes('C'),
         }
+      })
 
-        if (data) {
-          price.updateData(data)
+      const spans = Object.keys(price.data.spans || {}).map((key) => {
+        const span = price.data.spans[key]
+        return {
+          value: span.code || key,
+          label: span.code || key, // Только длина для дропдауна
+          length: parseInt(span.code || key, 10),
         }
-        if (validFrom) {
-          price.validFrom = new Date(validFrom)
+      })
+
+      const verticalStands = Object.keys(price.data.vertical_supports || {}).map((key) => {
+        const stand = price.data.vertical_supports[key]
+        return {
+          value: stand.code || key,
+          label: stand.code || key, // Только код для дропдауна
         }
-        if (validUntil) {
-          price.validUntil = new Date(validUntil)
-        }
+      })
 
-        const updated = await priceRepository.update(price)
-
-        return res.json({
-          success: true,
-          data: updated,
-        })
-      } catch (_error) {
-        return next(_error)
-      }
+      return res.json({
+        success: true,
+        data: {
+          supports,
+          spans,
+          verticalStands,
+        },
+      })
+    } catch (error) {
+      return next(error)
     }
-  )
-
-  /**
-   * POST /api/prices/:id/activate
-   * Activate price list (admin only)
-   */
-  router.post(
-    '/:id/activate',
-    authMiddleware,
-    requirePermission('prices', 'update'),
-    async (req: Request, res: Response, next) => {
-      try {
-        const { id } = req.params as { id: string }
-        await priceRepository.activate(id)
-
-        return res.json({
-          success: true,
-          message: 'Price list activated',
-        })
-      } catch (_error) {
-        return next(_error)
-      }
-    }
-  )
-
-  /**
-   * POST /api/prices/:id/deactivate
-   * Deactivate price list (admin only)
-   */
-  router.post(
-    '/:id/deactivate',
-    authMiddleware,
-    requirePermission('prices', 'update'),
-    async (req: Request, res: Response, next) => {
-      try {
-        const { id } = req.params as { id: string }
-        await priceRepository.deactivate(id)
-
-        return res.json({
-          success: true,
-          message: 'Price list deactivated',
-        })
-      } catch (_error) {
-        return next(_error)
-      }
-    }
-  )
-
-  /**
-   * DELETE /api/prices/:id
-   * Delete price list (admin only)
-   */
-  router.delete(
-    '/:id',
-    authMiddleware,
-    requirePermission('prices', 'delete'),
-    async (req: Request, res: Response, next) => {
-      try {
-        const { id } = req.params as { id: string }
-        await priceRepository.delete(id)
-
-        return res.json({
-          success: true,
-          message: 'Price list deleted',
-        })
-      } catch (_error) {
-        return next(_error)
-      }
-    }
-  )
+  })
 
   return router
 }

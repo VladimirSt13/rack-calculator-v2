@@ -1,5 +1,20 @@
-import { api } from './api';
-import type { RackConfiguration, RackResult, RackSet, RackFilters, RackRevision } from '@/types/rack';
+import { api } from './api'
+import type {
+  RackConfiguration,
+  RackResult,
+  RackSet,
+  RackFilters,
+  RackRevision,
+} from '@/types/rack'
+
+/**
+ * Опції з прайсу для калькулятора
+ */
+export interface RackOptions {
+  supports: Array<{ value: string; label: string; stepped: boolean }>
+  spans: Array<{ value: string; label: string; length: number }>
+  verticalStands: Array<{ value: string; label: string }>
+}
 
 /**
  * Rack Service
@@ -10,38 +25,38 @@ export const rackService = {
    * Расчёт стеллажа
    */
   calculate: async (config: RackConfiguration): Promise<RackResult> => {
-    const response = await api.post<{ data: RackResult }>('/rack/calculate', config);
-    return response.data.data;
+    const response = await api.post<{ data: RackResult }>('/rack/calculate', config)
+    return response.data.data
   },
 
   /**
    * Получение списка стеллажей пользователя
    */
   getMyRacks: async (filters?: RackFilters): Promise<RackSet[]> => {
-    const response = await api.get<{ data: RackSet[] }>('/rack/my', { params: filters });
-    return response.data.data;
+    const response = await api.get<{ data: RackSet[] }>('/rack/my', { params: filters })
+    return response.data.data
   },
 
   /**
    * Получение деталей стеллажа по ID
    */
   getRackById: async (id: string): Promise<RackSet> => {
-    const response = await api.get<{ data: RackSet }>(`/rack/${id}`);
-    return response.data.data;
+    const response = await api.get<{ data: RackSet }>(`/rack/${id}`)
+    return response.data.data
   },
 
   /**
    * Удаление стеллажа (soft delete)
    */
   deleteRack: async (id: string): Promise<void> => {
-    await api.delete(`/rack/${id}`);
+    await api.delete(`/rack/${id}`)
   },
 
   /**
    * Восстановление удалённого стеллажа
    */
   restoreRack: async (id: string): Promise<void> => {
-    await api.post(`/rack/${id}/restore`);
+    await api.post(`/rack/${id}/restore`)
   },
 
   /**
@@ -50,7 +65,15 @@ export const rackService = {
   getRevisions: async (rackSetId: string, limit = 10): Promise<RackRevision[]> => {
     const response = await api.get<{ data: RackRevision[] }>(`/rack/${rackSetId}/revisions`, {
       params: { limit },
-    });
-    return response.data.data;
+    })
+    return response.data.data
   },
-};
+
+  /**
+   * Получение доступных опций из прайса
+   */
+  getOptions: async (): Promise<RackOptions> => {
+    const response = await api.get<{ data: RackOptions }>('/prices/rack/options')
+    return response.data.data
+  },
+}
