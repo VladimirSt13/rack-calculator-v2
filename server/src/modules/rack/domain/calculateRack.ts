@@ -1,62 +1,62 @@
 /**
  * Domain-функция расчёта стеллажей
- * 
+ *
  * Алгоритм основан на RACK_ALGORITHM_BUSINESS.md
- * 
+ *
  * @param input - Входные параметры стеллажа
  * @returns Результат расчёта с компонентами и названием
  */
 
 export interface SpanInput {
-  type: string;      // тип пролёта (например, '600', '750')
-  quantity: number;  // количество пролётов этого типа
+  type: string // тип пролёта (например, '600', '750')
+  quantity: number // количество пролётов этого типа
 }
 
 export interface RackInput {
-  levels: number;           // поверхностність (1-3)
-  rows: number;             // рядність (1-4)
-  beamsPerRow: number;      // балок на ряд
-  supportType: string;      // тип опор (например, 'C80', '430', '430C')
-  verticalStandType?: string; // тип верт. стоек (для 2+ этажей)
-  spans: SpanInput[];       // пролёты
+  levels: number // поверхностність (1-3)
+  rows: number // рядність (1-4)
+  beamsPerRow: number // балок на ряд
+  supportType: string // тип опор (например, 'C80', '430', '430C')
+  verticalStandType?: string // тип верт. стоек (для 2+ этажей)
+  spans: SpanInput[] // пролёты
 }
 
 export interface SupportComponent {
-  type: 'edge' | 'intermediate';
-  quantity: number;
+  type: 'edge' | 'intermediate'
+  quantity: number
 }
 
 export interface BeamComponent {
-  type: string;
-  quantity: number;
+  type: string
+  quantity: number
 }
 
 export interface VerticalStandComponent {
-  type: string;
-  quantity: number;
+  type: string
+  quantity: number
 }
 
 export interface BracesComponent {
-  quantity: number;
+  quantity: number
 }
 
 export interface IsolatorComponent {
-  quantity: number;
+  quantity: number
 }
 
 export interface RackComponents {
-  supports: SupportComponent[];
-  beams: BeamComponent[];
-  verticalStands?: VerticalStandComponent;
-  braces?: BracesComponent;
-  isolators?: IsolatorComponent;
+  supports: SupportComponent[]
+  beams: BeamComponent[]
+  verticalStands?: VerticalStandComponent
+  braces?: BracesComponent
+  isolators?: IsolatorComponent
 }
 
 export interface RackResult {
-  name: string;
-  description: string;
-  components: RackComponents;
-  totalLength: number;
+  name: string
+  description: string
+  components: RackComponents
+  totalLength: number
 }
 
 /**
@@ -64,36 +64,36 @@ export interface RackResult {
  */
 export function calculateRack(input: RackInput): RackResult {
   // Валидация входных данных
-  validateInput(input);
+  validateInput(input)
 
   // 1. Расчёт общей длины
   const totalLength = input.spans.reduce(
-    (sum, span) => sum + (span.quantity * parseInt(span.type, 10)),
+    (sum, span) => sum + span.quantity * parseInt(span.type, 10),
     0
-  );
+  )
 
   // 2. Расчёт опор
-  const supports = calculateSupports(input.levels, input.spans);
+  const supports = calculateSupports(input.levels, input.spans)
 
   // 3. Расчёт балок
-  const beams = calculateBeams(input.spans, input.rows, input.beamsPerRow, input.levels);
+  const beams = calculateBeams(input.spans, input.rows, input.beamsPerRow, input.levels)
 
   // 4. Расчёт дополнительных компонентов (зависит от этажности)
-  let verticalStands: VerticalStandComponent | undefined;
-  let braces: BracesComponent | undefined;
-  let isolators: IsolatorComponent | undefined;
+  let verticalStands: VerticalStandComponent | undefined
+  let braces: BracesComponent | undefined
+  let isolators: IsolatorComponent | undefined
 
   if (input.levels >= 2) {
     // Многооярусный стеллаж
-    verticalStands = calculateVerticalStands(input.spans, input.verticalStandType);
-    braces = calculateBraces(input.spans);
+    verticalStands = calculateVerticalStands(input.spans, input.verticalStandType)
+    braces = calculateBraces(input.spans)
   } else {
     // Одноярусный стеллаж
-    isolators = calculateIsolators(input.spans);
+    isolators = calculateIsolators(input.spans)
   }
 
   // 5. Генерация названия
-  const { name, description } = generateRackName(input, totalLength);
+  const { name, description } = generateRackName(input, totalLength)
 
   return {
     name,
@@ -106,46 +106,48 @@ export function calculateRack(input: RackInput): RackResult {
       isolators,
     },
     totalLength,
-  };
+  }
 }
 
 /**
  * Валидация входных данных
  */
 function validateInput(input: RackInput): void {
-  if (!Number.isInteger(input.levels) || input.levels < 1 || input.levels > 3) {
-    throw new Error('Levels must be an integer between 1 and 3');
+  if (!Number.isInteger(input.levels) || input.levels < 1 || input.levels > 10) {
+    throw new Error('Levels must be an integer between 1 and 10')
   }
   if (!Number.isInteger(input.rows) || input.rows < 1 || input.rows > 4) {
-    throw new Error('Rows must be an integer between 1 and 4');
+    throw new Error('Rows must be an integer between 1 and 4')
   }
-  if (!Number.isInteger(input.beamsPerRow) || input.beamsPerRow < 1) {
-    throw new Error('Beams per row must be a positive integer');
+  if (!Number.isInteger(input.beamsPerRow) || input.beamsPerRow < 2 || input.beamsPerRow > 4) {
+    throw new Error('Beams per row must be between 2 and 4')
   }
   if (!input.supportType || typeof input.supportType !== 'string') {
-    throw new Error('Support type must be a non-empty string');
+    throw new Error('Support type must be a non-empty string')
   }
   if (!Array.isArray(input.spans) || input.spans.length === 0) {
-    throw new Error('Spans must be a non-empty array');
+    throw new Error('Spans must be a non-empty array')
   }
-  
+
   // Проверка пролётов
   for (const span of input.spans) {
     if (!span.type || typeof span.type !== 'string') {
-      throw new Error('Span type must be a string');
+      throw new Error('Span type must be a string')
     }
     if (!Number.isInteger(span.quantity) || span.quantity < 1) {
-      throw new Error('Span quantity must be a positive integer');
+      throw new Error('Span quantity must be a positive integer')
     }
     // Проверка формата типа (должно начинаться с числа)
     if (!/^\d+[A-Za-z]*$/.test(span.type)) {
-      throw new Error(`Invalid span type format: ${span.type}. Expected format: '600', '750mm', etc.`);
+      throw new Error(
+        `Invalid span type format: ${span.type}. Expected format: '600', '750mm', etc.`
+      )
     }
   }
 
   // Проверка verticalStandType для многооярусных
   if (input.levels >= 2 && !input.verticalStandType) {
-    throw new Error('Vertical stand type is required for multi-level racks (2+ levels)');
+    throw new Error('Vertical stand type is required for multi-level racks (2+ levels)')
   }
 }
 
@@ -156,22 +158,22 @@ function validateInput(input: RackInput): void {
  * - Промежуточные: (общее количество пролётов - 1) × уровни
  */
 function calculateSupports(levels: number, spans: SpanInput[]): SupportComponent[] {
-  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0);
-  
-  const edgeSupports = 2 * levels;
-  const intermediateSupports = Math.max(0, (totalSpans - 1)) * levels;
+  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0)
 
-  const supports: SupportComponent[] = [];
-  
+  const edgeSupports = 2 * levels
+  const intermediateSupports = Math.max(0, totalSpans - 1) * levels
+
+  const supports: SupportComponent[] = []
+
   if (edgeSupports > 0) {
-    supports.push({ type: 'edge', quantity: edgeSupports });
-  }
-  
-  if (intermediateSupports > 0) {
-    supports.push({ type: 'intermediate', quantity: intermediateSupports });
+    supports.push({ type: 'edge', quantity: edgeSupports })
   }
 
-  return supports;
+  if (intermediateSupports > 0) {
+    supports.push({ type: 'intermediate', quantity: intermediateSupports })
+  }
+
+  return supports
 }
 
 /**
@@ -184,10 +186,10 @@ function calculateBeams(
   beamsPerRow: number,
   levels: number
 ): BeamComponent[] {
-  return spans.map(span => ({
+  return spans.map((span) => ({
     type: span.type,
     quantity: span.quantity * rows * beamsPerRow * levels,
-  }));
+  }))
 }
 
 /**
@@ -198,13 +200,13 @@ function calculateVerticalStands(
   spans: SpanInput[],
   verticalStandType?: string
 ): VerticalStandComponent {
-  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0);
-  const quantity = (totalSpans + 1) * 2;
+  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0)
+  const quantity = (totalSpans + 1) * 2
 
   return {
     type: verticalStandType || 'unknown',
     quantity,
-  };
+  }
 }
 
 /**
@@ -214,16 +216,16 @@ function calculateVerticalStands(
  * - Если пролётов > 1: (пролёты - 1) × 2 + 2
  */
 function calculateBraces(spans: SpanInput[]): BracesComponent {
-  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0);
-  
-  let quantity: number;
+  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0)
+
+  let quantity: number
   if (totalSpans === 1) {
-    quantity = 2; // минимум
+    quantity = 2 // минимум
   } else {
-    quantity = (totalSpans - 1) * 2 + 2;
+    quantity = (totalSpans - 1) * 2 + 2
   }
 
-  return { quantity };
+  return { quantity }
 }
 
 /**
@@ -231,49 +233,52 @@ function calculateBraces(spans: SpanInput[]): BracesComponent {
  * Формула: количество опор × 2
  */
 function calculateIsolators(spans: SpanInput[]): IsolatorComponent {
-  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0);
-  
-  // Количество опор для одноярусного стеллажа
-  const edgeSupports = 2;
-  const intermediateSupports = Math.max(0, totalSpans - 1);
-  const totalSupports = edgeSupports + intermediateSupports;
-  
-  const quantity = totalSupports * 2;
+  const totalSpans = spans.reduce((sum, span) => sum + span.quantity, 0)
 
-  return { quantity };
+  // Количество опор для одноярусного стеллажа
+  const edgeSupports = 2
+  const intermediateSupports = Math.max(0, totalSpans - 1)
+  const totalSupports = edgeSupports + intermediateSupports
+
+  const quantity = totalSupports * 2
+
+  return { quantity }
 }
 
 /**
  * Генерация названия стеллажа
- * 
+ *
  * Формат: Стелаж [опис] L{рівні}A{ряди}{C?}-{довжина}/{опори}
- * 
+ *
  * Примеры:
  * - Стелаж одноповерховий однорядний L1A1C-1950/80
  * - Стелаж двоповерховий дворядний L2A2-1800/430
  */
-function generateRackName(input: RackInput, totalLength: number): { name: string; description: string } {
+function generateRackName(
+  input: RackInput,
+  totalLength: number
+): { name: string; description: string } {
   // Описова частина
-  const levelDescription = getLevelDescription(input.levels);
-  const rowDescription = getRowDescription(input.rows);
-  const steppedSuffix = isSteppedSupport(input.supportType) ? ' ступінчатий' : '';
+  const levelDescription = getLevelDescription(input.levels)
+  const rowDescription = getRowDescription(input.rows)
+  const steppedSuffix = isSteppedSupport(input.supportType) ? ' ступінчатий' : ''
 
-  const description = `Стелаж ${levelDescription} ${rowDescription}${steppedSuffix}`.trim();
+  const description = `Стелаж ${levelDescription} ${rowDescription}${steppedSuffix}`.trim()
 
   // Скорочення (маркування)
-  const levelsAbbr = `L${input.levels}`;
-  const rowsAbbr = `A${input.rows}`;
-  const steppedAbbr = isSteppedSupport(input.supportType) ? 'C' : '';
-  const lengthAbbr = totalLength;
-  const supportNumber = input.supportType.replace(/[A-Za-z]/g, '');
+  const levelsAbbr = `L${input.levels}`
+  const rowsAbbr = `A${input.rows}`
+  const steppedAbbr = isSteppedSupport(input.supportType) ? 'C' : ''
+  const lengthAbbr = totalLength
+  const supportNumber = input.supportType.replace(/[A-Za-z]/g, '')
 
-  const shortName = `${levelsAbbr}${rowsAbbr}${steppedAbbr}-${lengthAbbr}/${supportNumber}`;
-  const fullName = `${description} ${shortName}`;
+  const shortName = `${levelsAbbr}${rowsAbbr}${steppedAbbr}-${lengthAbbr}/${supportNumber}`
+  const fullName = `${description} ${shortName}`
 
   return {
     name: fullName,
     description,
-  };
+  }
 }
 
 /**
@@ -282,13 +287,13 @@ function generateRackName(input: RackInput, totalLength: number): { name: string
 function getLevelDescription(levels: number): string {
   switch (levels) {
     case 1:
-      return 'одноповерховий';
+      return 'одноповерховий'
     case 2:
-      return 'двоповерховий';
+      return 'двоповерховий'
     case 3:
-      return 'трьохповерховий';
+      return 'трьохповерховий'
     default:
-      return `${levels}-поверховий`;
+      return `${levels}-поверховий`
   }
 }
 
@@ -298,15 +303,15 @@ function getLevelDescription(levels: number): string {
 function getRowDescription(rows: number): string {
   switch (rows) {
     case 1:
-      return 'однорядний';
+      return 'однорядний'
     case 2:
-      return 'дворядний';
+      return 'дворядний'
     case 3:
-      return 'трьохрядний';
+      return 'трьохрядний'
     case 4:
-      return 'чотирьохрядний';
+      return 'чотирьохрядний'
     default:
-      return `${rows}-рядний`;
+      return `${rows}-рядний`
   }
 }
 
@@ -314,5 +319,5 @@ function getRowDescription(rows: number): string {
  * Проверка на ступенчатый тип опоры
  */
 function isSteppedSupport(supportType: string): boolean {
-  return supportType.toUpperCase().includes('C');
+  return supportType.toUpperCase().includes('C')
 }

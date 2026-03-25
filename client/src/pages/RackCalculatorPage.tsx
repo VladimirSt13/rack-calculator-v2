@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { Plus, Trash2, Save, Calculator } from 'lucide-react'
+import { Plus, Minus, Save, Calculator, X } from 'lucide-react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { rackService, type RackOptions } from '@/services/rack.service'
 import { rackCalculationSchema } from '@/utils/validation/rack.validation'
@@ -43,17 +43,8 @@ export function RackCalculatorPage() {
 
   // Инициализация значений после загрузки опций
   useEffect(() => {
-    if (options) {
-      // Установить значения по умолчанию из прайса
-      if (!supportType && options.supports.length > 0) {
-        setSupportType(options.supports[0].value)
-      }
-      if (!verticalStandType && options.verticalStands.length > 0) {
-        setVerticalStandType(options.verticalStands[0].value)
-      }
-      if (spans.length === 0 && options.spans.length > 0) {
-        setSpans([{ type: options.spans[0].value, quantity: 2 }])
-      }
+    if (options && !supportType && options.supports.length > 0) {
+      setSupportType(options.supports[0].value)
     }
   }, [options])
 
@@ -81,6 +72,8 @@ export function RackCalculatorPage() {
   const removeSpan = (index: number) => {
     if (spans.length > 1) {
       setSpans(spans.filter((_, i) => i !== index))
+    } else {
+      setSpans([])
     }
   }
 
@@ -89,6 +82,17 @@ export function RackCalculatorPage() {
     const newSpans = [...spans]
     newSpans[index] = { ...newSpans[index], [field]: value }
     setSpans(newSpans)
+  }
+
+  // Очистка формы
+  const handleClear = () => {
+    setLevels(1)
+    setRows(1)
+    setBeamsPerRow(2)
+    setSupportType(options?.supports[0]?.value || '')
+    setVerticalStandType('')
+    setSpans([])
+    setResult(null)
   }
 
   // Расчёт
@@ -136,92 +140,72 @@ export function RackCalculatorPage() {
     <AppLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Калькулятор стеллажей</h1>
-          <p className="text-muted-foreground">
-            Расчёт конфигурации и стоимости стеллажного оборудования
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Калькулятор стеллажей</h1>
+            <p className="text-muted-foreground">
+              Расчёт конфигурации и стоимости стеллажного оборудования
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Форма */}
           <Card>
             <CardHeader>
-              <CardTitle>Параметры стеллажа</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Параметры стеллажа</CardTitle>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleClear}
+                  className="text-muted-foreground text-xs"
+                >
+                  <X className="mr-1 h-3 w-3" />
+                  Очистить
+                </Button>
+              </div>
               <CardDescription>Введите конфигурацию стеллажа для расчёта</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Поверховість */}
-              <div className="space-y-2">
-                <Label htmlFor="levels">Количество уровней (ярусов)</Label>
-                <Select value={String(levels)} onValueChange={(v) => setLevels(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 уровень (одноповерховий)</SelectItem>
-                    <SelectItem value="2">2 уровня (двоповерховий)</SelectItem>
-                    <SelectItem value="3">3 уровня (трьохповерховий)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <CardContent className="space-y-6">
+              {/* Секция: Геометрия */}
+              <div className="space-y-4">
+                <h3 className="text-muted-foreground text-sm font-semibold tracking-wider uppercase">
+                  Геометрия
+                </h3>
 
-              {/* Рядність */}
-              <div className="space-y-2">
-                <Label htmlFor="rows">Количество рядов</Label>
-                <Select value={String(rows)} onValueChange={(v) => setRows(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4].map((n) => (
-                      <SelectItem key={n} value={String(n)}>
-                        {n} {n === 1 ? 'ряд' : n <= 4 ? 'ряда' : 'рядов'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Балок на ряд */}
-              <div className="space-y-2">
-                <Label htmlFor="beams">Балок на ряд</Label>
-                <Input
-                  id="beams"
-                  type="number"
-                  min={1}
-                  value={beamsPerRow}
-                  onChange={(e) => setBeamsPerRow(Number(e.target.value))}
-                />
-              </div>
-
-              {/* Тип опоры - из прайса */}
-              <div className="space-y-2">
-                <Label htmlFor="support">Тип опоры</Label>
-                <Select value={supportType} onValueChange={(v) => setSupportType(v ?? '')}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите тип опоры" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {options?.supports.map((support) => (
-                      <SelectItem key={support.value} value={support.value}>
-                        {support.value} {support.stepped ? '(ступенчатая)' : '(прямая)'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Тип верт. стоек - из прайса (для 2+ этажей) */}
-              {levels >= 2 && (
+                {/* Количество этажей */}
                 <div className="space-y-2">
-                  <Label htmlFor="vertical">Тип вертикальных стоек</Label>
+                  <Label htmlFor="levels">Количество уровней (ярусов)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="levels"
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={levels}
+                      onChange={(e) => setLevels(Number(e.target.value))}
+                      className="w-24 font-mono"
+                    />
+                    <span className="text-muted-foreground text-sm">
+                      {levels === 1 ? 'этаж' : levels <= 4 ? 'этажа' : 'этажей'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Вертикальная опора (disabled если 1 этаж) */}
+                <div className="space-y-2">
+                  <Label htmlFor="vertical">Вертикальная опора</Label>
                   <Select
                     value={verticalStandType}
                     onValueChange={(v) => setVerticalStandType(v ?? '')}
+                    disabled={levels === 1}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Выберите тип" />
+                      <SelectValue
+                        placeholder={levels === 1 ? 'Не требуется (1 этаж)' : 'Выберите...'}
+                      />
                     </SelectTrigger>
                     <SelectContent>
                       {options?.verticalStands.map((stand) => (
@@ -232,58 +216,129 @@ export function RackCalculatorPage() {
                     </SelectContent>
                   </Select>
                 </div>
-              )}
 
-              {/* Пролёты - из прайса */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Пролёты</Label>
-                  <Button type="button" size="sm" variant="outline" onClick={addSpan}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    Добавить
-                  </Button>
-                </div>
-
+                {/* Опора */}
                 <div className="space-y-2">
-                  {spans.map((span, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <Select
-                        value={span.type}
-                        onValueChange={(v) => updateSpan(index, 'type', v ?? '')}
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {options?.spans.map((spanType) => (
-                            <SelectItem key={spanType.value} value={spanType.value}>
-                              {spanType.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      <Input
-                        type="number"
-                        min={1}
-                        value={span.quantity}
-                        onChange={(e) => updateSpan(index, 'quantity', Number(e.target.value))}
-                        className="w-20"
-                        placeholder="Кол-во"
-                      />
-
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => removeSpan(index)}
-                        disabled={spans.length === 1}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+                  <Label htmlFor="support">Опора</Label>
+                  <Select value={supportType} onValueChange={(v) => setSupportType(v ?? '')}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Выберите..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {options?.supports.map((support) => (
+                        <SelectItem key={support.value} value={support.value}>
+                          {support.label} {support.stepped ? '(С)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
+                {/* Количество рядов */}
+                <div className="space-y-2">
+                  <Label htmlFor="rows">Количество рядов</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="rows"
+                      type="number"
+                      min={1}
+                      max={4}
+                      value={rows}
+                      onChange={(e) => setRows(Number(e.target.value))}
+                      className="w-24 font-mono"
+                    />
+                    <span className="text-muted-foreground text-sm">
+                      {rows === 1 ? 'ряд' : rows <= 4 ? 'ряда' : 'рядов'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Балок в ряду */}
+                <div className="space-y-2">
+                  <Label htmlFor="beams">Балок в ряду</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="beams"
+                      type="number"
+                      min={2}
+                      max={4}
+                      value={beamsPerRow}
+                      onChange={(e) => setBeamsPerRow(Number(e.target.value))}
+                      className="w-24 font-mono"
+                    />
+                    <span className="text-muted-foreground text-sm">
+                      {beamsPerRow === 2 ? 'балки' : 'балок'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Секция: Пролёты */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={addSpan}
+                    className="h-8"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                  <span className="text-muted-foreground text-sm">Добавить пролёт</span>
+                </div>
+
+                {/* Список пролётов */}
+                {spans.length === 0 ? (
+                  <p className="text-muted-foreground py-4 text-center text-sm">
+                    Нет добавленных пролётов
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {spans.map((span, index) => (
+                      <div
+                        key={index}
+                        className="bg-card grid grid-cols-[1fr_auto_auto] items-center gap-2 rounded-md border p-2.5"
+                      >
+                        <Select
+                          value={span.type}
+                          onValueChange={(v) => updateSpan(index, 'type', v ?? '')}
+                        >
+                          <SelectTrigger className="h-8 min-w-[120px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {options?.spans.map((spanType) => (
+                              <SelectItem key={spanType.value} value={spanType.value}>
+                                {spanType.label} мм
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <Input
+                          type="number"
+                          min={1}
+                          value={span.quantity}
+                          onChange={(e) => updateSpan(index, 'quantity', Number(e.target.value))}
+                          className="h-8 w-[72px] text-center font-mono"
+                        />
+
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => removeSpan(index)}
+                          className="h-8 w-8"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <Separator />
@@ -291,7 +346,7 @@ export function RackCalculatorPage() {
               <Button
                 className="w-full"
                 onClick={handleCalculate}
-                disabled={calculateMutation.isPending || !options}
+                disabled={calculateMutation.isPending || !options || spans.length === 0}
               >
                 <Calculator className="mr-2 h-4 w-4" />
                 {calculateMutation.isPending ? 'Расчёт...' : 'Рассчитать'}

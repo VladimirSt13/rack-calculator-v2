@@ -9,9 +9,9 @@ import type { RackResult } from '../../domain/calculateRack'
  * Входная схема для валидации
  */
 const calculateRackSchema = z.object({
-  levels: z.number().int().min(1).max(3),
+  levels: z.number().int().min(1).max(10),
   rows: z.number().int().min(1).max(4),
-  beamsPerRow: z.number().int().min(1),
+  beamsPerRow: z.number().int().min(2).max(4),
   supportType: z.string().nonempty(),
   verticalStandType: z.string().optional(),
   spans: z.array(
