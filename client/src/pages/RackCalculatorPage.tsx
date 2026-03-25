@@ -176,8 +176,10 @@ export function RackCalculatorPage() {
                 </h3>
 
                 {/* Количество этажей */}
-                <div className="space-y-2">
-                  <Label htmlFor="levels">Количество уровней (ярусов)</Label>
+                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                  <Label htmlFor="levels" className="justify-self-start">
+                    Количество уровней
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       id="levels"
@@ -195,8 +197,10 @@ export function RackCalculatorPage() {
                 </div>
 
                 {/* Вертикальная опора (disabled если 1 этаж) */}
-                <div className="space-y-2">
-                  <Label htmlFor="vertical">Вертикальная опора</Label>
+                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                  <Label htmlFor="vertical" className="justify-self-start">
+                    Вертик. опора
+                  </Label>
                   <Select
                     value={verticalStandType}
                     onValueChange={(v) => setVerticalStandType(v ?? '')}
@@ -218,8 +222,10 @@ export function RackCalculatorPage() {
                 </div>
 
                 {/* Опора */}
-                <div className="space-y-2">
-                  <Label htmlFor="support">Опора</Label>
+                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                  <Label htmlFor="support" className="justify-self-start">
+                    Опора
+                  </Label>
                   <Select value={supportType} onValueChange={(v) => setSupportType(v ?? '')}>
                     <SelectTrigger>
                       <SelectValue placeholder="Выберите..." />
@@ -227,7 +233,7 @@ export function RackCalculatorPage() {
                     <SelectContent>
                       {options?.supports.map((support) => (
                         <SelectItem key={support.value} value={support.value}>
-                          {support.label} {support.stepped ? '(С)' : ''}
+                          {support.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -235,8 +241,10 @@ export function RackCalculatorPage() {
                 </div>
 
                 {/* Количество рядов */}
-                <div className="space-y-2">
-                  <Label htmlFor="rows">Количество рядов</Label>
+                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                  <Label htmlFor="rows" className="justify-self-start">
+                    Количество рядов
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       id="rows"
@@ -254,8 +262,10 @@ export function RackCalculatorPage() {
                 </div>
 
                 {/* Балок в ряду */}
-                <div className="space-y-2">
-                  <Label htmlFor="beams">Балок в ряду</Label>
+                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                  <Label htmlFor="beams" className="justify-self-start">
+                    Балок в ряду
+                  </Label>
                   <div className="flex items-center gap-2">
                     <Input
                       id="beams"
