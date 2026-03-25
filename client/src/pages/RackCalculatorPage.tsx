@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { AppLayout } from '@/components/layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -19,6 +18,7 @@ import { rackService, type RackOptions } from '@/services/rack.service'
 import { rackCalculationSchema } from '@/utils/validation/rack.validation'
 import type { RackResult, SpanInput } from '@/types/rack'
 import { toast } from 'sonner'
+import { FormField } from '@/components/rack/FormField'
 
 /**
  * Страница калькулятора стеллажей
@@ -176,31 +176,20 @@ export function RackCalculatorPage() {
                 </h3>
 
                 {/* Количество этажей */}
-                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
-                  <Label htmlFor="levels" className="justify-self-start">
-                    Количество уровней
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="levels"
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={levels}
-                      onChange={(e) => setLevels(Number(e.target.value))}
-                      className="w-24 font-mono"
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      {levels === 1 ? 'этаж' : levels <= 4 ? 'этажа' : 'этажей'}
-                    </span>
-                  </div>
-                </div>
+                <FormField label="Уровней" labelId="levels">
+                  <Input
+                    id="levels"
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={levels}
+                    onChange={(e) => setLevels(Number(e.target.value))}
+                    className="w-20 font-mono"
+                  />
+                </FormField>
 
                 {/* Вертикальная опора (disabled если 1 этаж) */}
-                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
-                  <Label htmlFor="vertical" className="justify-self-start">
-                    Вертик. опора
-                  </Label>
+                <FormField label="Верт. опора" labelId="vertical">
                   <Select
                     value={verticalStandType}
                     onValueChange={(v) => setVerticalStandType(v ?? '')}
@@ -219,13 +208,10 @@ export function RackCalculatorPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FormField>
 
                 {/* Опора */}
-                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
-                  <Label htmlFor="support" className="justify-self-start">
-                    Опора
-                  </Label>
+                <FormField label="Опора" labelId="support">
                   <Select value={supportType} onValueChange={(v) => setSupportType(v ?? '')}>
                     <SelectTrigger>
                       <SelectValue placeholder="Выберите..." />
@@ -238,49 +224,33 @@ export function RackCalculatorPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </FormField>
 
                 {/* Количество рядов */}
-                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
-                  <Label htmlFor="rows" className="justify-self-start">
-                    Количество рядов
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="rows"
-                      type="number"
-                      min={1}
-                      max={4}
-                      value={rows}
-                      onChange={(e) => setRows(Number(e.target.value))}
-                      className="w-24 font-mono"
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      {rows === 1 ? 'ряд' : rows <= 4 ? 'ряда' : 'рядов'}
-                    </span>
-                  </div>
-                </div>
+                <FormField label="Рядов" labelId="rows">
+                  <Input
+                    id="rows"
+                    type="number"
+                    min={1}
+                    max={4}
+                    value={rows}
+                    onChange={(e) => setRows(Number(e.target.value))}
+                    className="w-20 font-mono"
+                  />
+                </FormField>
 
                 {/* Балок в ряду */}
-                <div className="grid grid-cols-[120px_1fr] items-center gap-2">
-                  <Label htmlFor="beams" className="justify-self-start">
-                    Балок в ряду
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="beams"
-                      type="number"
-                      min={2}
-                      max={4}
-                      value={beamsPerRow}
-                      onChange={(e) => setBeamsPerRow(Number(e.target.value))}
-                      className="w-24 font-mono"
-                    />
-                    <span className="text-muted-foreground text-sm">
-                      {beamsPerRow === 2 ? 'балки' : 'балок'}
-                    </span>
-                  </div>
-                </div>
+                <FormField label="Балок" labelId="beams">
+                  <Input
+                    id="beams"
+                    type="number"
+                    min={2}
+                    max={4}
+                    value={beamsPerRow}
+                    onChange={(e) => setBeamsPerRow(Number(e.target.value))}
+                    className="w-20 font-mono"
+                  />
+                </FormField>
               </div>
 
               <Separator />
