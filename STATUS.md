@@ -1,8 +1,8 @@
 # 📊 Статус проєкту Rack Calculator V2
 
-> **Дата оновлення:** 23 березня 2026 р.
+> **Дата оновлення:** 26 березня 2026 р.
 > **Гілка:** `main` ✅
-> **Останній коміт:** 8db744c — Merge pull request #7 (feature/tech-debts-fix)
+> **Останній коміт:** 7becc3a — Merge pull request #8 (feature/sprint5-rack-module)
 
 ---
 
@@ -10,8 +10,8 @@
 
 | Компонент        | Статус                            | Готовність |
 | ---------------- | --------------------------------- | ---------- |
-| **Backend**      | 🟢 Готово (Sprint 1-4.7)          | ~60%       |
-| **Frontend**     | 🟢 Audit UI (Sprint 4.5)          | ~35%       |
+| **Backend**      | 🟢 Готово (Sprint 1-5)            | ~75%       |
+| **Frontend**     | 🟢 Rack модуль готовий            | ~55%       |
 | **База даних**   | 🟢 Налаштована (Prisma + MongoDB) | ✅         |
 | **Тести**        | 🟡 Jest налаштований              | 5%         |
 | **Документація** | 🟢 Актуальна                      | ✅         |
@@ -30,7 +30,8 @@
 | **Sprint 4**   | Audit / Logging                     | ✅ Завершено    | 100%       |
 | **Sprint 4.5** | Audit Frontend                      | ✅ Завершено    | 100%       |
 | **Sprint 4.7** | Email Verification                  | ✅ Завершено    | 100%       |
-| **Sprint 5**   | Core Business Module: Rack          | 🔴 Не розпочато | 0%         |
+| **Sprint 5**   | Core Business Module: Rack          | ✅ Завершено    | 100%       |
+| **Sprint 5.5** | Admin Price Editor                  | 🔴 В роботі     | 0%         |
 | **Sprint 6**   | Battery Module                      | ⏳ Не розпочато | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не розпочато | 0%         |
 | **Sprint 8**   | Завершення і деплой                 | ⏳ Не розпочато | 0%         |
@@ -39,118 +40,120 @@
 
 ## ✅ Виконані завдання
 
-### Backend (Sprint 1)
+### Backend (Sprint 1-5)
 
-- [x] Ініціалізація Node.js + TypeScript проєкту
-- [x] Monorepo структура (client + server workspaces)
-- [x] Налаштування ESLint, Prettier, Vitest
-- [x] Prisma schema (MongoDB) — User, Role
-- [x] Модуль `users`:
-  - [x] UserRepository (findById, update, setRefreshToken)
-- [x] Модуль `auth`:
-  - [x] Use-cases: RegisterUser, LoginUser, ResetPassword, VerifyEmail
-  - [x] JwtService (accessToken, refreshToken)
-  - [x] Auth middleware
-  - [x] Auth controller (всі маршрути /api/auth/\*)
-- [x] Prisma singleton (prisma.client.ts)
-- [x] Конфігурація (ENV, DB, JWT, CORS)
-- [x] Server entry point + routes
-- [x] tsx для ES modules
+#### Auth & Users (Sprint 1-2)
 
-### Frontend (Sprint 2)
+- [x] Users module (CRUD, profile)
+- [x] Auth module (JWT, Refresh tokens)
+- [x] Email verification use-cases
+- [x] Password reset flow
 
-- [x] Налаштування проєкту (React + TypeScript + Vite)
-- [x] Структура папок (components, hooks, pages, services, stores, types, utils)
-- [x] Залежності встановлені (React, TanStack Query, Zustand, React Hook Form, Zod, Axios)
+#### RBAC (Sprint 3)
+
+- [x] Roles module (CRUD)
+- [x] Permissions module (Resource-Action)
+- [x] PolicyService
+- [x] RBAC middleware (`requirePermission`, `requireRole`)
+
+#### Audit (Sprint 4)
+
+- [x] AuditEvent entity
+- [x] AuditRepository (CRUD, filters, pagination)
+- [x] Use-cases: LogAuditAction, GetAuditLogs
+- [x] AuditController + API endpoints
+- [x] Auto-logging middleware
+
+#### Email (Sprint 4.7)
+
+- [x] Email Service (Nodemailer)
+- [x] HTML templates (verification, reset password)
+- [x] Use-cases: VerifyEmail, SendVerificationEmail, RequestResetPassword, ResetPassword
+- [x] Routes: /resend-verification, /reset-password/\*
+
+#### Price Module
+
+- [x] Prisma schema: Price model
+- [x] Price entity з PriceData interface
+- [x] PriceRepository (CRUD)
+- [x] PriceService (розрахунок вартості, фільтр за ролями)
+- [x] PriceController + API endpoints
+- [x] Seed script для тестових даних
+
+#### Rack Module (Sprint 5) ✅ НОВЕ
+
+- [x] Domain: `calculateRack()` алгоритм
+- [x] Value Objects: Size, Rows, Weight, Span
+- [x] RackEntity
+- [x] RackRepository (CRUD, findByUserId)
+- [x] Use-case: `calculateRackUseCase`
+- [x] RackController + Routes: `/api/rack/calculate`
+- [x] Prisma schema: RackSet, RackRevision
+- [x] Інтеграція з PriceService
+
+### Frontend (Sprint 1-5)
+
+#### Auth Pages (Sprint 2)
+
 - [x] API client з interceptors
 - [x] Auth service (login, register, logout, getCurrentUser, resetPassword)
 - [x] Zustand auth store
-- [x] Валідація форм (Zod + React Hook Form)
-- [x] Сторінки:
-  - [x] `/login` — Вхід
-  - [x] `/register` — Реєстрація
-  - [x] `/profile` — Профіль
-- [x] React Router
-- [x] Стилі для auth форм
+- [x] Форми (Zod + React Hook Form)
+- [x] Сторінки: Login, Register, Profile
 
-### DevOps
+#### Design System (Sprint 3.5)
 
-- [x] `npm run dev` — запускає обидва додатки одночасно
-- [x] concurrently встановлений
+- [x] Tailwind CSS v4
+- [x] shadcn/ui (16+ компонентів)
+- [x] Storybook
+- [x] UI компоненти: Button, Input, Label, Select, Checkbox, RadioGroup, Card, Table, Dialog, DropdownMenu, Sonner, Skeleton, Spinner, Avatar, Badge, ScrollArea, Separator
+- [x] Layout: Header, Sidebar, AppLayout
+- [x] Роутинг: ProtectedRoute, GuestRoute
 
-### Backend (Sprint 4)
+#### Audit Frontend (Sprint 4.5)
 
-- [x] Модуль `audit`:
-  - [x] Prisma schema: AuditEvent (MongoDB)
-  - [x] AuditEvent entity, AuditAction VO, AuditResource VO
-  - [x] AuditRepository (CRUD, filters, pagination)
-  - [x] Use-cases: LogAuditAction, GetAuditLogs
-  - [x] AuditController (GET /api/audit, /my, /:id)
-  - [x] Audit middleware (auto-logging)
-- [x] Middleware `requireRole` для перевірки ролей
-- [x] Інтеграція з auth:
-  - [x] Логування входу (успіх/невдача/помилка)
-  - [x] IP адреса, user agent
-  - [x] Метадані (request/response)
+- [x] Types: AuditLog, AuditFilters, AuditStatus
+- [x] Audit service (getLogs, getMyLogs, getLogById)
+- [x] Components: AuditLogFilters, AuditLogTable, AuditLogDetail
+- [x] AuditPage (/admin/audit, ADMIN only)
 
-### Frontend (Sprint 3.5)
+#### Rack Frontend (Sprint 5) ✅ НОВЕ
 
-- [x] Налаштування дизайн-системи:
-  - [x] Tailwind CSS v4
-  - [x] shadcn/ui (16 компонентів)
-  - [x] Storybook
-  - [x] prettier-plugin-tailwindcss
-- [x] UI-компоненти:
-  - [x] Button, Input, Label, Select, Checkbox, RadioGroup
-  - [x] Card, Table, Dialog, DropdownMenu
-  - [x] Sonner, Skeleton, Spinner, Avatar, Badge, ScrollArea, Separator
-- [x] Layout-компоненти:
-  - [x] Header (логотип, теми, уведомления, профіль)
-  - [x] Sidebar (навігація з розділами)
-  - [x] AppLayout (адаптивний)
-- [x] Роутинг:
-  - [x] ProtectedRoute
-  - [x] GuestRoute
-- [x] Сторінки:
-  - [x] DashboardPage
-  - [x] LoginPage (оновлена)
-  - [x] RegisterPage (оновлена)
-
-### Frontend (Sprint 4.5)
-
-- [x] Types:
-  - [x] AuditLog, AuditFilters, AuditStatus
-  - [x] AuditAction, AuditResource
-- [x] Services:
-  - [x] audit.service.ts (getLogs, getMyLogs, getLogById)
+- [x] Types: RackConfiguration, RackComponents, RackPricing, RackResult
+- [x] Rack service (calculate, getMyRacks, getRackById)
 - [x] Components:
-  - [x] AuditLogFilters (фільтри по статусу, ресурсу, дії, датам)
-  - [x] AuditLogTable (таблиця з badges)
-  - [x] AuditLogDetail (modal з деталями)
-- [x] Pages:
-  - [x] AuditPage (/admin/audit)
-- [x] Routes:
-  - [x] /admin/audit (ADMIN only)
-  - [x] Sidebar link updated
+  - RackForm (форма з динамічними прольотами)
+  - RackResults (таблиця компонентів з цінами)
+  - PreambleCard (короткі результати)
+  - ComponentsTableCard (таблиця з цінами)
+  - PriceDisplay (форматування цін)
+  - RackSetCard (панель комплекту)
+  - SaveSetModal (модальне вікно збереження)
+  - ResultsSkeleton (скелетон завантаження)
+- [x] Store: rackSet.store.ts (Zustand)
+- [x] Validation: rackSet.validation.ts (Zod)
+- [x] Сторінки: RackCalculatorPage
 
 ### Документація
 
 - [x] RACK_ALGORITHM_BUSINESS.md — бізнес-алгоритм розрахунку стелажів
-- [x] PLAN.md — **об'єднаний план розробки** (server + client)
-- [x] summory.md — технічне резюме
-- [x] backend-sturcure.md — структура бекенду
+- [x] PLAN.md — план розробки
 - [x] STATUS.md — статус проєкту
+- [x] rack-form-description.md — опис форми
+- [x] rack-results-description.md — опис результатів
+- [x] price/PRICE_DB_STRUCTURE.md — структура бази цін
 
 ---
 
 ## ⚠️ Технічні борги
 
-| Проблема               | Пріоритет   | Опис                                          |
-| ---------------------- | ----------- | --------------------------------------------- |
-| **Rack domain logic**  | 🔴 Високий  | Структура є, алгоритм не реалізований         |
-| **Відсутність тестів** | 🔴 Високий  | Unit і integration тести не створені          |
-| **Email verification** | 🟡 Середній | Frontend сторінки verification/reset-password |
-| **Battery logic**      | 🟡 Середній | Модуль не розпочатий                          |
+| Проблема               | Пріоритет   | Опис                                 |
+| ---------------------- | ----------- | ------------------------------------ |
+| **Відсутність тестів** | 🔴 Високий  | Unit і integration тести не створені |
+| **Battery logic**      | 🟡 Середній | Модуль не розпочатий                 |
+| **Email Frontend**     | 🟡 Середній | Сторінки verification/reset-password |
+| **E2E тести**          | 🟡 Середній | Повністю відсутні                    |
+| **Docker/CI/CD**       | 🟡 Середній | Не налаштовано                       |
 
 ---
 
@@ -158,32 +161,32 @@
 
 ### Короткострокові (1-2 тижні)
 
-1. **Sprint 5: Rack Module (Backend)** — 🔴 ПРІОРИТЕТ
-   - Реалізувати domain-функцію `calculateRack()` по алгоритму з `RACK_ALGORITHM_BUSINESS.md`
-   - Створити Value Objects (Size, Rows, Weight)
-   - Створити RackEntity
-   - Реалізувати RackRepository
-   - Створити Use-case `calculateRackUseCase`
-   - Створити RackController + маршрути `/api/rack/calculate`
+1. **Sprint 5.5: Admin Price Editor (Backend + Frontend)** 🔴 НОВЕ
+   - **Backend:** PUT /api/prices/bulk, POST /api/prices/import, GET /api/prices/export
+   - **Frontend:** Сторінка /admin/prices, PriceTableEditor (Excel-подібний UI), імпорт/експорт
+2. **Sprint 6: Battery Module**
+   - Domain-логіка підбору батарей
+   - BatteryRepository, Use-case, Controller
+   - UI для розрахунку та відображення результатів
 
-2. **Sprint 5: Rack Module (Frontend)**
-   - Сторінка калькулятора стелажів `/rack/calculator`
-   - Форма введення параметрів
-   - Відображення результатів
-   - Збереження конфігурацій (RackSet)
+3. **Тестування**
+   - Unit-тести для use-cases (auth, rack, rbac, audit, email)
+   - Integration-тести для API endpoints
+
+4. **Email Frontend**
+   - Сторінки `/verify-email` і `/reset-password`
 
 ### Середньострокові (3-4 тижні)
 
-3. **Sprint 6: Battery Module**
-   - Domain-логіка підбору батарей
-   - UI для розрахунку
+4. **Sprint 7: Export / Revisions / Soft Delete**
+   - Export RackSet to Excel/PDF
+   - Revision history management
+   - Soft delete / restore functionality
 
-4. **Тестування**
-   - Покрити unit-тестами use-cases (auth, rack, rbac, audit)
-   - Integration тести для API endpoints
-
-5. **Email Frontend**
-   - Сторінки `/verify-email` і `/reset-password`
+5. **Sprint 8: Deployment**
+   - Docker + docker-compose
+   - CI/CD pipeline
+   - Production environment setup
 
 ---
 
@@ -197,7 +200,7 @@
 | **users**   | ✅     | —           | ✅             | —          | ✅ Завершено    |
 | **roles**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
 | **perms**   | ✅     | —           | ✅             | ✅         | ✅ Завершено    |
-| **rack**    | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не розпочато |
+| **rack**    | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
 | **battery** | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не розпочато |
 | **audit**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
 | **email**   | —      | ✅          | ✅             | ✅         | ✅ Завершено    |
@@ -205,17 +208,18 @@
 
 ### Frontend структура
 
-| Компонент               | Статус            | Опис                                |
-| ----------------------- | ----------------- | ----------------------------------- |
-| **components/ui/**      | ✅ 16 компонентів | shadcn/ui компоненти                |
-| **components/layout/**  | ✅                | Header, Sidebar, AppLayout          |
-| **components/routing/** | ✅                | ProtectedRoute, GuestRoute          |
-| **hooks/**              | 🔴 Пусто          | Кастомні хуки                       |
-| **pages/**              | ✅ 4 сторінки     | Dashboard, Login, Register, Profile |
-| **services/**           | ✅ Auth           | API client, auth service            |
-| **stores/**             | ✅ Auth           | Zustand auth store                  |
-| **types/**              | 🔴 Пусто          | TypeScript типи                     |
-| **utils/**              | ✅ Validation     | Zod схеми                           |
+| Компонент               | Статус             | Опис                                                       |
+| ----------------------- | ------------------ | ---------------------------------------------------------- |
+| **components/ui/**      | ✅ 16+ компонентів | shadcn/ui компоненти                                       |
+| **components/layout/**  | ✅                 | Header, Sidebar, AppLayout                                 |
+| **components/routing/** | ✅                 | ProtectedRoute, GuestRoute                                 |
+| **components/rack/**    | ✅ 8 компонентів   | Rack модуль (форма, результати)                            |
+| **hooks/**              | 🔴 Пусто           | Кастомні хуки                                              |
+| **pages/**              | ✅ 6 сторінок      | Dashboard, Login, Register, Profile, Audit, RackCalculator |
+| **services/**           | ✅ Auth, Rack      | API client, auth service, rack service                     |
+| **stores/**             | ✅ Auth, RackSet   | Zustand stores                                             |
+| **types/**              | ✅ Rack, Audit     | TypeScript типи                                            |
+| **utils/**              | ✅ Validation      | Zod схеми                                                  |
 
 ---
 
@@ -229,7 +233,7 @@
 - Zod (валідація)
 - JWT (jsonwebtoken)
 - mongodb (ObjectId)
-- Vitest (тести)
+- Vitest/Jest (тести)
 - tsx (ES modules)
 
 ### Frontend
@@ -249,10 +253,10 @@
 ## 📈 Метрики прогресу
 
 ```
-Backend:  ████████████████░░░░░░ 60%
-Frontend: █████████░░░░░░░░░░░░░ 35%
-Tests:    █░░░░░░░░░░░░░░░░░░░░░  5%
-Docs:     ██████████████████████ 100%
+Backend:  ██████████████████████░░ 75%
+Frontend: █████████████████░░░░░░░ 55%
+Tests:    █░░░░░░░░░░░░░░░░░░░░░░░  5%
+Docs:     ████████████████████████ 100%
 ```
 
 ---
@@ -262,5 +266,6 @@ Docs:     ██████████████████████ 100
 - **Репозиторій:** https://github.com/VladimirSt13/rack-calculator-v2
 - **План розробки:** [PLAN.md](./PLAN.md)
 - **Алгоритм:** [RACK_ALGORITHM_BUSINESS.md](./RACK_ALGORITHM_BUSINESS.md)
-- **Структура бекенду:** [backend-sturcure.md](./backend-sturcure.md)
-- **Технічне резюме:** [summory.md](./summory.md)
+- **Опис форми:** [rack-form-description.md](./rack-form-description.md)
+- **Опис результатів:** [rack-results-description.md](./rack-results-description.md)
+- **База цін:** [price/PRICE_DB_STRUCTURE.md](./price/PRICE_DB_STRUCTURE.md)
