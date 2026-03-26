@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "1.0.0",
-  "description": "Frontend клиент для Rack Calculator",
+  "description": "Frontend клієнт для Rack Calculator",
   "private": true,
   "type": "module",
   "scripts": {

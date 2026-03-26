@@ -14,27 +14,27 @@ export class ResetPasswordUseCase {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(input: ResetPasswordInput): Promise<void> {
-    // Поиск пользователя по ID
+    // Пошук користувача за ID
     const user = await this.userRepository.findById(input.userId)
     if (!user) {
       throw AppError.unauthorized('Invalid reset token', 'INVALID_RESET_TOKEN')
     }
 
-    // Проверка токена
+    // Перевірка токена
     if (user.resetToken !== input.token) {
       throw AppError.unauthorized('Invalid reset token', 'INVALID_RESET_TOKEN')
     }
 
-    // Проверка срока действия токена
+    // Перевірка строку дії токена
     if (user.resetTokenExpiry && user.resetTokenExpiry < new Date()) {
       throw AppError.unauthorized('Reset token expired', 'RESET_TOKEN_EXPIRED')
     }
 
-    // Хэширование нового пароля
+    // Хешування нового пароля
     const password = new Password(input.newPassword)
     const passwordHash = await password.hash()
 
-    // Обновление пароля
+    // Оновлення пароля
     user.updatePassword(passwordHash)
     user.setResetToken(null, null)
     await this.userRepository.update(user)
@@ -53,25 +53,25 @@ export class RequestResetPasswordUseCase {
 
     const user = await this.userRepository.findByEmail(email)
     if (!user) {
-      // Не раскрываем информацию о существовании пользователя
-      return { success: true, message: 'Если email существует, письмо отправлено' }
+      // Не розкриваємо інформацію про існування користувача
+      return { success: true, message: 'Якщо email існує, лист відправлено' }
     }
 
-    // Генерация токена
+    // Генерація токена
     const token = crypto.randomUUID()
-    const expiry = new Date(Date.now() + 60 * 60 * 1000) // 1 час
+    const expiry = new Date(Date.now() + 60 * 60 * 1000) // 1 година
 
     user.setResetToken(token, expiry)
     await this.userRepository.update(user)
 
-    // Отправка email
+    // Відправка email
     try {
       await emailService.sendResetPasswordEmail(user.email.toString(), token, user.id)
     } catch (error) {
       console.error('Failed to send reset password email:', error)
-      // Не показываем ошибку пользователю для безопасности
+      // Не показуємо помилку користувачу для безпеки
     }
 
-    return { success: true, message: 'Если email существует, письмо отправлено' }
+    return { success: true, message: 'Якщо email існує, лист відправлено' }
   }
 }

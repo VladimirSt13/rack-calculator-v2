@@ -24,7 +24,7 @@ export function ProfilePage() {
     return (
       <AppLayout>
         <div className="flex h-32 items-center justify-center">
-          <p className="text-muted-foreground">Загрузка...</p>
+          <p className="text-muted-foreground">Завантаження...</p>
         </div>
       </AppLayout>
     )
@@ -35,41 +35,41 @@ export function ProfilePage() {
       <AppLayout>
         <Card>
           <CardHeader>
-            <CardTitle>Доступ запрещён</CardTitle>
-            <CardDescription>Пожалуйста, войдите в систему</CardDescription>
+            <CardTitle>Доступ заборонено</CardTitle>
+            <CardDescription>Будь ласка, увійдіть в систему</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate('/login')}>Войти</Button>
+            <Button onClick={() => navigate('/login')}>Увійти</Button>
           </CardContent>
         </Card>
       </AppLayout>
     )
   }
 
-  const roleLabel = user.role === 'ADMIN' ? 'Администратор' : 'Пользователь'
+  const roleLabel = user.role === 'ADMIN' ? 'Адміністратор' : 'Користувач'
   const roleName = (user.role || 'USER').toLowerCase()
 
   return (
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Профиль пользователя</h1>
-          <p className="text-muted-foreground">Информация о вашем аккаунте</p>
+          <h1 className="text-3xl font-bold tracking-tight">Профіль користувача</h1>
+          <p className="text-muted-foreground">Інформація про ваш акаунт</p>
         </div>
 
         <Card className="max-w-2xl">
           <CardHeader>
-            <CardTitle>Основная информация</CardTitle>
-            <CardDescription>Ваши персональные данные и настройки</CardDescription>
+            <CardTitle>Основна інформація</CardTitle>
+            <CardDescription>Ваші персональні дані та налаштування</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">ID</p>
+                <p className="text-muted-foreground text-sm">ID</p>
                 <p className="font-mono text-sm">{user.id}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Email</p>
+                <p className="text-muted-foreground text-sm">Email</p>
                 <p className="font-medium">{user.email}</p>
               </div>
             </div>
@@ -78,11 +78,11 @@ export function ProfilePage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Имя</p>
+                <p className="text-muted-foreground text-sm">Ім'я</p>
                 <p className="font-medium">{user.firstName || '—'}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Фамилия</p>
+                <p className="text-muted-foreground text-sm">Прізвище</p>
                 <p className="font-medium">{user.lastName || '—'}</p>
               </div>
             </div>
@@ -91,15 +91,15 @@ export function ProfilePage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Роль</p>
+                <p className="text-muted-foreground text-sm">Роль</p>
                 <Badge variant={roleName === 'admin' ? 'destructive' : 'secondary'}>
                   {roleLabel}
                 </Badge>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Email подтверждён</p>
+                <p className="text-muted-foreground text-sm">Email підтверджено</p>
                 <p className={user.emailVerified ? 'text-green-600' : 'text-yellow-600'}>
-                  {user.emailVerified ? '✓ Да' : '○ Нет'}
+                  {user.emailVerified ? '✓ Так' : '○ Ні'}
                 </p>
               </div>
             </div>
@@ -107,9 +107,9 @@ export function ProfilePage() {
             <Separator />
 
             <div>
-              <p className="text-sm text-muted-foreground">Дата регистрации</p>
+              <p className="text-muted-foreground text-sm">Дата реєстрації</p>
               <p className="text-sm">
-                {new Date(user.createdAt).toLocaleDateString('ru-RU', {
+                {new Date(user.createdAt).toLocaleDateString('uk-UA', {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric',
@@ -121,10 +121,10 @@ export function ProfilePage() {
 
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => navigate('/settings')}>
-                Настройки
+                Налаштування
               </Button>
               <Button variant="destructive" onClick={handleLogout}>
-                Выйти
+                Вийти
               </Button>
             </div>
           </CardContent>

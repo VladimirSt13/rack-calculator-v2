@@ -18,7 +18,7 @@ export const createAuthRouter = () => {
 
   /**
    * POST /api/auth/refresh
-   * Обновление access токена
+   * Оновлення access токена
    */
   router.post('/refresh', async (req: Request, res: Response, next) => {
     try {
@@ -28,21 +28,21 @@ export const createAuthRouter = () => {
         throw AppError.badRequest('Refresh token required', 'REFRESH_TOKEN_REQUIRED')
       }
 
-      // Верификация refresh токена
+      // Верифікація refresh токена
       const payload = JwtService.verifyRefreshToken(refreshToken)
 
-      // Поиск пользователя
+      // Пошук користувача
       const user = await userRepository.findById(payload.userId)
       if (!user) {
         throw AppError.unauthorized('User not found', 'USER_NOT_FOUND')
       }
 
-      // Проверка совпадения refresh токена
+      // Перевірка збігу refresh токена
       if (user.refreshToken !== refreshToken) {
         throw AppError.unauthorized('Invalid refresh token', 'INVALID_REFRESH_TOKEN')
       }
 
-      // Генерация новых токенов
+      // Генерація нових токенів
       const tokens = {
         accessToken: JwtService.generateAccessToken({
           userId: user.id,
@@ -58,7 +58,7 @@ export const createAuthRouter = () => {
         }),
       }
 
-      // Сохранение нового refresh токена
+      // Збереження нового refresh токена
       user.setRefreshToken(tokens.refreshToken)
       await userRepository.update(user)
 
@@ -98,7 +98,7 @@ export const createAuthRouter = () => {
 
   /**
    * GET /api/auth/me
-   * Получение текущего пользователя
+   * Отримання поточного користувача
    */
   router.get('/me', authMiddleware, async (req: AuthRequest, res: Response, next) => {
     try {
@@ -110,7 +110,7 @@ export const createAuthRouter = () => {
         throw AppError.notFound('User not found', 'USER_NOT_FOUND')
       }
 
-      // Если roleId есть в токене, но нет в БД — обновить пользователя
+      // Якщо roleId є в токені, але немає в БД — оновити користувача
       if (userRoleId && !user.roleId) {
         user.setRoleId(userRoleId)
         await userRepository.update(user)
@@ -123,8 +123,8 @@ export const createAuthRouter = () => {
           email: user.email.toString(),
           firstName: user.firstName,
           lastName: user.lastName,
-          role: req.user!.role, // Берём роль из токена
-          roleId: req.user!.roleId, // Добавляем roleId
+          role: req.user!.role, // Беремо роль з токена
+          roleId: req.user!.roleId, // Додаємо roleId
           emailVerified: user.emailVerified,
           createdAt: user.createdAt,
         },
@@ -165,7 +165,7 @@ export const createAuthRouter = () => {
 
   /**
    * POST /api/auth/login
-   * Вход в систему
+   * Вхід до системи
    */
   router.post('/login', async (req: Request, res: Response, next) => {
     try {
@@ -199,7 +199,7 @@ export const createAuthRouter = () => {
 
   /**
    * POST /api/auth/reset-password/request
-   * Запрос на сброс пароля
+   * Запит на скидання пароля
    */
   router.post('/reset-password/request', async (req: Request, res: Response, next) => {
     try {
@@ -219,7 +219,7 @@ export const createAuthRouter = () => {
 
   /**
    * POST /api/auth/reset-password/confirm
-   * Подтверждение сброса пароля
+   * Підтвердження скидання пароля
    */
   router.post('/reset-password/confirm', async (req: Request, res: Response, next) => {
     try {
@@ -243,7 +243,7 @@ export const createAuthRouter = () => {
 
   /**
    * POST /api/auth/resend-verification
-   * Повторная отправка verification email
+   * Повторна відправка verification email
    */
   router.post('/resend-verification', async (req: Request, res: Response, next) => {
     try {

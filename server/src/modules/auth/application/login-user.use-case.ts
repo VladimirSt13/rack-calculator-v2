@@ -27,7 +27,7 @@ export class LoginUserUseCase {
     const email = new Email(input.email)
 
     try {
-      // Поиск пользователя
+      // Пошук користувача
       const user = await this.userRepository.findByEmail(email)
       if (!user) {
         await this.logAuditEvent(
@@ -40,7 +40,7 @@ export class LoginUserUseCase {
         throw AppError.unauthorized('Invalid credentials', 'INVALID_CREDENTIALS')
       }
 
-      // Загрузка роли из БД если есть roleId
+      // Завантаження ролі з БД якщо є roleId
       if (user.roleId) {
         const role = await prisma.role.findUnique({
           where: { id: user.roleId },
@@ -50,7 +50,7 @@ export class LoginUserUseCase {
         }
       }
 
-      // Проверка пароля
+      // Перевірка пароля
       const passwordValid = await Password.compare(input.password, user.passwordHash)
       if (!passwordValid) {
         await this.logAuditEvent(
@@ -64,14 +64,14 @@ export class LoginUserUseCase {
         throw AppError.unauthorized('Invalid credentials', 'INVALID_CREDENTIALS')
       }
 
-      // Генерация токенов
+      // Генерація токенів
       const tokens = this.generateTokens(user)
 
-      // Сохранение refresh токена
+      // Збереження refresh токена
       user.setRefreshToken(tokens.refreshToken)
       await this.userRepository.update(user)
 
-      // Логирование успешного входа
+      // Логування успішного входу
       await this.logAuditEvent(
         input.email,
         'SUCCESS',

@@ -23,17 +23,17 @@ export class RegisterUserUseCase {
   async execute(input: RegisterInput): Promise<RegisterOutput> {
     const email = new Email(input.email)
 
-    // Проверка существования пользователя
+    // Перевірка існування користувача
     const exists = await this.userRepository.existsByEmail(email)
     if (exists) {
       throw AppError.conflict('Email already registered', 'EMAIL_EXISTS')
     }
 
-    // Хэширование пароля
+    // Хешування пароля
     const password = new Password(input.password)
     const passwordHash = await password.hash()
 
-    // Создание пользователя
+    // Створення користувача
     const user = new User({
       email,
       passwordHash,
@@ -45,10 +45,10 @@ export class RegisterUserUseCase {
 
     const createdUser = await this.userRepository.create(user)
 
-    // Генерация токенов
+    // Генерація токенів
     const tokens = this.generateTokens(createdUser)
 
-    // Сохранение refresh токена
+    // Збереження refresh токена
     createdUser.setRefreshToken(tokens.refreshToken)
     await this.userRepository.update(createdUser)
 

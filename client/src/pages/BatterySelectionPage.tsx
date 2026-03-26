@@ -6,24 +6,20 @@ export function BatterySelectionPage() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Подбор батареи</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Підбір батареї</h1>
           <p className="text-muted-foreground">
-            Подбор аккумуляторных батарей для стеллажного оборудования
+            Підбір акумуляторних батарей для стелажного обладнання
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>В разработке</CardTitle>
-            <CardDescription>
-              Подбор батареи будет доступен в следующем обновлении
-            </CardDescription>
+            <CardTitle>В розробці</CardTitle>
+            <CardDescription>Підбір батареї буде доступний в наступному оновленні</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex h-32 items-center justify-center">
-              <p className="text-muted-foreground">
-                🔋 Страница в разработке...
-              </p>
+              <p className="text-muted-foreground">🔋 Сторінка в розробці...</p>
             </div>
           </CardContent>
         </Card>

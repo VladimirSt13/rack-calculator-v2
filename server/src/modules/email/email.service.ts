@@ -12,7 +12,7 @@ export class EmailService {
   private transporter: nodemailer.Transporter
 
   constructor() {
-    // Создаём транспортер для SMTP
+    // Створюємо транспортер для SMTP
     this.transporter = nodemailer.createTransport({
       host: config.email?.smtpHost || 'smtp.gmail.com',
       port: config.email?.smtpPort || 587,
@@ -25,7 +25,7 @@ export class EmailService {
   }
 
   /**
-   * Отправка email
+   * Відправка email
    */
   async sendEmail(options: EmailOptions): Promise<void> {
     try {
@@ -45,7 +45,7 @@ export class EmailService {
   }
 
   /**
-   * Отправка email верификации
+   * Відправка email верифікації
    */
   async sendVerificationEmail(email: string, verifyToken: string, userId: string): Promise<void> {
     const verifyUrl = `${config.cors.clientUrl}/verify-email?token=${verifyToken}&id=${userId}`
@@ -110,7 +110,7 @@ export class EmailService {
   }
 
   /**
-   * Отправка email сброса пароля
+   * Відправка email скидання пароля
    */
   async sendResetPasswordEmail(email: string, resetToken: string, userId: string): Promise<void> {
     const resetUrl = `${config.cors.clientUrl}/reset-password?token=${resetToken}&id=${userId}`
@@ -180,5 +180,5 @@ export class EmailService {
   }
 }
 
-// Экспорт singleton экземпляра
+// Експорт singleton екземпляра
 export const emailService = new EmailService()
