@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 async function assignAdminRole() {
   try {
-    // Найти или создать роль ADMIN
+    // Знайти або створити роль ADMIN
     let adminRole = await prisma.role.findUnique({
       where: { name: 'ADMIN' },
     })
@@ -13,35 +13,35 @@ async function assignAdminRole() {
       adminRole = await prisma.role.create({
         data: {
           name: 'ADMIN',
-          description: 'Администратор системы',
+          description: 'Адміністратор системи',
         },
       })
-      console.log('✅ Роль ADMIN создана:', adminRole.id)
+      console.log('✅ Роль ADMIN створено:', adminRole.id)
     } else {
-      console.log('✅ Роль ADMIN найдена:', adminRole.id)
+      console.log('✅ Роль ADMIN знайдено:', adminRole.id)
     }
 
-    // Найти пользователя admin@accu-energo.com.ua
+    // Знайти користувача admin@accu-energo.com.ua
     const adminUser = await prisma.user.findUnique({
       where: { email: 'admin@accu-energo.com.ua' },
     })
 
     if (!adminUser) {
-      console.error('❌ Пользователь admin@accu-energo.com.ua не найден')
+      console.error('❌ Користувача admin@accu-energo.com.ua не знайдено')
       return
     }
 
-    // Присвоить роль пользователю
+    // Присвоїти роль користувачу
     await prisma.user.update({
       where: { id: adminUser.id },
       data: { roleId: adminRole.id },
     })
 
-    console.log('✅ Роль ADMIN присвоена пользователю:', adminUser.email)
+    console.log('✅ Роль ADMIN присвоєно користувачу:', adminUser.email)
     console.log('   User ID:', adminUser.id)
     console.log('   Role ID:', adminRole.id)
   } catch (error) {
-    console.error('❌ Ошибка:', error)
+    console.error('❌ Помилка:', error)
   } finally {
     await prisma.$disconnect()
   }

@@ -1,39 +1,41 @@
-# 📋 План реализации: Sprint 5 — Rack Module
+# 📋 План реалізації: Sprint 5 — Модуль Rack
 
-> **Приоритет:** 🔴 Высокий  
-> **Оценка:** 1-2 недели  
-> **Статус:** ⏳ Ожидает начала
-
----
-
-## 🎯 Цель спринта
-
-Реализовать полный цикл расчёта стеллажей:
-- **Backend:** Domain-логика → Use-Case → API
-- **Frontend:** UI калькулятора → Форма → Результаты → Сохранение
+> **Пріоритет:** 🔴 Високий
+> **Оцінка:** 1-2 тижні
+> **Статус:** ⏳ Очікує початку
 
 ---
 
-## 📦 Этапы реализации
+## 🎯 Мета спринту
 
-### Этап 1: Backend — Domain Layer (2-3 дня)
+Реалізувати повний цикл розрахунку стелажів:
+
+- **Бекенд:** Domain-логіка → Use-Case → API
+- **Фронтенд:** UI калькулятора → Форма → Результати → Збереження
+
+---
+
+## 📦 Етапи реалізації
+
+### Етап 1: Бекенд — Domain Layer (2-3 дні)
 
 #### 1.1 Value Objects
 
-**Файлы:**
+**Файли:**
+
 - `server/src/modules/rack/domain/value-objects/Size.vo.ts`
 - `server/src/modules/rack/domain/value-objects/Rows.vo.ts`
 - `server/src/modules/rack/domain/value-objects/Weight.vo.ts`
 - `server/src/modules/rack/domain/value-objects/Span.vo.ts`
 
-**Что реализовать:**
+**Що реалізувати:**
 
 ```typescript
 // Size.vo.ts
 export class Size {
   constructor(
-    public readonly levels: number,    // 1-3
-    public readonly totalLength: number // мм
+    public readonly levels: number, // 1-3
+    public readonly totalLength: number, // мм
   ) {
     this.validate();
   }
@@ -49,9 +51,10 @@ export class Size {
 }
 ```
 
-**Проверка:**
-- ✅ Unit-тесты на валидацию
-- ✅ Иммутабельность (readonly)
+**Перевірка:**
+
+- ✅ Unit-тести на валідацію
+- ✅ Іммутабельність (readonly)
 
 ---
 
@@ -59,15 +62,15 @@ export class Size {
 
 **Файл:** `server/src/modules/rack/domain/calculateRack.ts`
 
-**Алгоритм (из RACK_ALGORITHM_BUSINESS.md):**
+**Алгоритм (з RACK_ALGORITHM_BUSINESS.md):**
 
 ```typescript
 interface RackInput {
-  levels: number;        // поверхностність (1-3)
+  levels: number;        // поверховість (1-3)
   rows: number;          // рядність (1-2)
   beamsPerRow: number;   // балок на ряд
   supportType: string;   // C80, 430, 430C
-  verticalStandType?: string; // 632, 1190, 1500 (для 2+ этажей)
+  verticalStandType?: string; // 632, 1190, 1500 (для 2+ поверхів)
   spans: Span[];         // [{type: '600mm', quantity: 2}, ...]
 }
 
@@ -88,19 +91,19 @@ interface RackResult {
 }
 
 export function calculateRack(input: RackInput): RackResult {
-  // 1. Расчёт опор
+  // 1. Розрахунок опор
   const totalSpans = input.spans.reduce((sum, s) => sum + s.quantity, 0);
   const edgeSupports = 2 * input.levels;
   const intermediateSupports = (totalSpans - 1) * input.levels;
-  
-  // 2. Расчёт балок
+
+  // 2. Розрахунок балок
   const beams = input.spans.map(span => ({
     type: span.type,
     length: parseInt(span.type),
     quantity: span.quantity * input.rows * input.beamsPerRow * input.levels
   }));
-  
-  // 3. Вертикальные стойки (для 2+ этажей)
+
+  // 3. Вертикальні стійки (для 2+ поверхів)
   let verticalStands;
   if (input.levels >= 2) {
     verticalStands = {
@@ -108,35 +111,36 @@ export function calculateRack(input: RackInput): RackResult {
       quantity: (totalSpans + 1) * 2
     };
   }
-  
-  // 4. Раскосы (для 2+ этажей)
+
+  // 4. Розкоси (для 2+ поверхів)
   let braces;
   if (input.levels >= 2) {
     braces = {
       quantity: totalSpans === 1 ? 2 : (totalSpans - 1) * 2 + 2
     };
   }
-  
-  // 5. Изоляторы (для 1 этажа)
+
+  // 5. Ізолятори (для 1 поверху)
   let isolators;
   if (input.levels === 1) {
     const totalSupports = edgeSupports + intermediateSupports;
     isolators = { quantity: totalSupports * 2 };
   }
-  
-  // 6. Генерация названия
+
+  // 6. Генерація назви
   const name = generateRackName(input);
-  
-  // 7. Расчёт стоимости (из Price DB)
+
+  // 7. Розрахунок вартості (з Price DB)
   const pricing = calculatePricing({...});
-  
+
   return { name, components: {...}, pricing };
 }
 ```
 
-**Проверка:**
-- ✅ Unit-тесты на все формулы
-- ✅ Тесты на особые случаи (1 пролёт, 1 этаж, 2 этажа)
+**Перевірка:**
+
+- ✅ Unit-тести на всі формули
+- ✅ Тести на особливі випадки (1 проліт, 1 поверх, 2 поверхи)
 
 ---
 
@@ -164,7 +168,7 @@ export class RackEntity {
       name: result.name,
       configuration: input,
       components: result.components,
-      pricing: result.pricing
+      pricing: result.pricing,
     });
   }
 }
@@ -172,7 +176,7 @@ export class RackEntity {
 
 ---
 
-### Этап 2: Backend — Infrastructure Layer (1-2 дня)
+### Етап 2: Бекенд — Infrastructure Layer (1-2 дні)
 
 #### 2.1 Rack Repository
 
@@ -189,8 +193,8 @@ export class RackRepository {
         configuration: data.configuration,
         components: data.components,
         pricing: data.pricing,
-        userId: data.userId
-      }
+        userId: data.userId,
+      },
     });
     return this.mapToEntity(rack);
   }
@@ -198,7 +202,7 @@ export class RackRepository {
   async findById(id: string): Promise<RackEntity | null> {
     const rack = await this.prisma.rackSet.findUnique({
       where: { id },
-      include: { revisions: { orderBy: { createdAt: 'desc' } } }
+      include: { revisions: { orderBy: { createdAt: 'desc' } } },
     });
     return rack ? this.mapToEntity(rack) : null;
   }
@@ -206,9 +210,9 @@ export class RackRepository {
   async findByUserId(userId: string): Promise<RackEntity[]> {
     const racks = await this.prisma.rackSet.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
-    return racks.map(r => this.mapToEntity(r));
+    return racks.map((r) => this.mapToEntity(r));
   }
 
   private mapToEntity(data: any): RackEntity {
@@ -219,7 +223,7 @@ export class RackRepository {
       components: data.components,
       pricing: data.pricing,
       createdAt: data.createdAt,
-      updatedAt: data.updatedAt
+      updatedAt: data.updatedAt,
     });
   }
 }
@@ -263,14 +267,15 @@ model RackRevision {
 }
 ```
 
-**Миграции:**
+**Міграції:**
+
 ```bash
 npm run db:push
 ```
 
 ---
 
-### Этап 3: Backend — Application Layer (1 день)
+### Етап 3: Бекенд — Application Layer (1 день)
 
 #### 3.1 Use-Case: CalculateRack
 
@@ -289,40 +294,40 @@ interface CalculateRackInput {
 export class CalculateRackUseCase {
   constructor(
     private rackRepository: RackRepository,
-    private priceRepository: PriceRepository
+    private priceRepository: PriceRepository,
   ) {}
 
   async execute(input: CalculateRackInput, userId?: string): Promise<RackResult> {
-    // 1. Валидация входных данных (Zod schema)
+    // 1. Валідація вхідних даних (Zod schema)
     const validatedInput = calculateRackSchema.parse(input);
-    
-    // 2. Domain расчёт
+
+    // 2. Domain розрахунок
     const result = calculateRack(validatedInput);
-    
-    // 3. Получение цен из Price DB
+
+    // 3. Отримання цін з Price DB
     const prices = await this.priceRepository.getActivePrices();
-    
-    // 4. Расчёт стоимости
+
+    // 4. Розрахунок вартості
     const pricing = this.calculatePricing(result.components, prices);
-    
-    // 5. Сохранение (если пользователь авторизован)
+
+    // 5. Збереження (якщо користувач авторизований)
     if (userId) {
       await this.rackRepository.create({
         ...result,
         pricing,
-        userId
+        userId,
       });
     }
-    
+
     return { ...result, pricing };
   }
 
   private calculatePricing(components: any, prices: any): Pricing {
-    // Логика расчёта из алгоритма
+    // Логіка розрахунку з алгоритму
     return {
       base: 0,
       withoutIsolators: 0,
-      zero: 0
+      zero: 0,
     };
   }
 }
@@ -330,7 +335,7 @@ export class CalculateRackUseCase {
 
 ---
 
-### Этап 4: Backend — Interfaces Layer (1 день)
+### Етап 4: Бекенд — Interfaces Layer (1 день)
 
 #### 4.1 Rack Controller
 
@@ -349,29 +354,40 @@ export class RackController {
 
   private initRoutes() {
     // POST /api/rack/calculate
-    this.router.post('/calculate', asyncHandler(async (req, res) => {
-      const input = req.body;
-      const userId = req.user?.id; // из auth middleware
-      
-      const result = await this.useCase.execute(input, userId);
-      res.json(result);
-    }));
+    this.router.post(
+      '/calculate',
+      asyncHandler(async (req, res) => {
+        const input = req.body;
+        const userId = req.user?.id; // з auth middleware
 
-    // GET /api/rack/my — мои расчёты
-    this.router.get('/my', authMiddleware, asyncHandler(async (req, res) => {
-      const userId = req.user!.id;
-      const racks = await rackRepository.findByUserId(userId);
-      res.json(racks);
-    }));
+        const result = await this.useCase.execute(input, userId);
+        res.json(result);
+      }),
+    );
 
-    // GET /api/rack/:id — детали расчёта
-    this.router.get('/:id', authMiddleware, asyncHandler(async (req, res) => {
-      const rack = await rackRepository.findById(req.params.id);
-      if (!rack) {
-        throw new NotFoundError('Rack not found');
-      }
-      res.json(rack);
-    }));
+    // GET /api/rack/my — мої розрахунки
+    this.router.get(
+      '/my',
+      authMiddleware,
+      asyncHandler(async (req, res) => {
+        const userId = req.user!.id;
+        const racks = await rackRepository.findByUserId(userId);
+        res.json(racks);
+      }),
+    );
+
+    // GET /api/rack/:id — деталі розрахунку
+    this.router.get(
+      '/:id',
+      authMiddleware,
+      asyncHandler(async (req, res) => {
+        const rack = await rackRepository.findById(req.params.id);
+        if (!rack) {
+          throw new NotFoundError('Rack not found');
+        }
+        res.json(rack);
+      }),
+    );
   }
 
   getRouter(): Router {
@@ -380,7 +396,7 @@ export class RackController {
 }
 ```
 
-#### 4.2 Регистрация роутов
+#### 4.2 Реєстрація роутів
 
 **Файл:** `server/src/routes.ts`
 
@@ -388,8 +404,8 @@ export class RackController {
 import { createRackRouter } from './modules/rack/interfaces/rack.controller.js';
 
 export const registerRoutes = (app: Express) => {
-  // ... существующие роуты
-  
+  // ... існуючі роути
+
   // Rack routes
   const rackRepository = new RackRepository(prisma);
   const priceRepository = new PriceRepository(prisma);
@@ -399,7 +415,7 @@ export const registerRoutes = (app: Express) => {
 
 ---
 
-### Этап 5: Frontend — Types & Services (0.5 дня)
+### Етап 5: Фронтенд — Types & Services (0.5 дня)
 
 #### 5.1 TypeScript Types
 
@@ -479,25 +495,26 @@ export const rackService = {
 
   async deleteRack(id: string): Promise<void> {
     await apiClient.delete(`/rack/${id}`);
-  }
+  },
 };
 ```
 
 ---
 
-### Этап 6: Frontend — UI Components (1-2 дня)
+### Етап 6: Фронтенд — UI Components (1-2 дні)
 
 #### 6.1 Rack Calculator Form
 
 **Файл:** `client/src/pages/rack/RackCalculatorPage.tsx`
 
-**Компоненты:**
-- `RackForm` — форма ввода параметров
-- `SpanInput` — динамический ввод пролётов
-- `RackResults` — отображение результатов
-- `RackSummary` — сводка по компонентам
+**Компоненти:**
 
-**Структура формы:**
+- `RackForm` — форма введення параметрів
+- `SpanInput` — динамічне введення прольотів
+- `RackResults` — відображення результатів
+- `RackSummary` — зведення по компонентах
+
+**Структура форми:**
 
 ```tsx
 interface RackFormValues {
@@ -515,21 +532,26 @@ const schema = z.object({
   beamsPerRow: z.number().min(1),
   supportType: z.enum(['C80', '430', '430C']),
   verticalStandType: z.string().optional(),
-  spans: z.array(z.object({
-    type: z.string(),
-    quantity: z.number().min(1)
-  })).min(1)
+  spans: z
+    .array(
+      z.object({
+        type: z.string(),
+        quantity: z.number().min(1),
+      }),
+    )
+    .min(1),
 });
 ```
 
 ---
 
-#### 6.2 Страницы
+#### 6.2 Сторінки
 
-**Файлы:**
+**Файли:**
+
 - `client/src/pages/rack/RackCalculatorPage.tsx` — `/rack/calculator`
-- `client/src/pages/rack/RackListPage.tsx` — `/rack` (список сохранённых)
-- `client/src/pages/rack/RackDetailPage.tsx` — `/rack/:id` (детали)
+- `client/src/pages/rack/RackListPage.tsx` — `/rack` (список збережених)
+- `client/src/pages/rack/RackDetailPage.tsx` — `/rack/:id` (деталі)
 
 **Роутинг:**
 
@@ -545,16 +567,16 @@ const schema = z.object({
 ```tsx
 // client/src/components/layout/Sidebar.tsx
 <nav>
-  <NavLink to="/dashboard">Dashboard</NavLink>
-  <NavLink to="/rack">Стеллажи</NavLink>
-  <NavLink to="/rack/calculator">Калькулятор</NavLink>
-  <NavLink to="/settings">Настройки</NavLink>
+  <NavLink to='/dashboard'>Dashboard</NavLink>
+  <NavLink to='/rack'>Стелажі</NavLink>
+  <NavLink to='/rack/calculator'>Калькулятор</NavLink>
+  <NavLink to='/settings'>Налаштування</NavLink>
 </nav>
 ```
 
 ---
 
-### Этап 7: Тестирование (1 день)
+### Етап 7: Тестування (1 день)
 
 #### 7.1 Backend Unit Tests
 
@@ -568,11 +590,11 @@ describe('calculateRack', () => {
       rows: 1,
       beamsPerRow: 2,
       supportType: 'C80',
-      spans: [{ type: '600mm', quantity: 2 }]
+      spans: [{ type: '600mm', quantity: 2 }],
     };
-    
+
     const result = calculateRack(input);
-    
+
     expect(result.components.supports).toHaveLength(2);
     expect(result.components.isolators).toBeDefined();
     expect(result.components.verticalStands).toBeUndefined();
@@ -585,11 +607,11 @@ describe('calculateRack', () => {
       beamsPerRow: 2,
       supportType: 'C80',
       verticalStandType: '1190',
-      spans: [{ type: '600mm', quantity: 3 }]
+      spans: [{ type: '600mm', quantity: 3 }],
     };
-    
+
     const result = calculateRack(input);
-    
+
     expect(result.components.verticalStands).toBeDefined();
     expect(result.components.braces).toBeDefined();
     expect(result.components.isolators).toBeUndefined();
@@ -604,10 +626,8 @@ describe('calculateRack', () => {
 ```typescript
 describe('RackController', () => {
   it('POST /api/rack/calculate should return calculation result', async () => {
-    const response = await request(app)
-      .post('/api/rack/calculate')
-      .send(validRackConfig);
-    
+    const response = await request(app).post('/api/rack/calculate').send(validRackConfig);
+
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('name');
     expect(response.body).toHaveProperty('components');
@@ -618,72 +638,72 @@ describe('RackController', () => {
 
 ---
 
-## ✅ Чеклист готовности Sprint 5
+## ✅ Чеклист готовності Sprint 5
 
-### Backend
+### Бекенд
 
-- [ ] Value Objects созданы и протестированы
-- [ ] Domain функция `calculateRack()` реализована
-- [ ] RackEntity создан
-- [ ] RackRepository реализован
-- [ ] CalculateRackUseCase готов
-- [ ] RackController создан
-- [ ] Routes зарегистрированы
-- [ ] Prisma schema обновлена
-- [ ] Миграции выполнены
-- [ ] Unit-тесты написаны (80%+ coverage)
-- [ ] Integration-тесты написаны
+- [ ] Value Objects створені і протестовані
+- [ ] Domain функція `calculateRack()` реалізована
+- [ ] RackEntity створений
+- [ ] RackRepository реалізований
+- [ ] CalculateRackUseCase готовий
+- [ ] RackController створений
+- [ ] Routes зареєстровані
+- [ ] Prisma schema оновлена
+- [ ] Міграції виконані
+- [ ] Unit-тести написані (80%+ coverage)
+- [ ] Integration-тести написані
 
-### Frontend
+### Фронтенд
 
-- [ ] TypeScript типы созданы
-- [ ] rack.service.ts реализован
-- [ ] RackCalculatorPage создан
-- [ ] RackListPage создан
-- [ ] RackDetailPage создан
-- [ ] Роутинг настроен
-- [ ] Sidebar обновлён
-- [ ] Форма валидируется Zod
-- [ ] Результаты отображаются
-- [ ] Сохранение работает
+- [ ] TypeScript типи створені
+- [ ] rack.service.ts реалізований
+- [ ] RackCalculatorPage створений
+- [ ] RackListPage створений
+- [ ] RackDetailPage створений
+- [ ] Роутинг налаштований
+- [ ] Sidebar оновлений
+- [ ] Форма валідується Zod
+- [ ] Результати відображаються
+- [ ] Збереження працює
 
-### Документация
+### Документація
 
-- [ ] API документация обновлена
-- [ ] README обновлён
-- [ ] STATUS.md обновлён
-
----
-
-## 📊 Оценка времени
-
-| Этап | Задачи | Оценка |
-|------|--------|--------|
-| **1. Domain Layer** | VO + calculateRack + Entity | 2-3 дня |
-| **2. Infrastructure** | Repository + Prisma | 1-2 дня |
-| **3. Application** | Use-Case | 1 день |
-| **4. Interfaces** | Controller + Routes | 1 день |
-| **5. Frontend Types** | Types + Service | 0.5 дня |
-| **6. Frontend UI** | Формы + Страницы | 1-2 дня |
-| **7. Тесты** | Unit + Integration | 1 день |
-| **Итого** | | **7-11 дней** |
+- [ ] API документація оновлена
+- [ ] README оновлений
+- [ ] STATUS.md оновлений
 
 ---
 
-## 🎯 Критерии приёмки
+## 📊 Оцінка часу
 
-1. ✅ Пользователь может ввести параметры стеллажа
-2. ✅ Система рассчитывает компоненты по алгоритму
-3. ✅ Отображаются 3 типа цен (базовая, без изоляторов, нулевая)
-4. ✅ Результаты сохраняются в БД
-5. ✅ Пользователь видит историю своих расчётов
-6. ✅ Тесты покрывают критичную логику
-7. ✅ Документация актуальна
+| Етап                  | Завдання                    | Оцінка        |
+| --------------------- | --------------------------- | ------------- |
+| **1. Domain Layer**   | VO + calculateRack + Entity | 2-3 дні       |
+| **2. Infrastructure** | Repository + Prisma         | 1-2 дні       |
+| **3. Application**    | Use-Case                    | 1 день        |
+| **4. Interfaces**     | Controller + Routes         | 1 день        |
+| **5. Frontend Types** | Types + Service             | 0.5 дня       |
+| **6. Frontend UI**    | Форми + Сторінки            | 1-2 дні       |
+| **7. Тести**          | Unit + Integration          | 1 день        |
+| **Разом**             |                             | **7-11 днів** |
 
 ---
 
-## 🔗 Ссылки
+## 🎯 Критерії приймання
 
-- [Алгоритм расчёта](./RACK_ALGORITHM_BUSINESS.md)
-- [Статус проекта](./STATUS.md)
-- [План разработки](./PLAN.md)
+1. ✅ Користувач може ввести параметри стелажа
+2. ✅ Система розраховує компоненти за алгоритмом
+3. ✅ Відображаються 3 типи цін (базова, без ізоляторів, нульова)
+4. ✅ Результати зберігаються в БД
+5. ✅ Користувач бачить історію своїх розрахунків
+6. ✅ Тести покривають критичну логіку
+7. ✅ Документація актуальна
+
+---
+
+## 🔗 Посилання
+
+- [Алгоритм розрахунку](./RACK_ALGORITHM_BUSINESS.md)
+- [Статус проєкту](./STATUS.md)
+- [План розробки](./PLAN.md)

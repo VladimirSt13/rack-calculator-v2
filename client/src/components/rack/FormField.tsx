@@ -1,29 +1,27 @@
-import { ReactNode } from 'react';
-import { Label } from '@/components/ui/label';
+import { ReactNode } from 'react'
+import { Label } from '@/components/ui/label'
 
 interface FormFieldProps {
-  label: string;
-  labelId: string;
-  children: ReactNode;
-  labelWidth?: string;
+  label: string
+  labelId: string
+  children: ReactNode
+  labelWidth?: string
 }
 
 /**
- * Универсальный компонент поля формы
- * Layout: label (слева) | input/select (справа)
+ * Універсальний компонент поля форми
+ * Layout: label (зліва) ... input/select (справа)
  */
-export function FormField({
-  label,
-  labelId,
-  children,
-  labelWidth = '100px',
-}: FormFieldProps) {
+export function FormField({ label, labelId, children, labelWidth = '100px' }: FormFieldProps) {
   return (
-    <div className={`grid grid-cols-[${labelWidth}_1fr] items-center gap-2`}>
-      <Label htmlFor={labelId} className="justify-self-start">
+    <div className="flex items-baseline gap-1">
+      <Label htmlFor={labelId} className="shrink-0 text-right">
         {label}
       </Label>
-      {children}
+      <div className="border-muted-foreground flex-1 border-b border-dotted" />
+      <div className="shrink-0" style={{ width: labelWidth, minWidth: labelWidth }}>
+        {children}
+      </div>
     </div>
-  );
+  )
 }

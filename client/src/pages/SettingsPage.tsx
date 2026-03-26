@@ -6,24 +6,20 @@ export function SettingsPage() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Настройки</h1>
-          <p className="text-muted-foreground">
-            Настройки системы и пользователя
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Налаштування</h1>
+          <p className="text-muted-foreground">Налаштування системи та користувача</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>В разработке</CardTitle>
+            <CardTitle>В розробці</CardTitle>
             <CardDescription>
-              Страница настроек будет доступна в следующем обновлении
+              Сторінка налаштувань буде доступна в наступному оновленні
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex h-32 items-center justify-center">
-              <p className="text-muted-foreground">
-                ⚙️ Страница в разработке...
-              </p>
+              <p className="text-muted-foreground">⚙️ Сторінка в розробці...</p>
             </div>
           </CardContent>
         </Card>

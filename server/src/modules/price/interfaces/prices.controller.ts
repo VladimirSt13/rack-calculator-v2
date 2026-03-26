@@ -78,13 +78,13 @@ export const createPricesRouter = () => {
         })
       }
 
-      // Extract available options from price data
+      // Витяг доступних опцій з даних прайсу
       // supports structure: { "215": { edge: PriceComponent, intermediate: PriceComponent } }
       const supports = Object.keys(price.data.supports || {}).map((key) => {
         const code = key.split(' ')[0] // e.g., "430 кр" -> "430"
         return {
           value: code,
-          label: code, // Только код для дропдауна
+          label: code, // Тільки код для дропдауна
           stepped: code.toUpperCase().includes('C'),
         }
       })
@@ -93,7 +93,7 @@ export const createPricesRouter = () => {
         const span = price.data.spans[key]
         return {
           value: span.code || key,
-          label: span.code || key, // Только длина для дропдауна
+          label: span.code || key, // Тільки довжина для дропдауна
           length: parseInt(span.code || key, 10),
         }
       })
@@ -102,7 +102,7 @@ export const createPricesRouter = () => {
         const stand = price.data.vertical_supports[key]
         return {
           value: stand.code || key,
-          label: stand.code || key, // Только код для дропдауна
+          label: stand.code || key, // Тільки код для дропдауна
         }
       })
 

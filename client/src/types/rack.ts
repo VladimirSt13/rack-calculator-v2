@@ -1,102 +1,152 @@
 /**
- * Типы для модуля Rack Calculator
+ * Типи для модуля Rack Calculator
  */
 
 export interface SpanInput {
-  type: string;      // тип пролёта (например, '600', '750')
-  quantity: number;  // количество пролётов этого типа
+  type: string // тип прольоту (наприклад, '600', '750')
+  quantity: number // кількість прольотів цього типу
 }
 
 /**
- * Конфигурация стеллажа (входные параметры)
+ * Конфігурація стелажа (вхідні параметри)
  */
 export interface RackConfiguration {
-  levels: number;           // количество ярусов (1-3)
-  rows: number;             // количество рядов (1-4)
-  beamsPerRow: number;      // балок на ряд
-  supportType: string;      // тип опор (например, 'C80', '430', '430C')
-  verticalStandType?: string; // тип верт. стоек (для 2+ этажей)
-  spans: SpanInput[];       // пролёты
+  levels: number // кількість ярусів (1-3)
+  rows: number // кількість рядів (1-4)
+  beamsPerRow: number // балок на ряд
+  supportType: string // тип опор (наприклад, 'C80', '430', '430C')
+  verticalStandType?: string // тип верт. стійок (для 2+ поверхів)
+  spans: SpanInput[] // прольоти
 }
 
 /**
- * Компоненты стеллажа (результат расчёта)
+ * Компоненти стелажа (результат розрахунку)
  */
+export interface SupportItem {
+  type: 'edge' | 'intermediate'
+  quantity: number
+  price: number // ціна за одиницю
+  total: number // загальна вартість (quantity × price)
+}
+
+export interface BeamItem {
+  type: string // напр. '600', '750'
+  length: number // довжина в мм
+  quantity: number
+  price: number // ціна за одиницю
+  total: number // загальна вартість
+}
+
+export interface VerticalStandItem {
+  type: string // напр. '1190', '632'
+  quantity: number
+  price: number // ціна за одиницю
+  total: number // загальна вартість
+}
+
+export interface BraceItem {
+  quantity: number
+  price: number // ціна за одиницю
+  total: number // загальна вартість
+}
+
+export interface IsolatorItem {
+  quantity: number
+  price: number // ціна за одиницю
+  total: number // загальна вартість
+}
+
 export interface RackComponents {
-  supports: {
-    type: 'edge' | 'intermediate';
-    quantity: number;
-  }[];
-  beams: {
-    type: string;
-    quantity: number;
-  }[];
-  verticalStands?: {
-    type: string;
-    quantity: number;
-  };
-  braces?: {
-    quantity: number;
-  };
-  isolators?: {
-    quantity: number;
-  };
+  supports: SupportItem[]
+  beams: BeamItem[]
+  verticalStands?: VerticalStandItem
+  braces?: BraceItem
+  isolators?: IsolatorItem
 }
 
 /**
- * Ценообразование
+ * Ціноутворення
  */
 export interface RackPricing {
-  base: number;           // базовая цена
-  withoutIsolators: number; // цена без изоляторов
-  zero: number;           // нулевая цена (retail)
+  base: number // базова ціна (сума всіх компонентів)
+  withoutIsolators: number // ціна без ізоляторів
+  zero: number // нульова ціна (base × 1.44)
 }
 
 /**
- * Результат расчёта стеллажа
+ * Результат розрахунку стелажа
  */
 export interface RackResult {
-  name: string;
-  description: string;
-  configuration: RackConfiguration;
-  components: RackComponents;
-  totalLength: number;
-  pricing: RackPricing;
-  rackSetId?: string;
+  name: string
+  description: string
+  configuration: RackConfiguration
+  components: RackComponents
+  totalLength: number
+  pricing: RackPricing
+  rackSetId?: string
+  revisionId?: string
 }
 
 /**
- * Стеллаж из БД
+ * Стелаж з БД
  */
 export interface RackSet {
-  id: string;
-  name: string;
-  description: string;
-  configuration: RackConfiguration;
-  components: RackComponents;
-  totalLength: number;
-  pricing?: RackPricing;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  name: string
+  description: string
+  configuration: RackConfiguration
+  components: RackComponents
+  totalLength: number
+  pricing?: RackPricing
+  createdAt: string
+  updatedAt: string
 }
 
 /**
- * Фильтры для списка стеллажей
+ * Фільтри для списку стелажів
  */
 export interface RackFilters {
-  search?: string;
-  levels?: number;
-  rows?: number;
-  dateFrom?: string;
-  dateTo?: string;
+  search?: string
+  levels?: number
+  rows?: number
+  dateFrom?: string
+  dateTo?: string
 }
 
 /**
- * Ревизия стеллажа
+ * Ревізія стелажа
  */
 export interface RackRevision {
-  id: string;
-  version: number;
-  data: object;
-  createdAt: string;
+  id: string
+  version: number
+  data: object
+  createdAt: string
+}
+
+/**
+ * Елемент комплекту стелажів
+ */
+export interface RackSetItem {
+  rackId: string
+  name: string
+  quantity: number
+  result: RackResult
+  configuration: RackConfiguration
+}
+
+/**
+ * Стан комплекту стелажів
+ */
+export interface RackSetState {
+  items: RackSetItem[]
+  totalZero: number
+  totalWithoutIsolators: number
+}
+
+/**
+ * Форма збереження комплекту
+ */
+export interface SaveSetFormData {
+  objectName: string // назва об'єкту (обов'язкове)
+  note?: string // примітка (опціонально)
 }

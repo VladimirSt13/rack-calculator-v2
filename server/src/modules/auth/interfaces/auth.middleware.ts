@@ -41,7 +41,7 @@ export const optionalAuthMiddleware = (req: AuthRequest, _res: Response, next: N
     req.user = payload
     next()
   } catch {
-    // Токен недействителен, но это не ошибка для опциональной аутентификации
+    // Токен недійсний, але це не помилка для опціональної аутентифікації
     next()
   }
 }

@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -22,7 +17,7 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Детали лога</DialogTitle>
+          <DialogTitle>Деталі логу</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh]">
@@ -40,21 +35,19 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
             {/* Main Info */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted-foreground">Дата/Время</p>
-                <p className="font-mono">
-                  {new Date(log.createdAt).toLocaleString('ru-RU')}
-                </p>
+                <p className="text-muted-foreground">Дата/Час</p>
+                <p className="font-mono">{new Date(log.createdAt).toLocaleString('ru-RU')}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Ресурс</p>
                 <p className="font-medium">{log.resource}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">ID ресурса</p>
+                <p className="text-muted-foreground">ID ресурсу</p>
                 <p className="font-mono">{log.resourceId || '—'}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">IP адрес</p>
+                <p className="text-muted-foreground">IP адреса</p>
                 <p className="font-mono">{log.ipAddress || '—'}</p>
               </div>
             </div>
@@ -63,7 +56,7 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
 
             {/* User Info */}
             <div>
-              <p className="text-muted-foreground mb-2">Пользователь</p>
+              <p className="text-muted-foreground mb-2">Користувач</p>
               {log.user ? (
                 <div className="space-y-1 text-sm">
                   <p>
@@ -83,7 +76,7 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
 
             {/* Message */}
             <div>
-              <p className="text-muted-foreground mb-2">Сообщение</p>
+              <p className="text-muted-foreground mb-2">Повідомлення</p>
               <p className="text-sm">{log.message || '—'}</p>
             </div>
 
@@ -92,8 +85,8 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
             {/* Metadata */}
             {log.metadata && Object.keys(log.metadata).length > 0 && (
               <div>
-                <p className="text-muted-foreground mb-2">Метаданные</p>
-                <pre className="rounded-lg bg-muted p-3 text-xs overflow-auto">
+                <p className="text-muted-foreground mb-2">Метадані</p>
+                <pre className="bg-muted overflow-auto rounded-lg p-3 text-xs">
                   {JSON.stringify(log.metadata, null, 2)}
                 </pre>
               </div>
@@ -103,9 +96,7 @@ export function AuditLogDetail({ log, open, onOpenChange }: AuditLogDetailProps)
             {log.userAgent && (
               <div>
                 <p className="text-muted-foreground mb-2">User Agent</p>
-                <p className="text-xs font-mono text-muted-foreground break-all">
-                  {log.userAgent}
-                </p>
+                <p className="text-muted-foreground font-mono text-xs break-all">{log.userAgent}</p>
               </div>
             )}
           </div>

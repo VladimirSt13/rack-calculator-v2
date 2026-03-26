@@ -6,7 +6,7 @@ import type { RackPricing } from '../../domain/entities/rack.entity'
 import type { RackResult } from '../../domain/calculateRack'
 
 /**
- * Входная схема для валидации
+ * Вхідна схема для валідації
  */
 const calculateRackSchema = z.object({
   levels: z.number().int().min(1).max(10),
@@ -25,7 +25,7 @@ const calculateRackSchema = z.object({
 export type CalculateRackInput = z.infer<typeof calculateRackSchema>
 
 /**
- * Результат расчёта
+ * Результат розрахунку
  */
 export interface CalculateRackResult {
   name: string
@@ -38,7 +38,7 @@ export interface CalculateRackResult {
 }
 
 /**
- * Use-Case: Расчёт стеллажа с сохранением результата
+ * Use-Case: Розрахунок стелажа зі збереженням результату
  */
 export class CalculateRackUseCase {
   constructor(
@@ -47,23 +47,29 @@ export class CalculateRackUseCase {
   ) {}
 
   async execute(input: CalculateRackInput, userId?: string): Promise<CalculateRackResult> {
-    // 1. Валидация входных данных
+    // 1. Валідація вхідних даних
     const validatedInput = calculateRackSchema.parse(input)
 
-    // 2. Domain-расчёт компонентов
+    // 2. Domain-розрахунок компонентів
     const domainResult = calculateRack(validatedInput)
 
-    // 3. Расчёт стоимости через PriceService
-    const pricing = await this.calculatePricing(domainResult.components)
+    // 3. Розрахунок цін компонентів
+    const componentsWithPrices = await this.calculateComponentPrices(
+      domainResult.components,
+      validatedInput
+    )
 
-    // 4. Сохранение в БД (если пользователь авторизован)
+    // 4. Розрахунок вартості через PriceService
+    const pricing = await this.calculatePricing(domainResult.components, validatedInput)
+
+    // 5. Збереження в БД (якщо користувач авторизований)
     let rackSetId: string | undefined
     if (userId) {
       const rackEntity = await this.rackRepository.create({
         name: domainResult.name,
         description: domainResult.description,
         configuration: validatedInput,
-        components: domainResult.components,
+        components: componentsWithPrices, // Зберігаємо з цінами
         totalLength: domainResult.totalLength,
         pricing,
         userId,
@@ -71,22 +77,22 @@ export class CalculateRackUseCase {
 
       rackSetId = rackEntity.id
 
-      // Создание первой ревизии
+      // Створення першої ревізії
       if (rackSetId) {
         await this.rackRepository.createRevision(rackSetId, 1, {
           configuration: validatedInput,
-          components: domainResult.components,
+          components: componentsWithPrices,
           pricing,
         })
       }
     }
 
-    // 5. Возврат результата
+    // 6. Повернення результату
     return {
       name: domainResult.name,
       description: domainResult.description,
       configuration: validatedInput,
-      components: domainResult.components,
+      components: componentsWithPrices, // Повертаємо з цінами
       totalLength: domainResult.totalLength,
       pricing,
       rackSetId,
@@ -94,16 +100,21 @@ export class CalculateRackUseCase {
   }
 
   /**
-   * Расчёт стоимости на основе компонентов
+   * Розрахунок вартості на основі компонентів
    */
-  private async calculatePricing(components: RackResult['components']): Promise<RackPricing> {
-    // Загрузка прайса
+  private async calculatePricing(
+    components: RackResult['components'],
+    configuration?: CalculateRackInput
+  ): Promise<RackPricing> {
+    // Завантаження прайсу
     await this.priceService.loadCurrentPrice()
 
-    // Преобразование компонентов в формат PriceService
-    const priceComponents = this.convertToPriceComponents(components)
+    // Перетворення компонентів у формат PriceService
+    const priceComponents = configuration
+      ? this.convertToPriceComponents(components, configuration)
+      : this.convertToPriceComponentsOld(components)
 
-    // Расчёт стоимости
+    // Розрахунок вартості
     const { total } = this.priceService.calculateFull(priceComponents, 'ADMIN')
 
     return {
@@ -114,14 +125,114 @@ export class CalculateRackUseCase {
   }
 
   /**
-   * Преобразование компонентов в формат PriceService
+   * Перетворення компонентів у формат PriceService (стара версія без configuration)
    */
-  private convertToPriceComponents(
+  private convertToPriceComponentsOld(
     components: RackResult['components']
   ): Parameters<PriceService['calculateRackCost']>[0] {
     const result: Parameters<PriceService['calculateRackCost']>[0] = {}
 
-    // Опоры
+    if (components.supports && components.supports.length > 0) {
+      const edge = components.supports.find((s) => s.type === 'edge')
+      const intermediate = components.supports.find((s) => s.type === 'intermediate')
+
+      result.supports = {
+        edge: { quantity: edge?.quantity || 0, type: 'C80' },
+        intermediate: { quantity: intermediate?.quantity || 0, type: 'C80' },
+      }
+    }
+
+    if (components.beams && components.beams.length > 0) {
+      result.beams = components.beams.map((beam) => ({
+        length: parseInt(beam.type, 10),
+        quantity: beam.quantity,
+      }))
+    }
+
+    if (components.verticalStands) {
+      result.uprights = {
+        quantity: components.verticalStands.quantity,
+        type: components.verticalStands.type,
+      }
+    }
+
+    if (components.braces) {
+      result.braces = { quantity: components.braces.quantity }
+    }
+
+    if (components.isolators) {
+      result.isolators = { quantity: components.isolators.quantity }
+    }
+
+    return result
+  }
+
+  /**
+   * Розрахунок цін компонентів
+   */
+  private async calculateComponentPrices(
+    components: RackResult['components'],
+    configuration: CalculateRackInput
+  ): Promise<RackResult['components']> {
+    // Завантаження прайсу
+    await this.priceService.loadCurrentPrice()
+
+    // Отримання цін через PriceService
+    const rackPrices = this.priceService.calculateRackCost(
+      this.convertToPriceComponents(components, configuration)
+    )
+
+    // Повертаємо компоненти з цінами
+    return {
+      supports:
+        rackPrices.supports?.map((s) => ({
+          type: s.name.includes('крайня') ? 'edge' : 'intermediate',
+          quantity: s.amount,
+          price: s.price,
+          total: s.total,
+        })) || [],
+      beams:
+        rackPrices.beams?.map((b) => ({
+          type: b.name.replace('Балка ', '').replace(' мм', ''),
+          quantity: b.amount,
+          price: b.price,
+          total: b.total,
+        })) || [],
+      verticalStands: rackPrices.uprights
+        ? {
+            type: rackPrices.uprights[0]?.name.replace('Вертикальна стійка ', '') || 'unknown',
+            quantity: rackPrices.uprights[0].amount,
+            price: rackPrices.uprights[0].price,
+            total: rackPrices.uprights[0].total,
+          }
+        : undefined,
+      braces: rackPrices.braces
+        ? {
+            quantity: rackPrices.braces[0].amount,
+            price: rackPrices.braces[0].price,
+            total: rackPrices.braces[0].total,
+          }
+        : undefined,
+      isolators: rackPrices.isolators
+        ? {
+            quantity: rackPrices.isolators[0].amount,
+            price: rackPrices.isolators[0].price,
+            total: rackPrices.isolators[0].total,
+          }
+        : undefined,
+    }
+  }
+
+  /**
+   * Перетворення компонентів у формат PriceService
+   */
+  private convertToPriceComponents(
+    components: RackResult['components'],
+    configuration: CalculateRackInput
+  ): Parameters<PriceService['calculateRackCost']>[0] {
+    const result: Parameters<PriceService['calculateRackCost']>[0] = {}
+
+    // Опори - використовуємо supportType з configuration
     if (components.supports && components.supports.length > 0) {
       const edge = components.supports.find((s) => s.type === 'edge')
       const intermediate = components.supports.find((s) => s.type === 'intermediate')
@@ -129,11 +240,11 @@ export class CalculateRackUseCase {
       result.supports = {
         edge: {
           quantity: edge?.quantity || 0,
-          type: 'unknown',
+          type: configuration.supportType,
         },
         intermediate: {
           quantity: intermediate?.quantity || 0,
-          type: 'unknown',
+          type: configuration.supportType,
         },
       }
     }
@@ -146,7 +257,7 @@ export class CalculateRackUseCase {
       }))
     }
 
-    // Вертикальные стойки
+    // Вертикальні стійки
     if (components.verticalStands) {
       result.uprights = {
         quantity: components.verticalStands.quantity,
@@ -154,14 +265,14 @@ export class CalculateRackUseCase {
       }
     }
 
-    // Раскосы
+    // Розкоси
     if (components.braces) {
       result.braces = {
         quantity: components.braces.quantity,
       }
     }
 
-    // Изоляторы
+    // Ізолятори
     if (components.isolators) {
       result.isolators = {
         quantity: components.isolators.quantity,

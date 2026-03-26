@@ -1,15 +1,15 @@
 Rack Calculator — Technical Summary (v4, Rebuild)
-📌 Цель проекта
+📌 Мета проєкту
 
-Создать онлайн-сервис для расчёта стеллажей и батарей с возможностью масштабирования под новые фичи.
-Фокус: бизнес-логика в центре, тестируемость, модульность, контроль зависимостей, готовность к расширению.
+Створити онлайн-сервіс для розрахунку стелажів і батарей з можливістю масштабування під нові фічі.
+Фокус: бізнес-логіка в центрі, тестованість, модульність, контроль залежностей, готовність до розширення.
 
-🧠 Основной принцип
+🧠 Основний принцип
 
-Бизнес-логика — ядро системы. API, база данных и UI — инфраструктура.
-Каждый use-case — одно действие. Domain не зависит от фреймворков и внешних сервисов.
+Бізнес-логіка — ядро системи. API, база даних і UI — інфраструктура.
+Кожен use-case — одна дія. Domain не залежить від фреймворків і зовнішніх сервісів.
 
-1. Стек технологий
+1. Стек технологій
 
 Frontend:
 
@@ -21,82 +21,81 @@ React Router
 
 TanStack Query (data fetching)
 
-Zustand (UI и локальное состояние)
+Zustand (UI і локальний стан)
 
 TailwindCSS + Radix UI
 
-React Hook Form + Zod (валидация форм)
+React Hook Form + Zod (валідація форм)
 
 Backend:
 
 Node.js + TypeScript
 
-Express или Fastify
+Express або Fastify
 
 MongoDB (Mongoose / Prisma)
 
-Прочее:
+Інше:
 
 ESLint + Prettier
 
-Vitest (unit и integration тесты)
+Vitest (unit і integration тести)
 
-2. Принципы разработки
+2. Принципи розробки
 
-Use Case Driven — 1 действие = 1 use-case
+Use Case Driven — 1 дія = 1 use-case
 
 Separation of Concerns — domain / application / infrastructure / interfaces
 
-No Fat Services — нет god-object сервисов
+No Fat Services — немає god-object сервісів
 
-Explicit Dependencies — зависимости передаются явно
+Explicit Dependencies — залежності передаються явно
 
-Domain First — логика вне фреймворков
+Domain First — логіка поза фреймворками
 
-Garbage-Free Shared — без общей свалки модулей
+Garbage-Free Shared — без загальної свалки модулів
 
-Composition over Inheritance — предпочитаем композицию
+Composition over Inheritance — надаємо перевагу композиції
 
-3. Архитектура
+3. Архітектура
 
 Тип: Modular Monolith + Clean Architecture
 
-Слои
-domain/        # чистая бизнес-логика (без зависимостей)
-application/   # use-cases
+Шари
+domain/ # чиста бізнес-логіка (без залежностей)
+application/ # use-cases
 infrastructure/# DB, API, email, JWT
-interfaces/    # controllers / routes
-Поток данных
+interfaces/ # controllers / routes
+Потік даних
 HTTP → Controller → UseCase → Domain → Repository → DB
 
-Domain не знает про DB / Express
+Domain не знає про DB / Express
 
-Use-case оркестрирует действия
+Use-case оркеструє дії
 
-Repository отвечает только за доступ к данным
+Repository відповідає тільки за доступ до даних
 
-Структура модулей
+Структура модулів
 server/
-  src/
-    modules/
-      rack/
-        domain/
-          rack.entity.ts
-          calculateRack.ts
-        application/
-          calculateRack.use-case.ts
-        infrastructure/
-          rack.repository.ts
-        interfaces/
-          rack.controller.ts
-      battery/
-        domain/
-          calculateBatteryFit.ts
-        application/
-          calculateBattery.use-case.ts
-      auth/
-      users/
-4. Основной функционал (план)
+src/
+modules/
+rack/
+domain/
+rack.entity.ts
+calculateRack.ts
+application/
+calculateRack.use-case.ts
+infrastructure/
+rack.repository.ts
+interfaces/
+rack.controller.ts
+battery/
+domain/
+calculateBatteryFit.ts
+application/
+calculateBattery.use-case.ts
+auth/
+users/ 4. Основний функціонал (план)
 
 Auth (JWT + Refresh)
 
@@ -108,9 +107,9 @@ Rack calculation
 
 Battery calculation
 
-Rack sets (сохранение конфигураций)
+Rack sets (збереження конфігурацій)
 
-Revisions (версии)
+Revisions (версії)
 
 Soft delete / restore
 
@@ -122,127 +121,127 @@ Price management
 
 Filtering + pagination
 
-5. Алгоритмы фич (структурно)
-Авторизация
+5. Алгоритми фіч (структурно)
+   Авторизація
 
 Use-case: loginUser
 
-Найти пользователя
+Знайти користувача
 
-Проверить пароль
+Перевірити пароль
 
-Сгенерировать access + refresh token
+Згенерувати access + refresh token
 
-Сохранить refresh token
+Зберегти refresh token
 
-Вернуть токены
+Повернути токени
 
-Расчёт стелажа
+Розрахунок стелажа
 
 Domain: calculateRack()
 
-Принять параметры
+Прийняти параметри
 
-Подобрать конфигурацию
+Підібрати конфігурацію
 
-Рассчитать компоненты и стоимость
+Розрахувати компоненти і вартість
 
-Вернуть результат
+Повернути результат
 
 Use-case: calculateRack
 
-Валидирует вход
+Валідує вхід
 
-Вызывает domain функцию
+Викликає domain функцію
 
-Возвращает результат
+Повертає результат
 
-Подбор батарей
+Підбір батарей
 
 Domain: calculateBatteryFit()
 
-Рассчитать требуемую длину
+Розрахувати потрібну довжину
 
-Отфильтровать конфигурации
+Відфільтрувати конфігурації
 
-Найти оптимальные варианты
+Знайти оптимальні варіанти
 
-Вернуть список
+Повернути список
 
-Сохранение комплекта
+Збереження комплекту
 
 Use-case: createRackSet
 
-Принять данные
+Прийняти дані
 
-Создать RackSet и Revision
+Створити RackSet і Revision
 
-Сохранить
+Зберегти
 
-Вернуть результат
+Повернути результат
 
 RBAC
 
 Policy layer: can(user, action, resource)
 
-Получить permissions
+Отримати permissions
 
-Проверить правило
+Перевірити правило
 
-Вернуть true/false
+Повернути true/false
 
 Audit
 
 Use-case: logAction
 
-Принять контекст
+Прийняти контекст
 
-Сохранить событие
+Зберегти подію
 
-(опционально) асинхронная обработка
+(опціонально) асинхронна обробка
 
 Export
 
 Use-case: exportRackSet
 
-Получить данные
+Отримати дані
 
-Сформировать структуру
+Сформувати структуру
 
-Сгенерировать файл
+Згенерувати файл
 
-Вернуть stream
+Повернути stream
 
-6. Ключевые изменения относительно старой версии
+6. Ключові зміни відносно старої версії
 
-Убрано:
+Прибрано:
 
 BaseRepository
 
-Жирные сервисы
+Жирні сервіси
 
-Shared как «свалка»
+Shared як «свалка»
 
-Логика в контроллерах
+Логіка в контролерах
 
-Добавлено:
+Додано:
 
-Domain слой (ядро)
+Domain шар (ядро)
 
 Use-cases
 
 Policy layer (RBAC)
 
-Явные границы модулей
+Явні межі модулів
 
-Улучшено:
+Покращено:
 
-Тестируемость (domain и use-case можно тестировать отдельно)
+Тестованість (domain і use-case можна тестувати окремо)
 
-Масштабируемость
+Масштабованість
 
-Читаемость и контроль зависимостей
+Читабельність і контроль залежностей
 
-7. Главный принцип
+7. Головний принцип
 
-👉 Бизнес-логика — это ядро системы, а не побочный эффект Express + Mongo
+👉 Бізнес-логіка — це ядро системи, а не побічний ефект Express + Mongo

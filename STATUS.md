@@ -1,49 +1,49 @@
-# 📊 Статус проекта Rack Calculator V2
+# 📊 Статус проєкту Rack Calculator V2
 
-> **Дата обновления:** 23 марта 2026 г.
-> **Ветка:** `main` ✅
-> **Последний коммит:** 8db744c — Merge pull request #7 (feature/tech-debts-fix)
-
----
-
-## 🎯 Общее состояние
-
-| Компонент        | Статус                          | Готовность |
-| ---------------- | ------------------------------- | ---------- |
-| **Backend**      | 🟢 Готово (Sprint 1-4.7)        | ~60%       |
-| **Frontend**     | 🟢 Audit UI (Sprint 4.5)        | ~35%       |
-| **База данных**  | 🟢 Настроена (Prisma + MongoDB) | ✅         |
-| **Тесты**        | 🟡 Jest настроен                | 5%         |
-| **Документация** | 🟢 Актуальна                    | ✅         |
+> **Дата оновлення:** 23 березня 2026 р.
+> **Гілка:** `main` ✅
+> **Останній коміт:** 8db744c — Merge pull request #7 (feature/tech-debts-fix)
 
 ---
 
-## 📅 Спринты
+## 🎯 Загальний стан
 
-| Спринт         | Название                            | Статус      | Completion |
-| -------------- | ----------------------------------- | ----------- | ---------- |
-| **Sprint 0**   | Подготовка проекта                  | ✅ Завершён | 100%       |
-| **Sprint 1**   | User Management & Auth              | ✅ Завершён | 100%       |
-| **Sprint 2**   | Frontend Auth Pages                 | ✅ Завершён | 100%       |
-| **Sprint 3**   | Roles & RBAC                        | ✅ Завершён | 100%       |
-| **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершён | 100%       |
-| **Sprint 4**   | Audit / Logging                     | ✅ Завершён | 100%       |
-| **Sprint 4.5** | Audit Frontend                      | ✅ Завершён | 100%       |
-| **Sprint 4.7** | Email Verification                  | ✅ Завершён | 100%       |
-| **Sprint 5**   | Core Business Module: Rack          | 🔴 Не начат | 0%         |
-| **Sprint 6**   | Battery Module                      | ⏳ Не начат | 0%         |
-| **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не начат | 0%         |
-| **Sprint 8**   | Завершение и деплой                 | ⏳ Не начат | 0%         |
+| Компонент        | Статус                            | Готовність |
+| ---------------- | --------------------------------- | ---------- |
+| **Backend**      | 🟢 Готово (Sprint 1-4.7)          | ~60%       |
+| **Frontend**     | 🟢 Audit UI (Sprint 4.5)          | ~35%       |
+| **База даних**   | 🟢 Налаштована (Prisma + MongoDB) | ✅         |
+| **Тести**        | 🟡 Jest налаштований              | 5%         |
+| **Документація** | 🟢 Актуальна                      | ✅         |
 
 ---
 
-## ✅ Выполненные задачи
+## 📅 Спринти
+
+| Спринт         | Назва                               | Статус          | Completion |
+| -------------- | ----------------------------------- | --------------- | ---------- |
+| **Sprint 0**   | Підготовка проєкту                  | ✅ Завершено    | 100%       |
+| **Sprint 1**   | User Management & Auth              | ✅ Завершено    | 100%       |
+| **Sprint 2**   | Frontend Auth Pages                 | ✅ Завершено    | 100%       |
+| **Sprint 3**   | Roles & RBAC                        | ✅ Завершено    | 100%       |
+| **Sprint 3.5** | Frontend Foundation: Дизайн-система | ✅ Завершено    | 100%       |
+| **Sprint 4**   | Audit / Logging                     | ✅ Завершено    | 100%       |
+| **Sprint 4.5** | Audit Frontend                      | ✅ Завершено    | 100%       |
+| **Sprint 4.7** | Email Verification                  | ✅ Завершено    | 100%       |
+| **Sprint 5**   | Core Business Module: Rack          | 🔴 Не розпочато | 0%         |
+| **Sprint 6**   | Battery Module                      | ⏳ Не розпочато | 0%         |
+| **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не розпочато | 0%         |
+| **Sprint 8**   | Завершення і деплой                 | ⏳ Не розпочато | 0%         |
+
+---
+
+## ✅ Виконані завдання
 
 ### Backend (Sprint 1)
 
-- [x] Инициализация Node.js + TypeScript проекта
+- [x] Ініціалізація Node.js + TypeScript проєкту
 - [x] Monorepo структура (client + server workspaces)
-- [x] Настройка ESLint, Prettier, Vitest
+- [x] Налаштування ESLint, Prettier, Vitest
 - [x] Prisma schema (MongoDB) — User, Role
 - [x] Модуль `users`:
   - [x] UserRepository (findById, update, setRefreshToken)
@@ -51,32 +51,32 @@
   - [x] Use-cases: RegisterUser, LoginUser, ResetPassword, VerifyEmail
   - [x] JwtService (accessToken, refreshToken)
   - [x] Auth middleware
-  - [x] Auth controller (все маршруты /api/auth/\*)
+  - [x] Auth controller (всі маршрути /api/auth/\*)
 - [x] Prisma singleton (prisma.client.ts)
-- [x] Конфигурация (ENV, DB, JWT, CORS)
+- [x] Конфігурація (ENV, DB, JWT, CORS)
 - [x] Server entry point + routes
 - [x] tsx для ES modules
 
 ### Frontend (Sprint 2)
 
-- [x] Настройка проекта (React + TypeScript + Vite)
+- [x] Налаштування проєкту (React + TypeScript + Vite)
 - [x] Структура папок (components, hooks, pages, services, stores, types, utils)
-- [x] Зависимости установлены (React, TanStack Query, Zustand, React Hook Form, Zod, Axios)
-- [x] API client с interceptors
+- [x] Залежності встановлені (React, TanStack Query, Zustand, React Hook Form, Zod, Axios)
+- [x] API client з interceptors
 - [x] Auth service (login, register, logout, getCurrentUser, resetPassword)
 - [x] Zustand auth store
-- [x] Валидация форм (Zod + React Hook Form)
-- [x] Страницы:
-  - [x] `/login` — Вход
-  - [x] `/register` — Регистрация
-  - [x] `/profile` — Профиль
+- [x] Валідація форм (Zod + React Hook Form)
+- [x] Сторінки:
+  - [x] `/login` — Вхід
+  - [x] `/register` — Реєстрація
+  - [x] `/profile` — Профіль
 - [x] React Router
-- [x] Стили для auth форм
+- [x] Стилі для auth форм
 
 ### DevOps
 
-- [x] `npm run dev` — запускает оба приложения одновременно
-- [x] concurrently установлен
+- [x] `npm run dev` — запускає обидва додатки одночасно
+- [x] concurrently встановлений
 
 ### Backend (Sprint 4)
 
@@ -87,34 +87,34 @@
   - [x] Use-cases: LogAuditAction, GetAuditLogs
   - [x] AuditController (GET /api/audit, /my, /:id)
   - [x] Audit middleware (auto-logging)
-- [x] Middleware `requireRole` для проверки ролей
-- [x] Интеграция с auth:
-  - [x] Логирование входа (успех/неудача/ошибка)
-  - [x] IP адрес, user agent
-  - [x] Метаданные (request/response)
+- [x] Middleware `requireRole` для перевірки ролей
+- [x] Інтеграція з auth:
+  - [x] Логування входу (успіх/невдача/помилка)
+  - [x] IP адреса, user agent
+  - [x] Метадані (request/response)
 
 ### Frontend (Sprint 3.5)
 
-- [x] Настройка дизайн-системы:
+- [x] Налаштування дизайн-системи:
   - [x] Tailwind CSS v4
-  - [x] shadcn/ui (16 компонентов)
+  - [x] shadcn/ui (16 компонентів)
   - [x] Storybook
   - [x] prettier-plugin-tailwindcss
-- [x] UI-компоненты:
+- [x] UI-компоненти:
   - [x] Button, Input, Label, Select, Checkbox, RadioGroup
   - [x] Card, Table, Dialog, DropdownMenu
   - [x] Sonner, Skeleton, Spinner, Avatar, Badge, ScrollArea, Separator
-- [x] Layout-компоненты:
-  - [x] Header (логотип, темы, уведомления, профиль)
-  - [x] Sidebar (навигация с разделами)
-  - [x] AppLayout (адаптивный)
+- [x] Layout-компоненти:
+  - [x] Header (логотип, теми, уведомления, профіль)
+  - [x] Sidebar (навігація з розділами)
+  - [x] AppLayout (адаптивний)
 - [x] Роутинг:
   - [x] ProtectedRoute
   - [x] GuestRoute
-- [x] Страницы:
+- [x] Сторінки:
   - [x] DashboardPage
-  - [x] LoginPage (обновлена)
-  - [x] RegisterPage (обновлена)
+  - [x] LoginPage (оновлена)
+  - [x] RegisterPage (оновлена)
 
 ### Frontend (Sprint 4.5)
 
@@ -124,112 +124,112 @@
 - [x] Services:
   - [x] audit.service.ts (getLogs, getMyLogs, getLogById)
 - [x] Components:
-  - [x] AuditLogFilters (фильтры по статусу, ресурсу, действию, датам)
-  - [x] AuditLogTable (таблица с badges)
-  - [x] AuditLogDetail (modal с деталями)
+  - [x] AuditLogFilters (фільтри по статусу, ресурсу, дії, датам)
+  - [x] AuditLogTable (таблиця з badges)
+  - [x] AuditLogDetail (modal з деталями)
 - [x] Pages:
   - [x] AuditPage (/admin/audit)
 - [x] Routes:
   - [x] /admin/audit (ADMIN only)
   - [x] Sidebar link updated
 
-### Документация
+### Документація
 
-- [x] RACK_ALGORITHM_BUSINESS.md — бизнес-алгоритм расчёта стеллажей
-- [x] PLAN.md — **объединённый план разработки** (server + client)
-- [x] summory.md — техническое резюме
-- [x] backend-sturcure.md — структура бэкенда
-- [x] STATUS.md — статус проекта
-
----
-
-## ⚠️ Технические долги
-
-| Проблема               | Приоритет  | Описание                                      |
-| ---------------------- | ---------- | --------------------------------------------- |
-| **Rack domain logic**  | 🔴 Высокий | Структура есть, алгоритм не реализован        |
-| **Отсутствие тестов**  | 🔴 Высокий | Unit и integration тесты не созданы           |
-| **Email verification** | 🟡 Средний | Frontend страницы verification/reset-password |
-| **Battery logic**      | 🟡 Средний | Модуль не начат                               |
+- [x] RACK_ALGORITHM_BUSINESS.md — бізнес-алгоритм розрахунку стелажів
+- [x] PLAN.md — **об'єднаний план розробки** (server + client)
+- [x] summory.md — технічне резюме
+- [x] backend-sturcure.md — структура бекенду
+- [x] STATUS.md — статус проєкту
 
 ---
 
-## 🚀 Следующие шаги
+## ⚠️ Технічні борги
 
-### Краткосрочные (1-2 недели)
+| Проблема               | Пріоритет   | Опис                                          |
+| ---------------------- | ----------- | --------------------------------------------- |
+| **Rack domain logic**  | 🔴 Високий  | Структура є, алгоритм не реалізований         |
+| **Відсутність тестів** | 🔴 Високий  | Unit і integration тести не створені          |
+| **Email verification** | 🟡 Середній | Frontend сторінки verification/reset-password |
+| **Battery logic**      | 🟡 Середній | Модуль не розпочатий                          |
 
-1. **Sprint 5: Rack Module (Backend)** — 🔴 ПРИОРИТЕТ
-   - Реализовать domain-функцию `calculateRack()` по алгоритму из `RACK_ALGORITHM_BUSINESS.md`
-   - Создать Value Objects (Size, Rows, Weight)
-   - Создать RackEntity
-   - Реализовать RackRepository
-   - Создать Use-case `calculateRackUseCase`
-   - Создать RackController + маршруты `/api/rack/calculate`
+---
+
+## 🚀 Наступні кроки
+
+### Короткострокові (1-2 тижні)
+
+1. **Sprint 5: Rack Module (Backend)** — 🔴 ПРІОРИТЕТ
+   - Реалізувати domain-функцію `calculateRack()` по алгоритму з `RACK_ALGORITHM_BUSINESS.md`
+   - Створити Value Objects (Size, Rows, Weight)
+   - Створити RackEntity
+   - Реалізувати RackRepository
+   - Створити Use-case `calculateRackUseCase`
+   - Створити RackController + маршрути `/api/rack/calculate`
 
 2. **Sprint 5: Rack Module (Frontend)**
-   - Страница калькулятора стеллажей `/rack/calculator`
-   - Форма ввода параметров
-   - Отображение результатов
-   - Сохранение конфигураций (RackSet)
+   - Сторінка калькулятора стелажів `/rack/calculator`
+   - Форма введення параметрів
+   - Відображення результатів
+   - Збереження конфігурацій (RackSet)
 
-### Среднесрочные (3-4 недели)
+### Середньострокові (3-4 тижні)
 
 3. **Sprint 6: Battery Module**
-   - Domain-логика подбора батарей
-   - UI для расчёта
+   - Domain-логіка підбору батарей
+   - UI для розрахунку
 
-4. **Тестирование**
-   - Покрыть unit-тестами use-cases (auth, rack, rbac, audit)
-   - Integration тесты для API endpoints
+4. **Тестування**
+   - Покрити unit-тестами use-cases (auth, rack, rbac, audit)
+   - Integration тести для API endpoints
 
 5. **Email Frontend**
-   - Страницы `/verify-email` и `/reset-password`
+   - Сторінки `/verify-email` і `/reset-password`
 
 ---
 
-## 📦 Структура модулей (реализовано / требуется)
+## 📦 Структура модулів (реалізовано / потрібно)
 
-### Backend модули
+### Backend модулі
 
-| Модуль      | Domain | Application | Infrastructure | Interfaces | Статус      |
-| ----------- | ------ | ----------- | -------------- | ---------- | ----------- |
-| **auth**    | —      | ✅          | ✅             | ✅         | ✅ Завершён |
-| **users**   | ✅     | —           | ✅             | —          | ✅ Завершён |
-| **roles**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершён |
-| **perms**   | ✅     | —           | ✅             | ✅         | ✅ Завершён |
-| **rack**    | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не начат |
-| **battery** | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не начат |
-| **audit**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершён |
-| **email**   | —      | ✅          | ✅             | ✅         | ✅ Завершён |
-| **price**   | —      | —           | ✅             | ✅         | ✅ Завершён |
+| Модуль      | Domain | Application | Infrastructure | Interfaces | Статус          |
+| ----------- | ------ | ----------- | -------------- | ---------- | --------------- |
+| **auth**    | —      | ✅          | ✅             | ✅         | ✅ Завершено    |
+| **users**   | ✅     | —           | ✅             | —          | ✅ Завершено    |
+| **roles**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
+| **perms**   | ✅     | —           | ✅             | ✅         | ✅ Завершено    |
+| **rack**    | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не розпочато |
+| **battery** | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не розпочато |
+| **audit**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
+| **email**   | —      | ✅          | ✅             | ✅         | ✅ Завершено    |
+| **price**   | —      | —           | ✅             | ✅         | ✅ Завершено    |
 
 ### Frontend структура
 
-| Компонент               | Статус            | Описание                            |
+| Компонент               | Статус            | Опис                                |
 | ----------------------- | ----------------- | ----------------------------------- |
-| **components/ui/**      | ✅ 16 компонентов | shadcn/ui компоненты                |
+| **components/ui/**      | ✅ 16 компонентів | shadcn/ui компоненти                |
 | **components/layout/**  | ✅                | Header, Sidebar, AppLayout          |
 | **components/routing/** | ✅                | ProtectedRoute, GuestRoute          |
-| **hooks/**              | 🔴 Пусто          | Кастомные хуки                      |
-| **pages/**              | ✅ 4 страницы     | Dashboard, Login, Register, Profile |
+| **hooks/**              | 🔴 Пусто          | Кастомні хуки                       |
+| **pages/**              | ✅ 4 сторінки     | Dashboard, Login, Register, Profile |
 | **services/**           | ✅ Auth           | API client, auth service            |
 | **stores/**             | ✅ Auth           | Zustand auth store                  |
-| **types/**              | 🔴 Пусто          | TypeScript типы                     |
-| **utils/**              | ✅ Validation     | Zod схемы                           |
+| **types/**              | 🔴 Пусто          | TypeScript типи                     |
+| **utils/**              | ✅ Validation     | Zod схеми                           |
 
 ---
 
-## 🛠️ Технологии
+## 🛠️ Технології
 
 ### Backend
 
 - Node.js + TypeScript
 - Express 5.x
 - Prisma 5.x (MongoDB)
-- Zod (валидация)
+- Zod (валідація)
 - JWT (jsonwebtoken)
 - mongodb (ObjectId)
-- Vitest (тесты)
+- Vitest (тести)
 - tsx (ES modules)
 
 ### Frontend
@@ -246,7 +246,7 @@
 
 ---
 
-## 📈 Метрики прогресса
+## 📈 Метрики прогресу
 
 ```
 Backend:  ████████████████░░░░░░ 60%
@@ -257,10 +257,10 @@ Docs:     ██████████████████████ 100
 
 ---
 
-## 🔗 Ресурсы
+## 🔗 Ресурси
 
-- **Репозиторий:** https://github.com/VladimirSt13/rack-calculator-v2
-- **План разработки:** [PLAN.md](./PLAN.md)
+- **Репозиторій:** https://github.com/VladimirSt13/rack-calculator-v2
+- **План розробки:** [PLAN.md](./PLAN.md)
 - **Алгоритм:** [RACK_ALGORITHM_BUSINESS.md](./RACK_ALGORITHM_BUSINESS.md)
-- **Структура бэкенда:** [backend-sturcure.md](./backend-sturcure.md)
-- **Техническое резюме:** [summory.md](./summory.md)
+- **Структура бекенду:** [backend-sturcure.md](./backend-sturcure.md)
+- **Технічне резюме:** [summory.md](./summory.md)

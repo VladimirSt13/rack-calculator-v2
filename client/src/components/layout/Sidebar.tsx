@@ -14,16 +14,16 @@ const mainMenu = [
     href: '/dashboard',
   },
   {
-    title: 'Стеллажи',
+    title: 'Стелажі',
     icon: Warehouse,
     href: '#',
     children: [
       { title: 'Калькулятор', href: '/rack/calculator' },
-      { title: 'Подбор батареи', href: '/rack/battery' },
+      { title: 'Підбір батареї', href: '/rack/battery' },
     ],
   },
   {
-    title: 'Настройки',
+    title: 'Налаштування',
     icon: Settings,
     href: '/settings',
   },
@@ -31,10 +31,10 @@ const mainMenu = [
 
 const adminMenu = [
   {
-    title: 'Админ-панель',
+    title: 'Адмін-панель',
     icon: Shield,
     href: '#',
-    children: [{ title: 'Аудит логов', href: '/admin/audit' }],
+    children: [{ title: 'Аудит логів', href: '/admin/audit' }],
   },
 ]
 
@@ -61,7 +61,7 @@ export function Sidebar({ className }: SidebarProps) {
   }
 
   return (
-    <div className={cn('flex h-full flex-col bg-muted/40', className)}>
+    <div className={cn('bg-muted/40 flex h-full flex-col', className)}>
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
           {/* Main menu */}
@@ -84,7 +84,7 @@ export function Sidebar({ className }: SidebarProps) {
                     />
                   </Button>
                   {openItems.includes(item.title) && (
-                    <div className="ml-4 mt-1 space-y-1 border-l pl-4">
+                    <div className="mt-1 ml-4 space-y-1 border-l pl-4">
                       {item.children.map((child) => (
                         <Button
                           key={child.title}
@@ -132,7 +132,7 @@ export function Sidebar({ className }: SidebarProps) {
                       />
                     </Button>
                     {openItems.includes(item.title) && (
-                      <div className="ml-4 mt-1 space-y-1 border-l pl-4">
+                      <div className="mt-1 ml-4 space-y-1 border-l pl-4">
                         {item.children.map((child) => (
                           <Button
                             key={child.title}
@@ -170,7 +170,7 @@ export function Sidebar({ className }: SidebarProps) {
             onClick={() => handleNavigation('/profile')}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />
-            Профиль
+            Профіль
           </Button>
         </nav>
       </ScrollArea>

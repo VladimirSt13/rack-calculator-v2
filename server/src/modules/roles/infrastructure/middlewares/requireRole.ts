@@ -19,7 +19,7 @@ export function requireRole(...allowedRoles: string[]) {
         return
       }
 
-      // Поиск роли
+      // Пошук ролі
       const role = await prisma.role.findUnique({
         where: { id: roleId },
       })
@@ -35,7 +35,7 @@ export function requireRole(...allowedRoles: string[]) {
         return
       }
 
-      // Проверка роли
+      // Перевірка ролі
       if (!allowedRoles.includes(role.name)) {
         res.status(403).json({
           success: false,

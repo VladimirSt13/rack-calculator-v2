@@ -1,7 +1,7 @@
 {
   "name": "rack-calculator-v2",
   "version": "1.0.0",
-  "description": "Калькулятор расчёта стеллажного оборудования и их стоимости.",
+  "description": "Калькулятор розрахунку стелажного обладнання та його вартості.",
   "private": true,
   "type": "module",
   "workspaces": [

@@ -18,8 +18,8 @@ export class VerifyEmailUseCase {
       throw AppError.notFound('User not found', 'USER_NOT_FOUND')
     }
 
-    // Проверка токена (в реальном приложении токен хранится в БД)
-    // Здесь упрощённая версия - токен должен совпадать с resetToken
+    // Перевірка токена (в реальному застосунку токен зберігається в БД)
+    // Тут спрощена версія - токен повинен збігатися з resetToken
     if (user.resetToken !== input.token) {
       throw AppError.badRequest('Invalid verification token', 'INVALID_TOKEN')
     }
@@ -37,31 +37,31 @@ export class SendVerificationEmailUseCase {
     const user = await this.userRepository.findByEmail(userEmail)
 
     if (!user) {
-      // Не раскрываем是否存在 пользователя для безопасности
-      return { success: true, message: 'Если email существует, письмо отправлено' }
+      // Не розкриваємо інформацію про існування користувача для безпеки
+      return { success: true, message: 'Якщо email існує, лист відправлено' }
     }
 
     if (user.emailVerified) {
       throw AppError.conflict('Email already verified', 'EMAIL_ALREADY_VERIFIED')
     }
 
-    // Генерация токена верификации
+    // Генерація токена верифікації
     const token = crypto.randomUUID()
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 часа
+    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 години
 
-    // Сохранение токена в БД
+    // Збереження токена в БД
     user.resetToken = token
     user.resetTokenExpiry = tokenExpiry
     await this.userRepository.update(user)
 
-    // Отправка email
+    // Відправка email
     try {
       await emailService.sendVerificationEmail(user.email.toString(), token, user.id)
     } catch (error) {
       console.error('Failed to send verification email:', error)
-      // Не показываем ошибку пользователю для безопасности
+      // Не показуємо помилку користувачу для безпеки
     }
 
-    return { success: true, message: 'Если email существует, письмо отправлено' }
+    return { success: true, message: 'Якщо email існує, лист відправлено' }
   }
 }

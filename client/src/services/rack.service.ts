@@ -12,8 +12,19 @@ import type {
  */
 export interface RackOptions {
   supports: Array<{ value: string; label: string; stepped: boolean }>
-  spans: Array<{ value: string; label: string; length: number }>
+  spans: Array<{ value: string; label: string; length: number; maxQuantity?: number }>
   verticalStands: Array<{ value: string; label: string }>
+}
+
+/**
+ * Ціни компонентів з прайсу
+ */
+export interface RackPrices {
+  supports: Record<string, { edge: { price: number }; intermediate: { price: number } }>
+  spans: Record<string, { price: number }>
+  vertical_supports: Record<string, { price: number }>
+  diagonal_brace: { price: number }
+  isolator: { price: number }
 }
 
 /**
@@ -70,10 +81,23 @@ export const rackService = {
   },
 
   /**
-   * Получение доступных опций из прайса
+   * Отримання доступних опцій з прайсу
    */
   getOptions: async (): Promise<RackOptions> => {
     const response = await api.get<{ data: RackOptions }>('/prices/rack/options')
     return response.data.data
+  },
+
+  /**
+   * Отримання цін компонентів з прайсу
+   */
+  getPrices: async (): Promise<RackPrices | null> => {
+    try {
+      const response = await api.get<{ data: RackPrices }>('/prices/rack')
+      return response.data.data
+    } catch (error) {
+      console.error('Failed to fetch prices:', error)
+      return null
+    }
   },
 }
