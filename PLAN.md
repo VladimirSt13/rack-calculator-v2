@@ -1,8 +1,8 @@
 # 📋 План розробки Rack Calculator V2
 
-> **Статус:** Sprint 5 (Rack Module) — ✅ **ЗАВЕРШЕНО**
-> **Останнє оновлення:** 26 березня 2026 р.
-> **Git:** `main` (актуальна)
+> **Статус:** Sprint 5.5 (Admin Price Editor) — ✅ **ЗАВЕРШЕНО**  
+> **Останнє оновлення:** 27 березня 2026 р.  
+> **Git:** `feature/price-editor` (актуальна)
 
 ---
 
@@ -195,96 +195,77 @@
 
 ---
 
-### Sprint 5.5 — Admin Price Editor 🔴 НОВЕ
+### Sprint 5.5 — Admin Price Editor ✅
 
-**Статус:** ⏳ **В РОБОТІ** | **Пріоритет:** 🔴 **ВИСОКИЙ**
+**Статус:** ✅ **ЗАВЕРШЕНО** | **Пріоритет:** 🔴 **ВИСОКИЙ**
 
-| Компонент    | Завдання                                                                                              | Статус |
-| ------------ | ----------------------------------------------------------------------------------------------------- | ------ |
-| **Backend**  | Оновлення Price API: bulk update, import/export, валідація даних                                      | ⏳     |
-| **Frontend** | Сторінка адмін-панелі для редагування прайсів (Excel-подібний UI), імпорт/експорт, масове редагування | ⏳     |
+| Компонент    | Завдання                                                                                                                              | Статус |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| **Backend**  | ✅ Нова структура Price з items, ✅ Bulk update, ✅ Import/Export Excel, ✅ Сортування, ✅ Strategy Pattern, ✅ Unit Tests (32 тести) | ✅     |
+| **Frontend** | ✅ Admin Prices сторінка, ✅ Таблиця елементів, ✅ Редагування, ✅ Імпорт/Експорт                                                     | ✅     |
 
 **Функціонал:**
 
-1. **Перегляд прайсів у вигляді таблиці** (Excel/Google Sheets стиль)
-   - Редаговані клітинки (inline editing)
-   - Швидке заповнення (auto-fill)
+1. **Нова структура прайсу**
+   - Масив `items` замість вкладених об'єктів
+   - Варіанти для опор (edge/intermediate)
+   - Унікальні ID для кожного елемента
+
+2. **Strategy Pattern**
+   - `IPriceStrategy` інтерфейс
+   - `RackPriceStrategy` реалізація
+   - `PriceProcessorService` для обробки
+   - Легке додавання нових типів прайсів
+
+3. **Перегляд прайсів у вигляді таблиці**
+   - Сортування за типом і розміром
    - Підсвітка змін
 
-2. **Редагування / Додавання нових позицій**
-   - Додавання нових категорій
-   - Масове оновлення цін
+4. **Редагування / Додавання нових позицій**
+   - Додавання нових елементів
+   - Редагування існуючих
    - Видалення позицій
 
-3. **Експорт**
+5. **Експорт**
    - Експорт в Excel (.xlsx)
    - Експорт в CSV
-   - Експорт поточного фільтрованого вигляду
 
-4. **Імпорт**
+6. **Імпорт**
    - Імпорт з Excel (.xlsx)
-   - Імпорт з CSV
-   - Валідація даних перед збереженням
-   - Попередній перегляд змін
+   - Валідація даних
+   - Оновлення існуючих і додавання нових
 
-**API Endpoints (оновлення):**
-
-- `PUT /api/prices/bulk` — масове оновлення цін (ADMIN)
-- `POST /api/prices/import` — імпорт прайсів з файлу (ADMIN)
-- `GET /api/prices/export?format=xlsx|csv` — експорт прайсів (ADMIN)
-
-**Backend завдання:**
-
-- [ ] Оновити PriceController: додати bulk update endpoint
-- [ ] Створити Use-case: `BulkUpdatePrices`, `ImportPrices`, `ExportPrices`
-- [ ] Додати валідацію імпортованих даних (Zod схема)
-- [ ] Інтеграція з `xlsx` бібліотекою (ExcelJS або similar)
-- [ ] Додати middleware перевірки ADMIN ролі
-
-**Frontend завдання:**
-
-- [ ] Створити сторінку `/admin/prices` (ADMIN only)
-- [ ] Компонент PriceTableEditor (Excel-подібна таблиця)
-  - Inline editing клітинок
-  - Підсвітка змінених комірок
-  - Швидке копіювання/вставка
-- [ ] Компонент PriceImportModal (імпорт файлів)
-  - Drag-and-drop зона
-  - Попередній перегляд даних
-  - Валідація перед імпортом
-- [ ] Компонент PriceExportButton (експорт)
-  - Вибір формату (XLSX, CSV)
-  - Вибір категорій для експорту
-- [ ] Services: priceAdmin.service.ts (bulkUpdate, import, export)
-- [ ] Types: PriceEntry, PriceCategory, PriceImportResult
-- [ ] Додати посилання в Sidebar (ADMIN розділ)
-
-**Алгоритм розрахунку включає:**
-
-- Розрахунок опор (крайні + проміжні)
-- Розрахунок балок (за типами прольотів)
-- Розрахунок вертикальних стійок (для 2+ поверхів)
-- Розрахунок розпорків (для 2+ поверхів)
-- Розрахунок ізоляторів (для 1 поверху)
-- Генерація назви стелажа
-- Розрахунок вартості (базова, без ізоляторів, нульова)
+7. **Unit Tests**
+   - 18 тестів для `RackPriceStrategy`
+   - 14 тестів для `PriceProcessorService`
+   - 100% pass rate
 
 **API Endpoints:**
 
-- `POST /api/rack/calculate` — розрахунок стелажа
-- `GET /api/rack/my` — мої розрахунки
-- `GET /api/rack/:id` — деталі розрахунку
+- `PUT /api/prices/bulk` — масове оновлення цін (ADMIN)
+- `POST /api/prices/import` — імпорт прайсів з файлу (ADMIN)
+- `GET /api/prices/:id/export` — експорт прайсів (ADMIN)
+- `GET /api/prices/all` — всі прайси (ADMIN)
+- `POST /api/prices/:id/activate` — активувати (ADMIN)
+- `POST /api/prices/:id/deactivate` — деактивувати (ADMIN)
+- `DELETE /api/prices/:id` — видалити (ADMIN)
 
 **Створені компоненти:**
 
-- RackForm (форма з динамічними прольотами)
-- RackResults (відображення результатів)
-- PreambleCard (короткі результати)
-- ComponentsTableCard (таблиця з цінами)
-- PriceDisplay (форматування цін)
-- RackSetCard (панель комплекту)
-- SaveSetModal (модальне вікно збереження)
-- ResultsSkeleton (скелетон завантаження)
+- `PriceItemsTable` (таблиця з сортуванням)
+- `EditItemModal` (додавання/редагування)
+- `AdminPricesPage` (List/Detail вигляд)
+
+**Створені стратегії:**
+
+- `RackPriceStrategy` (реалізовано)
+- `BatteryPriceStrategy` (майбутній)
+
+**Документація:**
+
+- [price.md](./price.md) — архітектура модуля
+- [server/src/modules/price/ARCHITECTURE.md](./server/src/modules/price/ARCHITECTURE.md) — Strategy Pattern
+- [server/src/modules/price/TESTS.md](./server/src/modules/price/TESTS.md) — unit-тести
 
 ---
 
@@ -306,205 +287,4 @@
 | Компонент    | Завдання                                                                                           | Пріоритет   |
 | ------------ | -------------------------------------------------------------------------------------------------- | ----------- |
 | **Backend**  | Export: `exportRackSet` (Excel / PDF), Revisions: збереження версій RackSet, Soft delete / restore | 🟡 Середній |
-| **Frontend** | Сторінки експорту, Управління версіями, Відновлення вилучених елементів, Фільтри і пагінація       | 🟡 Середній |
-
----
-
-### Sprint 8 — Завершення і деплой ⏳
-
-**Статус:** ⏳ **НЕ РОЗПОЧАТО**
-
-| Компонент  | Завдання                                                                            | Пріоритет   |
-| ---------- | ----------------------------------------------------------------------------------- | ----------- |
-| **DevOps** | Docker + docker-compose, CI/CD (збірка, тести, деплой), Оточення (dev/staging/prod) | 🔴 Високий  |
-| **Docs**   | OpenAPI / Swagger документація                                                      | 🟡 Середній |
-| **Tests**  | Unit-тести (use-cases), Integration-тести (API endpoints), E2E-тести                | 🔴 Високий  |
-
----
-
-## 📊 Зведена таблиця статусів
-
-| Спринт         | Назва                               | Backend | Frontend | Загальний статус |
-| -------------- | ----------------------------------- | ------- | -------- | ---------------- |
-| **Sprint 0**   | Підготовка проєкту                  | ✅      | ✅       | ✅ Завершено     |
-| **Sprint 1**   | User Management & Auth              | ✅      | ✅       | ✅ Завершено     |
-| **Sprint 2**   | Frontend Auth Pages                 | ✅      | ✅       | ✅ Завершено     |
-| **Sprint 3**   | Roles & RBAC                        | ✅      | —        | ✅ Завершено     |
-| **Sprint 3.5** | Frontend Foundation: Дизайн-система | —       | ✅       | ✅ Завершено     |
-| **Sprint 4**   | Audit / Logging                     | ✅      | —        | ✅ Завершено     |
-| **Sprint 4.5** | Audit Frontend                      | —       | ✅       | ✅ Завершено     |
-| **Sprint 4.7** | Email Verification                  | ✅      | ⏳       | ✅ Завершено     |
-| **Sprint 5**   | Core Business Module: Rack          | ✅      | ✅       | ✅ Завершено     |
-| **Sprint 5.5** | Admin Price Editor                  | 🔴      | 🔴       | 🔴 В роботі      |
-| **Sprint 6**   | Battery Module                      | ⏳      | ⏳       | ⏳ Не розпочато  |
-| **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳      | ⏳       | ⏳ Не розпочато  |
-| **Sprint 8**   | Завершення і деплой                 | ⏳      | ⏳       | ⏳ Не розпочато  |
-
----
-
-## 📈 Прогрес проєкту
-
-```
-Backend:  ██████████████████████░░ 75%
-Frontend: █████████████████░░░░░░░ 55%
-Tests:    █░░░░░░░░░░░░░░░░░░░░░░░  5%
-Docs:     ████████████████████████ 100%
-```
-
----
-
-## ⚠️ Технічні борги
-
-| Проблема               | Пріоритет   | Опис                                 |
-| ---------------------- | ----------- | ------------------------------------ |
-| **Відсутність тестів** | 🔴 Високий  | Unit/integration тести не написані   |
-| **Email Frontend**     | 🟡 Середній | Сторінки verification/reset-password |
-| **Battery logic**      | 🟡 Середній | Модуль не розпочатий                 |
-| **E2E тести**          | 🟡 Середній | Повністю відсутні                    |
-| **Docker/CI/CD**       | 🟡 Середній | Не налаштовано                       |
-
----
-
-## 🚀 Наступні кроки (пріоритети)
-
-### 🔴 Спринт 5.5: Admin Price Editor (1 тиждень)
-
-1. **Backend** — оновлення Price API:
-   - `PUT /api/prices/bulk` — масове оновлення цін
-   - `POST /api/prices/import` — імпорт з Excel/CSV
-   - `GET /api/prices/export` — експорт в Excel/CSV
-   - Use-cases: `BulkUpdatePrices`, `ImportPrices`, `ExportPrices`
-   - Інтеграція з ExcelJS
-
-2. **Frontend** — адмін-панель для прайсів:
-   - Сторінка `/admin/prices` (ADMIN only)
-   - PriceTableEditor (Excel-подібна таблиця з inline editing)
-   - PriceImportModal (drag-and-drop + preview)
-   - PriceExportButton (експорт в XLSX/CSV)
-
-### 🔴 Спринт 6: Battery Module (1-2 тижні)
-
-1. **Battery Backend** — реалізувати domain-логіку підбору батарей:
-   - Domain: `calculateBatteryFit()`
-   - BatteryEntity, BatteryRepository
-   - Use-case: `calculateBatteryUseCase`
-   - BatteryController + Routes: `/api/battery/calculate`
-
-2. **Battery Frontend** — створити інтерфейс підбору батарей:
-   - Сторінка `/battery`
-   - Форма введення параметрів
-   - Відображення результатів
-   - Інтеграція з Rack калькулятором
-
-### 🟡 Наступні пріоритети
-
-3. **Тести** — покрити unit-тестами use-cases (auth, rack, rbac, audit, email, battery)
-
-4. **Email Frontend** — сторінки для email verification:
-   - Сторінка `/verify-email` — підтвердження email
-   - Сторінка `/reset-password` — скидання пароля
-
-5. **Sprint 7 (Export/Revisions)** — експорт в Excel, версіонування
-
-6. **Sprint 8 (Deployment)** — Docker, CI/CD, production готовність
-
----
-
-## 📁 Структура проєкту
-
-```
-rack-calculator-v2/
-├── client/                     # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── components/        # UI компоненти
-│   │   │   ├── ui/            # shadcn/ui компоненти
-│   │   │   ├── layout/        # Header, Sidebar, AppLayout
-│   │   │   └── rack/          # Rack модуль
-│   │   ├── hooks/             # Кастомні хуки
-│   │   ├── pages/             # Сторінки
-│   │   ├── services/          # API client, auth service, rack service
-│   │   ├── stores/            # Zustand stores (auth, rackSet)
-│   │   ├── types/             # TypeScript типи
-│   │   └── utils/             # Утиліти, validation
-│   └── package.json
-│
-├── server/                     # Node.js + Express + Prisma
-│   ├── src/
-│   │   ├── modules/
-│   │   │   ├── auth/          # Автентифікація ✅
-│   │   │   ├── users/         # Користувачі ✅
-│   │   │   ├── roles/         # Ролі і права ✅
-│   │   │   ├── permissions/   # Дозволи ✅
-│   │   │   ├── rack/          # Розрахунок стелажів ✅
-│   │   │   ├── battery/       # Підбір батарей 🔴
-│   │   │   ├── audit/         # Логування ✅
-│   │   │   ├── email/         # Email сервіс ✅
-│   │   │   ├── price/         # Модуль цін ✅
-│   │   │   └── common/        # Спільні утиліти
-│   │   ├── config/            # Конфігурація (ENV, DB, JWT)
-│   │   ├── db/                # DB підключення (prisma.client.ts)
-│   │   ├── routes.ts          # Маршрути
-│   │   └── server.ts          # Точка входу
-│   └── package.json
-│
-├── price/                      # База цін
-│   ├── PRICE_DB_STRUCTURE.md
-│   ├── price.txt
-│   └── price.xlsx
-│
-└── документация
-    ├── README.md
-    ├── PLAN.md
-    ├── STATUS.md
-    ├── RACK_ALGORITHM_BUSINESS.md
-    ├── rack-form-description.md
-    └── rack-results-description.md
-```
-
----
-
-## 🛠️ Технологічний стек
-
-### Backend
-
-| Технологія           | Призначення           |
-| -------------------- | --------------------- |
-| Node.js + TypeScript | Платформа + типізація |
-| Express 5.x          | Web-фреймворк         |
-| Prisma 5.x (MongoDB) | ORM + база даних      |
-| Zod                  | Валідація даних       |
-| JWT (jsonwebtoken)   | Токени автентифікації |
-| Vitest/Jest          | Тестування            |
-| tsx                  | ES modules            |
-
-### Frontend
-
-| Технологія      | Призначення        |
-| --------------- | ------------------ |
-| React 19        | UI-бібліотека      |
-| TypeScript      | Типізація          |
-| Vite            | Збірник            |
-| TanStack Query  | Робота з сервером  |
-| Zustand         | State management   |
-| React Hook Form | Управління формами |
-| Zod             | Валідація форм     |
-| Axios           | HTTP-клієнт        |
-| React Router    | Маршрутизація      |
-
-### DevOps
-
-| Технологія              | Призначення        |
-| ----------------------- | ------------------ |
-| Docker + docker-compose | Контейнеризація    |
-| concurrently            | Паралельний запуск |
-| npm workspaces          | Monorepo           |
-
----
-
-## 🔗 Посилання на документацію
-
-- [STATUS.md](./STATUS.md) — статус проєкту
-- [RACK_ALGORITHM_BUSINESS.md](./RACK_ALGORITHM_BUSINESS.md) — алгоритм розрахунку стелажів
-- [rack-form-description.md](./rack-form-description.md) — опис форми
-- [rack-results-description.md](./rack-results-description.md) — опис результатів
-- [price/PRICE_DB_STRUCTURE.md](./price/PRICE_DB_STRUCTURE.md) — структура бази цін
+| **Frontend** | Сторінки експорту, Управління версіями, Відновлення вилучених елемен                               |

@@ -1,5 +1,6 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 import { Price } from '../domain/entities/price.entity.js'
+import type { PriceItem } from '../domain/types.js'
 
 export class PriceRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -68,8 +69,10 @@ export class PriceRepository {
     const data = price.toPersistence()
     const created = await this.prisma.price.create({
       data: {
+        name: data.name,
+        description: data.description,
         category: data.category,
-        data: data.data as unknown as Prisma.InputJsonValue,
+        items: data.items as unknown as Prisma.InputJsonValue,
         isActive: data.isActive,
         validFrom: data.validFrom,
         validUntil: data.validUntil,
@@ -87,10 +90,27 @@ export class PriceRepository {
     const updated = await this.prisma.price.update({
       where: { id: data.id },
       data: {
-        data: data.data as unknown as Prisma.InputJsonValue,
+        name: data.name,
+        description: data.description,
+        items: data.items as unknown as Prisma.InputJsonValue,
         isActive: data.isActive,
         validFrom: data.validFrom,
         validUntil: data.validUntil,
+      },
+    })
+
+    return Price.fromPersistence(updated)
+  }
+
+  /**
+   * Update items in price list
+   */
+  async updateItems(id: string, items: PriceItem[]): Promise<Price> {
+    const updated = await this.prisma.price.update({
+      where: { id },
+      data: {
+        items: items as unknown as Prisma.InputJsonValue,
+        updatedAt: new Date(),
       },
     })
 

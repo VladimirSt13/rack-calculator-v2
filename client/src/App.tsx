@@ -12,6 +12,7 @@ import { AuditPage } from './pages/AuditPage'
 import { RackCalculatorPage } from './pages/RackCalculatorPage'
 import { BatterySelectionPage } from './pages/BatterySelectionPage'
 import { SettingsPage } from './pages/SettingsPage'
+import AdminPricesPage from './pages/AdminPricesPage'
 import './App.css'
 
 const queryClient = new QueryClient({
@@ -90,6 +91,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/prices"
+            element={
+              <ProtectedRoute>
+                <AdminPricesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/prices/:priceId"
+            element={
+              <ProtectedRoute>
+                <AdminPricesPage />
               </ProtectedRoute>
             }
           />

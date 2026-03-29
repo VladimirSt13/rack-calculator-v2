@@ -1,5 +1,6 @@
 import { Price } from '../domain/entities/price.entity.js'
 import { PriceRepository } from './price.repository.js'
+import type { PriceItem } from '../domain/types.js'
 
 export interface RackComponentPrice {
   name: string
@@ -51,14 +52,61 @@ export class PriceService {
   }
 
   /**
-   * Get component price
+   * Find support item by size
    */
-  getComponentPrice(category: string, key: string): number | null {
-    if (!this.currentPrice) {
-      throw new Error('Price list not loaded')
-    }
+  findSupport(size: string): PriceItem | null {
+    if (!this.currentPrice) return null
 
-    return this.currentPrice.getComponentPrice(category, key)
+    return (
+      this.currentPrice.items.find((item) => item.type === 'support' && item.size === size) || null
+    )
+  }
+
+  /**
+   * Find span item by length
+   */
+  findSpan(length: number): PriceItem | null {
+    if (!this.currentPrice) return null
+
+    return (
+      this.currentPrice.items.find(
+        (item) => item.type === 'span' && item.size === String(length)
+      ) || null
+    )
+  }
+
+  /**
+   * Find vertical support by size
+   */
+  findVerticalSupport(size: string): PriceItem | null {
+    if (!this.currentPrice) return null
+
+    return (
+      this.currentPrice.items.find(
+        (item) => item.type === 'vertical_support' && item.size === size
+      ) || null
+    )
+  }
+
+  /**
+   * Get support price by type and variant
+   */
+  getSupportPrice(size: string, variant: 'edge' | 'intermediate'): number | null {
+    const item = this.findSupport(size)
+    if (!item?.variants) return null
+
+    const v = item.variants.find((v) => v.variant === variant)
+    return v?.price ?? null
+  }
+
+  /**
+   * Get span price by length
+   */
+  getSpanPrice(length: number): number | null {
+    const item = this.findSpan(length)
+    if (!item) return null
+
+    return item.price ?? null
   }
 
   /**
@@ -80,35 +128,34 @@ export class PriceService {
 
     const prices: RackPrices = {}
 
-    // Supports (опори) - нова структура: supports[type].edge / supports[type].intermediate
+    // Supports (опори)
     if (components.supports) {
       const { edge, intermediate } = components.supports
-      const supportsData = this.currentPrice.data.supports || {}
 
       prices.supports = []
 
       // Edge support
-      if (edge.quantity > 0 && supportsData[edge.type]) {
-        const edgeComponent = supportsData[edge.type].edge
-        if (edgeComponent) {
+      if (edge.quantity > 0) {
+        const price = this.getSupportPrice(edge.type, 'edge')
+        if (price !== null) {
           prices.supports.push({
             name: `Опора ${edge.type} (крайня)`,
             amount: edge.quantity,
-            price: edgeComponent.price,
-            total: edge.quantity * edgeComponent.price,
+            price,
+            total: edge.quantity * price,
           })
         }
       }
 
       // Intermediate support
-      if (intermediate.quantity > 0 && supportsData[intermediate.type]) {
-        const intermediateComponent = supportsData[intermediate.type].intermediate
-        if (intermediateComponent) {
+      if (intermediate.quantity > 0) {
+        const price = this.getSupportPrice(intermediate.type, 'intermediate')
+        if (price !== null) {
           prices.supports.push({
             name: `Опора ${intermediate.type} (пром)`,
             amount: intermediate.quantity,
-            price: intermediateComponent.price,
-            total: intermediate.quantity * intermediateComponent.price,
+            price,
+            total: intermediate.quantity * price,
           })
         }
       }
@@ -116,57 +163,60 @@ export class PriceService {
 
     // Beams (балки)
     if (components.beams) {
-      const spansData = this.currentPrice.data.spans || {}
       prices.beams = components.beams.map((beam) => {
-        const beamComponent = spansData[String(beam.length)]
+        const price = this.getSpanPrice(beam.length)
         return {
           name: `Балка ${beam.length}`,
           amount: beam.quantity,
-          price: beamComponent?.price || 0,
-          total: beam.quantity * (beamComponent?.price || 0),
+          price: price || 0,
+          total: beam.quantity * (price || 0),
         }
       })
     }
 
     // Uprights (вертикальні стійки)
     if (components.uprights) {
-      const uprightsData = this.currentPrice.data.vertical_supports || {}
-      const uprightComponent = uprightsData[components.uprights.type]
       prices.uprights = []
-      if (components.uprights.quantity > 0 && uprightComponent) {
-        prices.uprights.push({
-          name: `Вертикальна стійка ${components.uprights.type}`,
-          amount: components.uprights.quantity,
-          price: uprightComponent.price,
-          total: components.uprights.quantity * uprightComponent.price,
-        })
+      if (components.uprights.quantity > 0) {
+        const item = this.findVerticalSupport(components.uprights.type)
+        const price = item?.price ?? null
+        if (price !== null) {
+          prices.uprights.push({
+            name: `Вертикальна стійка ${components.uprights.type}`,
+            amount: components.uprights.quantity,
+            price,
+            total: components.uprights.quantity * price,
+          })
+        }
       }
     }
 
     // Braces (розкоси)
     if (components.braces) {
-      const braceComponent = this.currentPrice.data.diagonal_brace
       prices.braces = []
-      if (components.braces.quantity > 0 && braceComponent) {
+      const braceItem = this.currentPrice.items.find((item) => item.type === 'diagonal_brace')
+      const price = braceItem?.price ?? null
+      if (components.braces.quantity > 0 && price !== null) {
         prices.braces.push({
           name: 'Розкос',
           amount: components.braces.quantity,
-          price: braceComponent.price,
-          total: components.braces.quantity * braceComponent.price,
+          price,
+          total: components.braces.quantity * price,
         })
       }
     }
 
     // Isolators (ізолятори)
     if (components.isolators) {
-      const isolatorComponent = this.currentPrice.data.isolator
       prices.isolators = []
-      if (components.isolators.quantity > 0 && isolatorComponent) {
+      const isolatorItem = this.currentPrice.items.find((item) => item.type === 'isolator')
+      const price = isolatorItem?.price ?? null
+      if (components.isolators.quantity > 0 && price !== null) {
         prices.isolators.push({
           name: 'Ізолятор',
           amount: components.isolators.quantity,
-          price: isolatorComponent.price,
-          total: components.isolators.quantity * isolatorComponent.price,
+          price,
+          total: components.isolators.quantity * price,
         })
       }
     }

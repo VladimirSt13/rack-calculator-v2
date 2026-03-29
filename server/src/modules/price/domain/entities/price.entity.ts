@@ -1,28 +1,11 @@
-export interface PriceComponent {
-  code: string
-  name: string
-  price: number
-  weight?: number | null
-  category: string
-}
-
-export interface SupportType {
-  edge: PriceComponent
-  intermediate: PriceComponent
-}
-
-export interface PriceData {
-  supports: Record<string, SupportType> // { "215": { edge: {...}, intermediate: {...} } }
-  spans: Record<string, PriceComponent> // { "600": {...}, "750": {...} }
-  vertical_supports: Record<string, PriceComponent>
-  diagonal_brace: PriceComponent
-  isolator: PriceComponent
-}
+import type { PriceItem, PriceVariant } from '../types.js'
 
 export interface PriceProps {
   id?: string
+  name?: string
+  description?: string
   category: string
-  data: PriceData
+  items: PriceItem[]
   isActive?: boolean
   validFrom?: Date
   validUntil?: Date
@@ -32,8 +15,10 @@ export interface PriceProps {
 
 export class Price {
   public readonly id: string
+  public name?: string
+  public description?: string
   public category: string
-  public data: PriceData
+  public items: PriceItem[]
   public isActive: boolean
   public validFrom?: Date
   public validUntil?: Date
@@ -42,8 +27,10 @@ export class Price {
 
   constructor(props: PriceProps) {
     this.id = props.id || crypto.randomUUID()
+    this.name = props.name
+    this.description = props.description
     this.category = props.category
-    this.data = props.data
+    this.items = props.items
     this.isActive = props.isActive ?? true
     this.validFrom = props.validFrom
     this.validUntil = props.validUntil
@@ -52,41 +39,66 @@ export class Price {
   }
 
   /**
-   * Get component price by category and key
-   * e.g., getComponentPrice('supports', '430 кр')
+   * Знайти елемент по ID
    */
-  getComponentPrice(category: string, key: string): number | null {
-    const categoryData = this.data[category as keyof PriceData]
-    if (!categoryData || typeof categoryData !== 'object') {
-      return null
-    }
-
-    const component = (categoryData as Record<string, PriceComponent>)[key]
-    return component?.price ?? null
+  findItem(itemId: string): PriceItem | null {
+    return this.items.find((item) => item.id === itemId) || null
   }
 
   /**
-   * Get component by category and key
+   * Знайти варіант елемента по ID елемента та ID варіанта
    */
-  getComponent(category: string, key: string): PriceComponent | null {
-    const categoryData = this.data[category as keyof PriceData]
-    if (!categoryData || typeof categoryData !== 'object') {
-      return null
-    }
+  findVariant(itemId: string, variantId: string): PriceVariant | null {
+    const item = this.findItem(itemId)
+    if (!item?.variants) return null
 
-    return (categoryData as Record<string, PriceComponent>)[key] || null
+    return item.variants.find((v: PriceVariant) => v.id === variantId) || null
   }
 
   /**
-   * Update price data
+   * Отримати ціну для елемента
    */
-  updateData(data: PriceData): void {
-    this.data = data
+  getPrice(itemId: string, variantId?: string): number | null {
+    if (!variantId) {
+      // Простий елемент без варіантів
+      const item = this.findItem(itemId)
+      return item?.price ?? null
+    }
+
+    // Елемент з варіантами
+    const variant = this.findVariant(itemId, variantId)
+    return variant?.price ?? null
+  }
+
+  /**
+   * Оновити ціну варіанта
+   */
+  updateVariantPrice(itemId: string, variantId: string, newPrice: number): boolean {
+    const item = this.findItem(itemId)
+    if (!item?.variants) return false
+
+    const variant = item.variants.find((v: PriceVariant) => v.id === variantId)
+    if (!variant) return false
+
+    variant.price = newPrice
     this.updatedAt = new Date()
+    return true
   }
 
   /**
-   * Activate price list
+   * Оновити ціну простого елемента
+   */
+  updateItemPrice(itemId: string, newPrice: number): boolean {
+    const item = this.findItem(itemId)
+    if (!item || item.variants) return false
+
+    item.price = newPrice
+    this.updatedAt = new Date()
+    return true
+  }
+
+  /**
+   * Активувати прайс
    */
   activate(): void {
     this.isActive = true
@@ -94,31 +106,20 @@ export class Price {
   }
 
   /**
-   * Deactivate price list
+   * Деактивувати прайс
    */
   deactivate(): void {
     this.isActive = false
     this.updatedAt = new Date()
   }
 
-  /**
-   * Check if price list is currently valid
-   */
-  isValidNow(): boolean {
-    if (!this.isActive) return false
-
-    const now = new Date()
-    if (this.validFrom && now < this.validFrom) return false
-    if (this.validUntil && now > this.validUntil) return false
-
-    return true
-  }
-
   toPersistence() {
     return {
       id: this.id,
+      name: this.name,
+      description: this.description,
       category: this.category,
-      data: this.data,
+      items: this.items,
       isActive: this.isActive,
       validFrom: this.validFrom,
       validUntil: this.validUntil,
@@ -130,8 +131,10 @@ export class Price {
   static fromPersistence(data: any): Price {
     return new Price({
       id: data.id,
+      name: data.name,
+      description: data.description,
       category: data.category,
-      data: data.data as PriceData,
+      items: data.items || [],
       isActive: data.isActive,
       validFrom: data.validFrom,
       validUntil: data.validUntil,

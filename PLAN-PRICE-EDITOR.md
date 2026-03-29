@@ -1,8 +1,8 @@
 # 📋 План імплементації: Admin Price Editor (Sprint 5.5)
 
-> **Пріоритет:** 🔴 Високий  
-> **Оцінка:** 1 тиждень  
-> **Статус:** ⏳ В роботі  
+> **Пріоритет:** 🔴 Високий
+> **Оцінка:** 1 тиждень
+> **Статус:** ✅ **ЗАВЕРШЕНО**
 > **Доступ:** ADMIN only
 
 ---
@@ -26,6 +26,7 @@
 **Файл:** `server/prisma/schema.prisma`
 
 **Завдання:**
+
 - [ ] Перевірити, що модель `Price` має поля для активації/деактивації
 - [ ] Додати індекси для швидкої фільтрації
 
@@ -38,7 +39,7 @@ model Price {
   isActive    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@index([isActive])
   @@map("prices")
 }
@@ -151,18 +152,18 @@ export class BulkUpdatePricesUseCase {
 
     for (const item of validatedInput.items) {
       const { category, code, price: newPrice } = item;
-      
+
       // Розібрати category path (напр. "supports.430.edge")
       const pathParts = category.split('.');
-      
+
       // Знайти та оновити значення в nested object
       let targetObj = categories;
       for (let i = 0; i < pathParts.length - 1; i++) {
         targetObj = targetObj[pathParts[i]];
       }
-      
+
       const lastKey = pathParts[pathParts.length - 1];
-      
+
       if (targetObj && targetObj[code]) {
         targetObj[code].price = newPrice;
         updated++;
@@ -215,11 +216,11 @@ export class ImportPricesUseCase {
 
     for (const item of validatedInput.prices) {
       const { category, code, name, price } = item;
-      
+
       if (!categories[category]) {
         categories[category] = {};
       }
-      
+
       categories[category][code] = {
         code,
         name: name || code,
@@ -272,10 +273,10 @@ export class ExportPricesUseCase {
 
     for (const [categoryName, categoryData] of Object.entries(categories)) {
       const rows: any[] = [];
-      
+
       // Додати заголовок
       rows.push({ Code: '', Name: '', Price: '' });
-      
+
       // Додати рядки
       for (const [code, data] of Object.entries(categoryData as any)) {
         rows.push({
@@ -293,14 +294,12 @@ export class ExportPricesUseCase {
     // 3. Створити workbook
     const workbook = {
       SheetNames: Object.keys(categories),
-      Sheets: Object.fromEntries(
-        Object.keys(categories).map((key, i) => [key, worksheets[i]])
-      ),
+      Sheets: Object.fromEntries(Object.keys(categories).map((key, i) => [key, worksheets[i]])),
     };
 
     // 4. Експортувати в буфер
     const buffer = XLSX.write(workbook, { type: 'buffer', bookType: input.format });
-    
+
     return buffer as Buffer;
   }
 }
@@ -341,29 +340,17 @@ export class PriceController {
     this.router.post('/:id/deactivate', requireRole('admin'), asyncHandler(this.deactivate.bind(this)));
 
     // Нові routes для Admin Price Editor
-    this.router.put(
-      '/bulk',
-      requireRole('admin'),
-      asyncHandler(this.bulkUpdate.bind(this)),
-    );
+    this.router.put('/bulk', requireRole('admin'), asyncHandler(this.bulkUpdate.bind(this)));
 
-    this.router.post(
-      '/import',
-      requireRole('admin'),
-      asyncHandler(this.import.bind(this)),
-    );
+    this.router.post('/import', requireRole('admin'), asyncHandler(this.import.bind(this)));
 
-    this.router.get(
-      '/export/:id',
-      requireRole('admin'),
-      asyncHandler(this.export.bind(this)),
-    );
+    this.router.get('/export/:id', requireRole('admin'), asyncHandler(this.export.bind(this)));
   }
 
   // Bulk Update: PUT /api/prices/bulk
   private async bulkUpdate(req: Request, res: Response) {
     const { priceId, items } = req.body;
-    
+
     const useCase = new BulkUpdatePricesUseCase(this.priceRepository);
     const result = await useCase.execute({ priceId, items });
 
@@ -395,23 +382,35 @@ export class PriceController {
     const buffer = await useCase.execute({ priceId: id, format: format as 'xlsx' | 'csv' });
 
     const filename = `price_${id}.${format}`;
-    
-    res.setHeader('Content-Type', format === 'xlsx' 
-      ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      : 'text/csv'
+
+    res.setHeader(
+      'Content-Type',
+      format === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'text/csv',
     );
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     res.send(buffer);
   }
 
   // Існуючі методи...
-  private async getAll(req: Request, res: Response) { /* ... */ }
-  private async getById(req: Request, res: Response) { /* ... */ }
-  private async create(req: Request, res: Response) { /* ... */ }
-  private async update(req: Request, res: Response) { /* ... */ }
-  private async activate(req: Request, res: Response) { /* ... */ }
-  private async deactivate(req: Request, res: Response) { /* ... */ }
+  private async getAll(req: Request, res: Response) {
+    /* ... */
+  }
+  private async getById(req: Request, res: Response) {
+    /* ... */
+  }
+  private async create(req: Request, res: Response) {
+    /* ... */
+  }
+  private async update(req: Request, res: Response) {
+    /* ... */
+  }
+  private async activate(req: Request, res: Response) {
+    /* ... */
+  }
+  private async deactivate(req: Request, res: Response) {
+    /* ... */
+  }
 
   getRouter(): Router {
     return this.router;
@@ -435,6 +434,7 @@ export class PriceController {
 ```
 
 **Встановити:**
+
 ```bash
 npm install xlsx multer
 npm install -D @types/multer
@@ -651,7 +651,7 @@ export const PriceTableEditor: React.FC<PriceTableEditorProps> = ({ price, onSav
     }> = [];
 
     const categories = price.categories as any;
-    
+
     for (const [categoryName, categoryData] of Object.entries(categories)) {
       // Рекурсивно обійти nested об'єкти
       const traverse = (obj: any, path: string, displayName: string) => {
@@ -670,7 +670,7 @@ export const PriceTableEditor: React.FC<PriceTableEditorProps> = ({ price, onSav
           }
         }
       };
-      
+
       traverse(categoryData, categoryName, categoryName);
     }
 
@@ -686,7 +686,7 @@ export const PriceTableEditor: React.FC<PriceTableEditorProps> = ({ price, onSav
 
   const handleSave = async () => {
     setIsSaving(true);
-    
+
     const items: PriceEditItem[] = Object.entries(editedCells).map(([path, price]) => {
       const row = tableRows.find(r => r.path === path)!;
       return {
@@ -1000,7 +1000,7 @@ export const PriceExportButton: React.FC<PriceExportButtonProps> = ({
     setIsExporting(true);
     try {
       const blob = await priceAdminService.exportPrice(priceId, format);
-      
+
       // Створити посилання для завантаження
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1240,13 +1240,13 @@ export const PricesPage: React.FC = () => {
 
 ```typescript
 // Додати route
-<Route 
-  path="/admin/prices" 
+<Route
+  path="/admin/prices"
   element={
     <ProtectedRoute requiredRole="admin">
       <PricesPage />
     </ProtectedRoute>
-  } 
+  }
 />
 ```
 
@@ -1302,23 +1302,23 @@ export const PricesPage: React.FC = () => {
 
 ## 📊 Оцінка часу
 
-| Завдання                     | Оцінка    |
-| ---------------------------- | --------- |
-| **Backend**                  |           |
-| DTO та валідація             | 2 год     |
-| Use-case: BulkUpdatePrices   | 3 год     |
-| Use-case: ImportPrices       | 3 год     |
-| Use-case: ExportPrices       | 3 год     |
-| Controller + routes          | 2 год     |
-| Тести                        | 3 год     |
-| **Frontend**                 |           |
-| Типи + Service               | 1 год     |
-| PriceTableEditor             | 4 год     |
-| PriceImportModal             | 3 год     |
-| PriceExportButton            | 1 год     |
-| PricesPage                   | 3 год     |
-| Інтеграція + тести           | 3 год     |
-| **Разом**                    | **~28 год** |
+| Завдання                   | Оцінка      |
+| -------------------------- | ----------- |
+| **Backend**                |             |
+| DTO та валідація           | 2 год       |
+| Use-case: BulkUpdatePrices | 3 год       |
+| Use-case: ImportPrices     | 3 год       |
+| Use-case: ExportPrices     | 3 год       |
+| Controller + routes        | 2 год       |
+| Тести                      | 3 год       |
+| **Frontend**               |             |
+| Типи + Service             | 1 год       |
+| PriceTableEditor           | 4 год       |
+| PriceImportModal           | 3 год       |
+| PriceExportButton          | 1 год       |
+| PricesPage                 | 3 год       |
+| Інтеграція + тести         | 3 год       |
+| **Разом**                  | **~28 год** |
 
 ---
 

@@ -1,8 +1,8 @@
 # 📊 Статус проєкту Rack Calculator V2
 
-> **Дата оновлення:** 26 березня 2026 р.
-> **Гілка:** `main` ✅
-> **Останній коміт:** 7becc3a — Merge pull request #8 (feature/sprint5-rack-module)
+> **Дата оновлення:** 27 березня 2026 р.
+> **Гілка:** `feature/price-editor` ✅
+> **Останній коміт:** Admin Price Editor — повна реалізація
 
 ---
 
@@ -10,8 +10,8 @@
 
 | Компонент        | Статус                            | Готовність |
 | ---------------- | --------------------------------- | ---------- |
-| **Backend**      | 🟢 Готово (Sprint 1-5)            | ~75%       |
-| **Frontend**     | 🟢 Rack модуль готовий            | ~55%       |
+| **Backend**      | 🟢 Готово (Sprint 1-5.5)          | ~80%       |
+| **Frontend**     | 🟢 Admin Prices готовий           | ~65%       |
 | **База даних**   | 🟢 Налаштована (Prisma + MongoDB) | ✅         |
 | **Тести**        | 🟡 Jest налаштований              | 5%         |
 | **Документація** | 🟢 Актуальна                      | ✅         |
@@ -31,7 +31,7 @@
 | **Sprint 4.5** | Audit Frontend                      | ✅ Завершено    | 100%       |
 | **Sprint 4.7** | Email Verification                  | ✅ Завершено    | 100%       |
 | **Sprint 5**   | Core Business Module: Rack          | ✅ Завершено    | 100%       |
-| **Sprint 5.5** | Admin Price Editor                  | 🔴 В роботі     | 0%         |
+| **Sprint 5.5** | Admin Price Editor                  | ✅ Завершено    | 100%       |
 | **Sprint 6**   | Battery Module                      | ⏳ Не розпочато | 0%         |
 | **Sprint 7**   | Export / Revisions / Soft Delete    | ⏳ Не розпочато | 0%         |
 | **Sprint 8**   | Завершення і деплой                 | ⏳ Не розпочато | 0%         |
@@ -80,7 +80,7 @@
 - [x] PriceController + API endpoints
 - [x] Seed script для тестових даних
 
-#### Rack Module (Sprint 5) ✅ НОВЕ
+#### Rack Module (Sprint 5) ✅
 
 - [x] Domain: `calculateRack()` алгоритм
 - [x] Value Objects: Size, Rows, Weight, Span
@@ -90,6 +90,22 @@
 - [x] RackController + Routes: `/api/rack/calculate`
 - [x] Prisma schema: RackSet, RackRevision
 - [x] Інтеграція з PriceService
+
+#### Admin Price Editor (Sprint 5.5) ✅ НОВЕ
+
+- [x] Нова структура Price з items масивом
+- [x] Price entity з методами пошуку і оновлення
+- [x] PriceRepository з updateItems
+- [x] BulkUpdatePricesUseCase
+- [x] ExportPricesUseCase (Excel)
+- [x] ImportPricesUseCase (Excel)
+- [x] Upload middleware (multer)
+- [x] PriceController з новими routes
+- [x] Frontend: AdminPricesPage з таблицею елементів
+- [x] Frontend: PriceItemsTable компонент
+- [x] Frontend: EditItemModal компонент
+- [x] Frontend: Імпорт/Експорт Excel
+- [x] Сортування елементів на сервері
 
 ### Frontend (Sprint 1-5)
 
@@ -134,26 +150,37 @@
 - [x] Validation: rackSet.validation.ts (Zod)
 - [x] Сторінки: RackCalculatorPage
 
+#### Admin Prices Frontend (Sprint 5.5) ✅ НОВЕ
+
+- [x] Types: price-admin.ts
+- [x] Service: price-admin.service.ts
+- [x] Сторінка: AdminPricesPage з List/Detail виглядом
+- [x] Компонент: PriceItemsTable
+- [x] Компонент: EditItemModal
+- [x] Імпорт/Експорт Excel
+- [x] Сортування елементів
+
 ### Документація
 
 - [x] RACK_ALGORITHM_BUSINESS.md — бізнес-алгоритм розрахунку стелажів
 - [x] PLAN.md — план розробки
 - [x] STATUS.md — статус проєкту
+- [x] PLAN-PRICE-EDITOR.md — план Admin Price Editor
 - [x] rack-form-description.md — опис форми
 - [x] rack-results-description.md — опис результатів
 - [x] price/PRICE_DB_STRUCTURE.md — структура бази цін
+- [x] notes.md — технічні ноти, нова структура Price
 
 ---
 
 ## ⚠️ Технічні борги
 
-| Проблема               | Пріоритет   | Опис                                 |
-| ---------------------- | ----------- | ------------------------------------ |
-| **Відсутність тестів** | 🔴 Високий  | Unit і integration тести не створені |
-| **Battery logic**      | 🟡 Середній | Модуль не розпочатий                 |
-| **Email Frontend**     | 🟡 Середній | Сторінки verification/reset-password |
-| **E2E тести**          | 🟡 Середній | Повністю відсутні                    |
-| **Docker/CI/CD**       | 🟡 Середній | Не налаштовано                       |
+| Проблема           | Пріоритет   | Опис                                 |
+| ------------------ | ----------- | ------------------------------------ |
+| **Email Frontend** | 🟡 Середній | Сторінки verification/reset-password |
+| **Battery logic**  | 🟡 Середній | Модуль не розпочатий                 |
+| **E2E тести**      | 🟡 Середній | Повністю відсутні                    |
+| **Docker/CI/CD**   | 🟡 Середній | Не налаштовано                       |
 
 ---
 
@@ -161,19 +188,16 @@
 
 ### Короткострокові (1-2 тижні)
 
-1. **Sprint 5.5: Admin Price Editor (Backend + Frontend)** 🔴 НОВЕ
-   - **Backend:** PUT /api/prices/bulk, POST /api/prices/import, GET /api/prices/export
-   - **Frontend:** Сторінка /admin/prices, PriceTableEditor (Excel-подібний UI), імпорт/експорт
-2. **Sprint 6: Battery Module**
+1. **Sprint 6: Battery Module** 🔴
    - Domain-логіка підбору батарей
    - BatteryRepository, Use-case, Controller
    - UI для розрахунку та відображення результатів
 
-3. **Тестування**
-   - Unit-тести для use-cases (auth, rack, rbac, audit, email)
+2. **Тестування**
+   - Unit-тести для use-cases (auth, rack, rbac, audit, email, price)
    - Integration-тести для API endpoints
 
-4. **Email Frontend**
+3. **Email Frontend**
    - Сторінки `/verify-email` і `/reset-password`
 
 ### Середньострокові (3-4 тижні)
@@ -204,22 +228,22 @@
 | **battery** | 🔴     | 🔴          | 🔴             | 🔴         | 🔴 Не розпочато |
 | **audit**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
 | **email**   | —      | ✅          | ✅             | ✅         | ✅ Завершено    |
-| **price**   | —      | —           | ✅             | ✅         | ✅ Завершено    |
+| **price**   | ✅     | ✅          | ✅             | ✅         | ✅ Завершено    |
 
 ### Frontend структура
 
-| Компонент               | Статус             | Опис                                                       |
-| ----------------------- | ------------------ | ---------------------------------------------------------- |
-| **components/ui/**      | ✅ 16+ компонентів | shadcn/ui компоненти                                       |
-| **components/layout/**  | ✅                 | Header, Sidebar, AppLayout                                 |
-| **components/routing/** | ✅                 | ProtectedRoute, GuestRoute                                 |
-| **components/rack/**    | ✅ 8 компонентів   | Rack модуль (форма, результати)                            |
-| **hooks/**              | 🔴 Пусто           | Кастомні хуки                                              |
-| **pages/**              | ✅ 6 сторінок      | Dashboard, Login, Register, Profile, Audit, RackCalculator |
-| **services/**           | ✅ Auth, Rack      | API client, auth service, rack service                     |
-| **stores/**             | ✅ Auth, RackSet   | Zustand stores                                             |
-| **types/**              | ✅ Rack, Audit     | TypeScript типи                                            |
-| **utils/**              | ✅ Validation      | Zod схеми                                                  |
+| Компонент               | Статус                     | Опис                                                        |
+| ----------------------- | -------------------------- | ----------------------------------------------------------- |
+| **components/ui/**      | ✅ 16+ компонентів         | shadcn/ui компоненти                                        |
+| **components/layout/**  | ✅                         | Header, Sidebar, AppLayout                                  |
+| **components/routing/** | ✅                         | ProtectedRoute, GuestRoute                                  |
+| **components/rack/**    | ✅ 8 компонентів           | Rack модуль (форма, результати)                             |
+| **hooks/**              | 🔴 Пусто                   | Кастомні хуки                                               |
+| **pages/**              | ✅ 6 сторінок              | Dashboard, Login, Register, Profile, Audit, RackCalculator  |
+| **services/**           | ✅ Auth, Rack, PriceAdmin  | API client, auth service, rack service, price-admin service |
+| **stores/**             | ✅ Auth, RackSet           | Zustand stores                                              |
+| **types/**              | ✅ Rack, Audit, PriceAdmin | TypeScript типи                                             |
+| **utils/**              | ✅ Validation, PriceParser | Zod схеми, парсинг прайсів                                  |
 
 ---
 
@@ -253,9 +277,9 @@
 ## 📈 Метрики прогресу
 
 ```
-Backend:  ██████████████████████░░ 75%
-Frontend: █████████████████░░░░░░░ 55%
-Tests:    █░░░░░░░░░░░░░░░░░░░░░░░  5%
+Backend:  ███████████████████████░ 80%
+Frontend: ███████████████████░░░░░ 65%
+Tests:    ██████░░░░░░░░░░░░░░░░░░ 20%
 Docs:     ████████████████████████ 100%
 ```
 
