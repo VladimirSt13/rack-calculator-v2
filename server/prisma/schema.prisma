@@ -55,15 +55,18 @@ model Permission {
 }
 
 model Price {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  category   String    @unique // "rack", "battery", etc.
-  data       Json // { supports: {...}, spans: {...}, isolator: {...} }
-  isActive   Boolean   @default(true)
-  validFrom  DateTime?
-  validUntil DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String? // Назва прайсу (напр. "Прайс 2024-Q1")
+  description String? // Опис прайсу
+  category    String    @unique // "rack", "battery", etc.
+  items       Json? // [ { id, type, size, variants: [{ id, variant, price, weight }] } ]
+  isActive    Boolean   @default(true)
+  validFrom   DateTime?
+  validUntil  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
+  @@index([isActive])
   @@map("prices")
 }
 
@@ -89,20 +92,20 @@ model AuditEvent {
 }
 
 model RackSet {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   name          String
   description   String
-  configuration Json     // { levels, rows, beamsPerRow, supportType, verticalStandType?, spans }
-  components    Json     // { supports, beams, verticalStands?, braces?, isolators? }
-  totalLength   Int      // общая длина в мм
-  pricing       Json?    // { base, withoutIsolators, zero }
-  userId        String   @db.ObjectId
-  user          User     @relation(fields: [userId], references: [id])
+  configuration Json // { levels, rows, beamsPerRow, supportType, verticalStandType?, spans }
+  components    Json // { supports, beams, verticalStands?, braces?, isolators? }
+  totalLength   Int // общая длина в мм
+  pricing       Json? // { base, withoutIsolators, zero }
+  userId        String         @db.ObjectId
+  user          User           @relation(fields: [userId], references: [id])
   revisions     RackRevision[]
-  isDeleted     Boolean  @default(false)
+  isDeleted     Boolean        @default(false)
   deletedAt     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([userId])
   @@index([createdAt])
@@ -114,7 +117,7 @@ model RackRevision {
   rackSetId String   @db.ObjectId
   rackSet   RackSet  @relation(fields: [rackSetId], references: [id], onDelete: Cascade)
   version   Int
-  data      Json     // snapshot конфигурации
+  data      Json // snapshot конфигурации
   createdAt DateTime @default(now())
 
   @@unique([rackSetId, version])

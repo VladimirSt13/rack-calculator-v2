@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { ChevronDown, Home, Settings, Shield, ShoppingCart, Warehouse } from 'lucide-react'
+import { ChevronDown, Home, Settings, Shield, ShoppingCart, Warehouse, Package } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth.store'
@@ -34,7 +34,10 @@ const adminMenu = [
     title: 'Адмін-панель',
     icon: Shield,
     href: '#',
-    children: [{ title: 'Аудит логів', href: '/admin/audit' }],
+    children: [
+      { title: 'Аудит логів', href: '/admin/audit' },
+      { title: 'Прайси', href: '/admin/prices', icon: Package },
+    ],
   },
 ]
 

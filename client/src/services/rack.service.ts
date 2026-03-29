@@ -17,14 +17,19 @@ export interface RackOptions {
 }
 
 /**
- * Ціни компонентів з прайсу
+ * Ціни компонентів з прайсу (нова структура)
  */
+export interface SupportPrice {
+  edge: number
+  intermediate: number
+}
+
 export interface RackPrices {
-  supports: Record<string, { edge: { price: number }; intermediate: { price: number } }>
-  spans: Record<string, { price: number }>
-  vertical_supports: Record<string, { price: number }>
-  diagonal_brace: { price: number }
-  isolator: { price: number }
+  supports: Record<string, SupportPrice>
+  spans: Record<string, number>
+  vertical_supports: Record<string, number>
+  diagonal_brace: number
+  isolator: number
 }
 
 /**
@@ -89,12 +94,57 @@ export const rackService = {
   },
 
   /**
-   * Отримання цін компонентів з прайсу
+   * Отримання цін компонентів з прайсу (нова структура)
    */
   getPrices: async (): Promise<RackPrices | null> => {
     try {
-      const response = await api.get<{ data: RackPrices }>('/prices/rack')
-      return response.data.data
+      // Отримуємо повний прайс з items
+      const response = await api.get<{
+        data: {
+          items: Array<{
+            id: string
+            type: string
+            size?: string
+            price?: number
+            variants?: Array<{ id: string; variant: string; price: number }>
+          }>
+        }
+      }>('/prices/rack')
+
+      const items = response.data.data.items
+
+      // Конвертуємо в старий формат для сумісності
+      const prices: RackPrices = {
+        supports: {},
+        spans: {},
+        vertical_supports: {},
+        diagonal_brace: 0,
+        isolator: 0,
+      }
+
+      for (const item of items) {
+        if (item.type === 'support' && item.size && item.variants) {
+          const edgeVariant = item.variants.find((v) => v.variant === 'edge')
+          const intermediateVariant = item.variants.find((v) => v.variant === 'intermediate')
+
+          if (edgeVariant && intermediateVariant) {
+            prices.supports[item.size] = {
+              edge: edgeVariant.price,
+              intermediate: intermediateVariant.price,
+            }
+          }
+        } else if (item.type === 'span' && item.size && item.price !== undefined) {
+          prices.spans[item.size] = item.price
+        } else if (item.type === 'vertical_support' && item.size && item.price !== undefined) {
+          prices.vertical_supports[item.size] = item.price
+        } else if (item.type === 'diagonal_brace' && item.price !== undefined) {
+          prices.diagonal_brace = item.price
+        } else if (item.type === 'isolator' && item.price !== undefined) {
+          prices.isolator = item.price
+        }
+      }
+
+      return prices
     } catch (error) {
       console.error('Failed to fetch prices:', error)
       return null

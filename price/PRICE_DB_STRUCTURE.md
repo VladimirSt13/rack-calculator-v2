@@ -1,6 +1,67 @@
 # Структура прайса в MongoDB
 
-## 1. Price Document (Приклад запису в БД)
+> **Оновлено:** 27 березня 2026 р.
+> **Нова структура:** масив `items` замість вкладених об'єктів `data`
+> **Документація:** [../../notes.md](../../notes.md)
+
+---
+
+## ⚠️ Нова структура (Sprint 5.5)
+
+Починаючи з Sprint 5.5, використовується **нова структура** з масивом `items`:
+
+```json
+{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "name": "Прайс стелажів 2024",
+  "category": "rack",
+  "items": [
+    {
+      "id": "support_215",
+      "type": "support",
+      "size": "215",
+      "variants": [
+        {
+          "id": "support_215_edge",
+          "variant": "edge",
+          "price": 600,
+          "weight": 2.0
+        },
+        {
+          "id": "support_215_intermediate",
+          "variant": "intermediate",
+          "price": 620,
+          "weight": 2.05
+        }
+      ]
+    },
+    {
+      "id": "span_600",
+      "type": "span",
+      "size": "600",
+      "price": 500,
+      "weight": 1.6
+    }
+  ],
+  "isActive": true,
+  "createdAt": "2026-03-27T00:00:00.000Z",
+  "updatedAt": "2026-03-27T00:00:00.000Z"
+}
+```
+
+**Переваги нової структури:**
+
+- ✅ Кожен елемент має унікальний `id`
+- ✅ Варіанти для опор (edge/intermediate)
+- ✅ Простіша навігація по елементах
+- ✅ Легше імпорт/експорт в Excel
+- ✅ Сортування за типом і розміром
+
+---
+
+## 1. Стара структура (Price Document)
+
+**Примітка:** Ця структура використовувалася до Sprint 5.5. Може зустрічатися в старих записах.
 
 ```json
 {
@@ -98,6 +159,7 @@
 **Тип:** `Object (Mixed)`
 
 **Структура:**
+
 ```javascript
 {
   "<category_key>": {           // "supports", "spans", "isolator"
@@ -113,6 +175,7 @@
 ```
 
 **Категорії в data:**
+
 - `supports` — опори (C80, C290, C430, тощо)
 - `spans` — балки/траверси (600, 750, 900, 1500)
 - `isolator` — ізолятори
@@ -128,6 +191,7 @@
 **Тип:** `Object (Mixed)`
 
 **Приклад структури:**
+
 ```javascript
 {
   // Для опор (supports)
@@ -140,7 +204,7 @@
     position: string,    // "крайня" або "проміжна"
     stepped: boolean     // true для ступінчастих (C)
   }
-  
+
   // Для балок (spans)
   {
     code: string,        // "1500"
@@ -148,7 +212,7 @@
     weight: number,      // 4.28 кг
     profile: string      // "h/с-профіль"
   }
-  
+
   // Для ізоляторів
   {
     code: string,        // "isolator"
@@ -212,7 +276,7 @@
   "unit": "шт",
   "metadata": {
     "code": "isolator",
-    "weight": 0.10,
+    "weight": 0.1,
     "material": "гума",
     "thickness": 5
   }
@@ -231,7 +295,7 @@
   "metadata": {
     "code": "1190",
     "height": 1190,
-    "weight": 3.40
+    "weight": 3.4
   }
 }
 ```
@@ -247,7 +311,7 @@
   "unit": "шт",
   "metadata": {
     "code": "diagonal_brace",
-    "weight": 1.00,
+    "weight": 1.0,
     "type": "багатоповерховий"
   }
 }
@@ -261,15 +325,15 @@
 
 ```javascript
 // Індекси
-db.prices.createIndex({ category: 1, updatedAt: -1 })
-db.prices.createIndex({ deleted: 1, updatedAt: -1 })
+db.prices.createIndex({ category: 1, updatedAt: -1 });
+db.prices.createIndex({ deleted: 1, updatedAt: -1 });
 ```
 
 ### PriceComponent Collection
 
 ```javascript
 // Комбінований індекс (унікальність)
-db.pricecomponents.createIndex({ name: 1, category: 1, deleted: 1 })
+db.pricecomponents.createIndex({ name: 1, category: 1, deleted: 1 });
 ```
 
 ---
@@ -280,28 +344,30 @@ db.pricecomponents.createIndex({ name: 1, category: 1, deleted: 1 })
 
 ```javascript
 db.prices.findOne({
-  category: "rack",
-  deleted: false
-})
+  category: 'rack',
+  deleted: false,
+});
 ```
 
 ### Отримати всі компоненти категорії "supports"
 
 ```javascript
-db.pricecomponents.find({
-  category: "supports",
-  deleted: false
-}).sort({ price: 1 })
+db.pricecomponents
+  .find({
+    category: 'supports',
+    deleted: false,
+  })
+  .sort({ price: 1 });
 ```
 
 ### Отримати компоненти з фільтрацією по ціні
 
 ```javascript
 db.pricecomponents.find({
-  category: "supports",
+  category: 'supports',
   price: { $gte: 500, $lte: 1000 },
-  deleted: false
-})
+  deleted: false,
+});
 ```
 
 ### Агрегація: середня ціна по категоріях
@@ -311,12 +377,12 @@ db.pricecomponents.aggregate([
   { $match: { deleted: false } },
   {
     $group: {
-      _id: "$category",
-      avgPrice: { $avg: "$price" },
-      count: { $sum: 1 }
-    }
-  }
-])
+      _id: '$category',
+      avgPrice: { $avg: '$price' },
+      count: { $sum: 1 },
+    },
+  },
+]);
 ```
 
 ---
@@ -341,16 +407,16 @@ db.pricecomponents.aggregate([
 
 ```javascript
 db.prices.find({
-  deleted: { $in: [false, null] }
-})
+  deleted: { $in: [false, null] },
+});
 ```
 
 ### Запит для отримання видалених
 
 ```javascript
 db.prices.find({
-  deleted: true
-})
+  deleted: true,
+});
 ```
 
 ---
@@ -360,6 +426,7 @@ db.prices.find({
 **Примітка:** Price та PriceComponent не мають TTL indexes.
 
 TTL indexes використовуються в інших моделях:
+
 - `RefreshToken` — 7 днів
 - `EmailVerification` — 24 години
 - `PasswordReset` — 1 година
@@ -403,9 +470,9 @@ Calculation
 async getPrices(category?: string, userPermissions?: string[]) {
   const query = { deleted: false };
   if (category) query.category = category;
-  
+
   const prices = await this.pricesRepository.find(query);
-  
+
   // Фільтрація data за permissions
   if (userPermissions && !userPermissions.includes('загальна')) {
     prices.forEach(price => {
@@ -418,7 +485,7 @@ async getPrices(category?: string, userPermissions?: string[]) {
       });
     });
   }
-  
+
   return prices;
 }
 ```
@@ -587,6 +654,7 @@ async getPrices(category?: string, userPermissions?: string[]) {
 ---
 
 **Файли:**
+
 - Модель: `server/src/database/models/price.model.ts`
 - Модель: `server/src/database/models/price-component.model.ts`
 - Скрипт: `server/scripts/create-test-price.ts`

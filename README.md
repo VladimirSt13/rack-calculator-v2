@@ -22,6 +22,9 @@
 - ✅ Система ролей та прав доступу (RBAC)
 - ✅ Логування дій користувачів (Audit)
 - ✅ Email verification та скидання пароля
+- ✅ **Admin Price Editor** — управління прайсами з Excel імпортом/експортом
+- ✅ **Strategy Pattern** — гнучка архітектура для різних типів прайсів
+- ✅ **Unit Tests** — 32 тести для Price модуля (100% pass)
 
 ---
 
@@ -145,27 +148,28 @@ rack-calculator-v2/
 
 ### Backend
 
-| Модуль      | Опис                          | Статус |
-| ----------- | ----------------------------- | ------ |
-| **auth**    | Автентифікація (JWT, Refresh) | ✅     |
-| **users**   | Користувачі (CRUD, Profile)   | ✅     |
-| **roles**   | Ролі та RBAC система          | ✅     |
-| **perms**   | Дозволи (Resource-Action)     | ✅     |
-| **audit**   | Логування дій користувачів    | ✅     |
-| **email**   | Email сервіс (Nodemailer)     | ✅     |
-| **price**   | Модуль цін (Price DB)         | ✅     |
-| **rack**    | Розрахунок стелажів           | ✅     |
-| **battery** | Підбір батарей                | ⏳     |
+| Модуль      | Опис                                    | Статус |
+| ----------- | --------------------------------------- | ------ |
+| **auth**    | Автентифікація (JWT, Refresh)           | ✅     |
+| **users**   | Користувачі (CRUD, Profile)             | ✅     |
+| **roles**   | Ролі та RBAC система                    | ✅     |
+| **perms**   | Дозволи (Resource-Action)               | ✅     |
+| **audit**   | Логування дій користувачів              | ✅     |
+| **email**   | Email сервіс (Nodemailer)               | ✅     |
+| **price**   | Модуль цін (Price DB, Strategy Pattern) | ✅     |
+| **rack**    | Розрахунок стелажів                     | ✅     |
+| **battery** | Підбір батарей                          | ⏳     |
 
 ### Frontend
 
-| Компонент           | Опис                     | Статус |
-| ------------------- | ------------------------ | ------ |
-| **Auth Pages**      | Login, Register, Profile | ✅     |
-| **Dashboard**       | Головна сторінка         | ✅     |
-| **Audit Page**      | Перегляд логів (ADMIN)   | ✅     |
-| **Rack Calculator** | Калькулятор стелажів     | ✅     |
-| **Battery Page**    | Підбір батарей           | ⏳     |
+| Компонент           | Опис                                  | Статус |
+| ------------------- | ------------------------------------- | ------ |
+| **Auth Pages**      | Login, Register, Profile              | ✅     |
+| **Dashboard**       | Головна сторінка                      | ✅     |
+| **Audit Page**      | Перегляд логів (ADMIN)                | ✅     |
+| **Admin Prices**    | Управління прайсами (Strategy, Tests) | ✅     |
+| **Rack Calculator** | Калькулятор стелажів                  | ✅     |
+| **Battery Page**    | Підбір батарей                        | ⏳     |
 
 ---
 
@@ -203,20 +207,34 @@ rack-calculator-v2/
 ### Prices
 
 - `GET /api/prices` — список прайсів
-- `GET /api/prices/:category` — прайс по категорії
+- `GET /api/prices/all` — всі прайси (admin)
+- `GET /api/prices/:id` — прайс по ID (admin)
+- `GET /api/prices/:id/export` — експорт в Excel (admin)
+- `POST /api/prices/:id/import` — імпорт з Excel (admin)
 - `POST /api/prices` — створити (admin)
 - `PUT /api/prices/:id` — оновити (admin)
+- `PUT /api/prices/bulk` — масове оновлення цін (admin)
+- `POST /api/prices/:id/activate` — активувати (admin)
+- `POST /api/prices/:id/deactivate` — деактивувати (admin)
+- `DELETE /api/prices/:id` — видалити (admin)
 
 ---
 
 ## 📚 Документація
 
+- **[INDEX.md](./INDEX.md)** — навігація по всіх документах
+- **[README.md](./README.md)** — загальний опис проєкту
 - **[STATUS.md](./STATUS.md)** — статус проєкту, готовність спринтів
 - **[PLAN.md](./PLAN.md)** — план розробки, дорожня карта
+- **[PLAN-PRICE-EDITOR.md](./PLAN-PRICE-EDITOR.md)** — план Admin Price Editor
+- **[price.md](./price.md)** — 🔥 НОВА: архітектура Price модуля, стратегії, API
+- **[server/src/modules/price/ARCHITECTURE.md](./server/src/modules/price/ARCHITECTURE.md)** — Strategy Pattern документація
+- **[server/src/modules/price/TESTS.md](./server/src/modules/price/TESTS.md)** — 🔥 НОВА: unit-тести (32 тести, 100% pass)
+- **[notes.md](./notes.md)** — технічні ноти, структура нової моделі Price
 - **[RACK_ALGORITHM_BUSINESS.md](./RACK_ALGORITHM_BUSINESS.md)** — бізнес-алгоритм розрахунку стелажів
 - **[rack-form-description.md](./rack-form-description.md)** — опис форми калькулятора
 - **[rack-results-description.md](./rack-results-description.md)** — опис результатів
-- **[price/PRICE_DB_STRUCTURE.md](./price/PRICE_DB_STRUCTURE.md)** — структура бази цін
+- **[price/PRICE_DB_STRUCTURE.md](./price/PRICE_DB_STRUCTURE.md)** — структура бази цін (стара + нова)
 
 ---
 
